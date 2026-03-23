@@ -1,0 +1,17 @@
+# macOS artifacts
+.DS_Store
+__MACOSX/
+
+# Local agent/tooling state
+.claude/
+
+# Local environment and secrets
+.env
+.env.*
+.envrc
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519

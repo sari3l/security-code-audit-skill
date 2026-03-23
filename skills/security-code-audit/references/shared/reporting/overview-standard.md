@@ -1,0 +1,31 @@
+# Overview Standard
+
+The report overview should help a decision-maker understand risk quickly without losing the path to technical detail.
+
+---
+
+## Required Sections
+
+- project meta: date, mode, project, skill version, audit profile, knowledge domain, tech stack, files analyzed
+- executive summary: 2 to 3 sentences on overall posture and dominant risks
+- risk overview by severity
+- category coverage or domain coverage, plus notable blind spots
+- top findings: only confirmed highest-signal items
+- candidate signals: only unresolved high-signal cases worth explicit follow-up
+- coverage debt: partial, blocked, or invalidated surfaces that still matter
+- attack chains for Standard or Deep mode when multiple findings combine
+- working-hypotheses appendix for Deep mode or beta `multi` when unresolved high-signal chains, trust assumptions, or shared-root-cause models remain material
+- historical comparison: new, recurring, regressed, fixed
+- prioritized action items ordered by risk reduction
+
+---
+
+## Prioritization Rules
+
+- prioritize exploitability and blast radius first
+- favor findings with a clear minimal fix over broad wishlist items
+- call out when one fix removes multiple downstream risks
+- keep leadership-facing summary concise and engineer-facing action items specific
+- never present candidate signals as if they were confirmed findings
+- if coverage debt is material, surface it near the top instead of burying it
+- keep working hypotheses in an appendix so they remain visible without crowding the confirmed finding list
