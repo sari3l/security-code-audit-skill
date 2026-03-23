@@ -54,6 +54,51 @@ Examples:
 
 ## 3. Architecture
 
+Runtime architecture: staged scanning with profile routing, on-demand loading, and persistent state.
+
+```mermaid
+flowchart TD
+    A["User command<br/>/security-code-audit [mode] [execution]"]
+    B["SKILL.md<br/>entry router + shared workflow"]
+
+    C["Bootstrap control plane<br/>parse mode + execution<br/>load core controls and mode rules"]
+    D["Recon phase<br/>map repo surface, stack, artifacts, and risk areas"]
+    E["Profile selection<br/>application | smart-contract | artifact-centric"]
+
+    F["core/loading.md<br/>lazy loading + on-demand routing"]
+    G["Primary knowledge domain<br/>references/application or references/smart-contract"]
+    H["Shared modules<br/>artifacts, dependencies, reporting, and state standards"]
+
+    I["Targeted audit pass<br/>follow selected references for the active surface"]
+    J["Evidence and consolidation<br/>validate findings, dedupe repeats, track coverage debt"]
+    K["Reporting and regression<br/>write findings, compare history, retest fixes"]
+
+    S[".security-code-audit-state/<br/>run context, loading decisions, hypotheses, invalidations"]
+    R[".security-code-audit-reports/<br/>human-readable findings and history"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+
+    F --> G
+    F --> H
+
+    G --> I
+    H --> I
+    I --> J
+    J --> K
+    K --> R
+
+    D -. initialize scan state .-> S
+    F -. persist selected modules .-> S
+    I -. update findings and coverage .-> S
+    J -. carry forward hypotheses and invalidations .-> S
+    S -. support long scans, regression, and multi-agent continuity .-> I
+    R -. latest report reused by regression mode .-> K
+```
+
 The skill is intentionally split into layers:
 
 - `SKILL.md`

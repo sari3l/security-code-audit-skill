@@ -52,6 +52,51 @@
 
 ## 3. 架构
 
+运行时架构：分阶段扫描、按目标路由、按需加载，并通过持久化 state 保持长扫描和回归的一致性。
+
+```mermaid
+flowchart TD
+    A["用户命令<br/>/security-code-audit [mode] [execution]"]
+    B["SKILL.md<br/>入口路由 + 共享工作流"]
+
+    C["启动控制面<br/>解析 mode 和 execution<br/>加载 core 控制与模式规则"]
+    D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts 和风险面"]
+    E["目标画像选择<br/>application | smart-contract | artifact-centric"]
+
+    F["core/loading.md<br/>懒加载 + 按需路由"]
+    G["主知识域<br/>references/application 或 references/smart-contract"]
+    H["共享模块<br/>artifacts、dependencies、reporting、state 标准"]
+
+    I["定向审计阶段<br/>按当前目标面加载并执行对应审计方法"]
+    J["证据收敛与整理<br/>验证 findings、去重、记录 coverage debt"]
+    K["报告与回归<br/>输出 findings、对比历史、验证修复"]
+
+    S[".security-code-audit-state/<br/>run context、加载决策、假设、失效记录"]
+    R[".security-code-audit-reports/<br/>人类可读 findings 和历史报告"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+
+    F --> G
+    F --> H
+
+    G --> I
+    H --> I
+    I --> J
+    J --> K
+    K --> R
+
+    D -. 初始化扫描 state .-> S
+    F -. 持久化已选模块 .-> S
+    I -. 更新 findings 与 coverage .-> S
+    J -. 延续假设与失效记录 .-> S
+    S -. 支撑长扫描、回归与多 agent 连续性 .-> I
+    R -. regression 模式复用最新报告 .-> K
+```
+
 这套 skill 按层拆分：
 
 - `SKILL.md`
