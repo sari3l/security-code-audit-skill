@@ -9,31 +9,31 @@ Searching 138 files for "2.0.0" (regex)
   ...
   236  [RECON]
   237  Project: {name}
-  238: Skill Version: {security-code-audit 1.0.0}
+  238: Skill Version: {security-code-audit 1.0.1}
   239  Audit Profile: {application|smart-contract|artifact-centric}
   240  Knowledge Domain: {application|smart-contract}
   ...
   264  **[RECON]**
   265  - `Project`: vuln-bank
-  266: - `Skill Version`: `security-code-audit 1.0.0`
+  266: - `Skill Version`: `security-code-audit 1.0.1`
   267  - `Audit Profile`: `application`
   268  - `Knowledge Domain`: `application`
   ...
   503  **Project:** [name]
   504  **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-  505: **Skill Version:** [1.0.0]
+  505: **Skill Version:** [1.0.1]
   506  **Mode:** [quick|standard|deep|regression]
   507  **Audit Profile:** [application|smart-contract|artifact-centric]
   ...
   577  **Project:** [name]
   578  **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-  579: **Skill Version:** [1.0.0]
+  579: **Skill Version:** [1.0.1]
   580  **Mode:** [regression]
   581  **Audit Profile:** [application|smart-contract|artifact-centric]
   ...
   602  ## Meta
   603  - **Date**: [YYYY-MM-DD HH:MM:SS TZ]
-  604: - **Skill Version**: [1.0.0]
+  604: - **Skill Version**: [1.0.1]
   605  - **Mode**: [quick|standard|deep|regression]
   606  - **Audit Profile**: [application|smart-contract|artifact-centric]
 

@@ -1,6 +1,6 @@
 ---
 name: security-code-audit
-version: 1.0.0
+version: 1.0.1
 description: |
   Help: `/security-code-audit help` or `/security-code-audit --help`.
   Code security scanning capability for web/API and smart-contract repositories, provided by the RockBund Capital Security Team.
@@ -11,7 +11,7 @@ description: |
 
 A systematic, language-agnostic security audit framework with tiered scanning depth.
 
-Current skill version: `1.0.0`. Version bump rules live in `VERSIONING.md`.
+Current skill version: `1.0.1`. Version bump rules live in `VERSIONING.md`.
 
 ## Help Path
 
@@ -24,10 +24,9 @@ If help is requested:
 - load the user-facing README that best matches the conversation language
   - use `README.md` for English
   - use `README-CN.md` for Chinese
-- print a concise usage summary that follows the README sections for:
-  - usage
-  - features
-  - architecture
+- print only a concise usage summary from the README `Usage` section
+- include command forms, parameters, execution options, and representative examples
+- do not print the README `Features` or `Architecture` sections
 - do not initialize the scan progress plan
 - do not load mode files, history, or reference modules beyond what is needed to answer help
 - stop immediately after printing help
@@ -235,7 +234,7 @@ Mode-specific reconnaissance depth lives in `modes/*.md`:
 ```
 [RECON]
 Project: {name}
-Skill Version: {security-code-audit 1.0.0}
+Skill Version: {security-code-audit 1.0.1}
 Audit Profile: {application|smart-contract|artifact-centric}
 Knowledge Domain: {application|smart-contract}
 Size: {X files, Y directories}
@@ -263,7 +262,7 @@ Example preferred rendering:
 ```markdown
 **[RECON]**
 - `Project`: vuln-bank
-- `Skill Version`: `security-code-audit 1.0.0`
+- `Skill Version`: `security-code-audit 1.0.1`
 - `Audit Profile`: `application`
 - `Knowledge Domain`: `application`
 - `Size`: 5 Python files, 12 HTML templates, 2 JS files
@@ -502,7 +501,7 @@ Print directly in the conversation:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.0]
+**Skill Version:** [1.0.1]
 **Mode:** [quick|standard|deep|regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -576,7 +575,7 @@ Regression mode uses this summary shape instead:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.0]
+**Skill Version:** [1.0.1]
 **Mode:** [regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -601,7 +600,7 @@ Save to `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md
 
 ## Meta
 - **Date**: [YYYY-MM-DD HH:MM:SS TZ]
-- **Skill Version**: [1.0.0]
+- **Skill Version**: [1.0.1]
 - **Mode**: [quick|standard|deep|regression]
 - **Audit Profile**: [application|smart-contract|artifact-centric]
 - **Knowledge Domain**: [application|smart-contract]
