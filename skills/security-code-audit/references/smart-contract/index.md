@@ -17,6 +17,9 @@ This domain exists because contract auditing is not a thin variant of web Top 10
 - `references/smart-contract/exploits/index.md`
   Contract exploit validation guidance once a finding is verified or strongly suspected.
 
+- `references/smart-contract/standards/index.md`
+  Standards overlay mapping for OWASP Smart Contracts and SCSVS contract-architecture checks.
+
 ---
 
 ## Supporting Shared Modules
@@ -56,4 +59,5 @@ These remain relevant when the surface matches, but they are supporting lenses r
 2. Load `references/smart-contract/languages/index.md` when you need language-level grep starters or sink hints.
 3. Pull in only the deep dives that match the observed trust, accounting, signature, oracle, or deployment surface.
 4. Use `references/smart-contract/exploits/index.md` only when validation is needed.
-5. Add `references/shared/` modules only when artifacts, dependencies, configuration, reporting, or history work actually require them.
+5. Use `references/smart-contract/standards/index.md` when you need to map findings and coverage back to OWASP or SCSVS language without changing the audit spine.
+6. Add `references/shared/` modules only when artifacts, dependencies, configuration, reporting, or history work actually require them.

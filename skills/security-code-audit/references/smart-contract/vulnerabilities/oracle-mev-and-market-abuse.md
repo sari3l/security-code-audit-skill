@@ -42,3 +42,13 @@ Separate:
 - realistic profit path under expected market conditions
 
 If the weakness is only profitable above a certain liquidity or slippage threshold, state that explicitly rather than flattening it into a yes/no claim.
+
+---
+
+## Remediation Notes
+
+- Do not recommend generic "use TWAP" or "add slippage checks" if the protocol still trusts an attacker-shapeable source for the critical decision.
+- Minimal fixes should change the trust boundary that creates profit, such as switching to an independent oracle, enforcing freshness/deviation guards, or preventing same-transaction user-controlled reserve shaping from driving settlement.
+- Parameter tuning alone is hardening unless it actually makes the exploit path impossible under the protocol's stated threat model.
+- Preserve intended market behavior where possible. A fix that freezes liquidations, minting, or redemption under normal volatility may be necessary, but it is not a minimal fix unless the report says why narrower controls are insufficient.
+- State the exact impossible post-fix condition, such as: "an attacker can no longer profit by moving the trusted price source within the same transaction or stale-oracle window."

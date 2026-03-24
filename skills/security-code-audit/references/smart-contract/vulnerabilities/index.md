@@ -39,3 +39,4 @@ The files in this directory are ordered to match how contract review should usua
 1. Start with `smart-contracts.md`.
 2. Load the deep dives that match the observed surface.
 3. Load `coverage.md` near stage `5/6` and final report generation.
+4. Use `../standards/index.md` only as a standards overlay after the technical review path is already clear.

@@ -1,6 +1,6 @@
 ---
 name: security-code-audit
-version: 1.0.1
+version: 1.0.2
 description: |
   Help: `/security-code-audit help` or `/security-code-audit --help`.
   Code security scanning capability for web/API and smart-contract repositories, provided by the RockBund Capital Security Team.
@@ -11,7 +11,7 @@ description: |
 
 A systematic, language-agnostic security audit framework with tiered scanning depth.
 
-Current skill version: `1.0.1`. Version bump rules live in `VERSIONING.md`.
+Current skill version: `1.0.2`. Version bump rules live in `VERSIONING.md`.
 
 ## Help Path
 
@@ -234,11 +234,12 @@ Mode-specific reconnaissance depth lives in `modes/*.md`:
 ```
 [RECON]
 Project: {name}
-Skill Version: {security-code-audit 1.0.1}
+Skill Version: {security-code-audit 1.0.2}
 Audit Profile: {application|smart-contract|artifact-centric}
 Knowledge Domain: {application|smart-contract}
 Size: {X files, Y directories}
 Tech Stack: {language, framework, version}
+Compiler Reality: {pragma ranges, active compiler, key contract dependencies — smart-contract only when detected}
 Dependency Files: {manifests and lock files found}
 Entry Points: {count and types}
 API Versions: {list all versioned endpoints found}
@@ -257,16 +258,18 @@ Retest Baseline: {latest report file/timestamp, regression mode only}
 - Use inline code for compact high-signal values when it improves contrast, such as skill version, filenames, routes, API versions, and module names.
 - Keep long descriptive values in normal text so they remain readable.
 - Use ANSI colors only as an optional fallback in terminals that truly render them.
+- For smart-contract audits, include `Compiler Reality` when it materially affects exploitability or remediation, but treat it as context rather than an automatic reason to suppress findings.
 
 Example preferred rendering:
 ```markdown
 **[RECON]**
 - `Project`: vuln-bank
-- `Skill Version`: `security-code-audit 1.0.1`
+- `Skill Version`: `security-code-audit 1.0.2`
 - `Audit Profile`: `application`
 - `Knowledge Domain`: `application`
 - `Size`: 5 Python files, 12 HTML templates, 2 JS files
 - `Tech Stack`: Python, Flask 2.0.1, PostgreSQL, GraphQL, Jinja2, Docker Compose
+- `Compiler Reality`: `pragma ^0.8.20`, `solc 0.8.23`, `OpenZeppelin 5.x`
 - `Dependency Files`: `requirements.txt`
 - `Entry Points`: 50+ routes, `POST /graphql`, AI endpoints
 - `API Versions`: `/api/v1`, `/api/v2`, `/api/v3`
@@ -501,10 +504,11 @@ Print directly in the conversation:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.1]
+**Skill Version:** [1.0.2]
 **Mode:** [quick|standard|deep|regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
+**Compiler Reality:** [pragma / active compiler / key dependency context, smart-contract when material]
 **Risk Level:** [Critical/High/Medium/Low]
 
 ### Findings Overview
@@ -575,7 +579,7 @@ Regression mode uses this summary shape instead:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.1]
+**Skill Version:** [1.0.2]
 **Mode:** [regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -600,10 +604,11 @@ Save to `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md
 
 ## Meta
 - **Date**: [YYYY-MM-DD HH:MM:SS TZ]
-- **Skill Version**: [1.0.1]
+- **Skill Version**: [1.0.2]
 - **Mode**: [quick|standard|deep|regression]
 - **Audit Profile**: [application|smart-contract|artifact-centric]
 - **Knowledge Domain**: [application|smart-contract]
+- **Compiler Reality**: [pragma / active compiler / key dependency context, smart-contract when material]
 - **Project**: [name]
 - **Tech Stack**: [detected stack]
 - **Files Analyzed**: [count, including template files]
@@ -634,6 +639,7 @@ Use only the coverage section that matches the active knowledge domain.
 - **Description**: [Clear description of the vulnerability]
 - **Attack Vector**: [How an attacker would exploit this]
 - **Impact**: [Consequences of successful exploitation]
+- **Build Context**: [Optional; include for smart-contract findings when compiler or dependency reality materially affects exploitability or remediation]
 - **PoC**: [Concrete exploit payload, curl command, or step-by-step — required for Critical/High]
 - **Evidence**:
   ```[lang]

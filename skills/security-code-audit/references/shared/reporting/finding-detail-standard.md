@@ -21,6 +21,11 @@ Each finding entry should be specific enough that another engineer can reproduce
 - `Hardening`
 - `Related Findings`
 
+## Optional Context Fields
+
+- `Build Context`
+  Use for smart-contract findings when `pragma`, actual compiler, optimizer, proxy model, or key dependency version materially affects exploitability, severity confidence, or remediation compatibility.
+
 ---
 
 ## Writing Rules
@@ -33,6 +38,8 @@ Each finding entry should be specific enough that another engineer can reproduce
 - Distinguish direct impact from chain impact if the issue compounds with others.
 - Main finding entries should use `Maturity: Confirmed`.
 - Candidate entries belong in a separate `Candidate Signals` section and should follow `evidence-standard.md`.
+- `Minimal Fix` must be exploit-breaking and execution-preserving; avoid proposing patches that would self-revert or disable the intended happy path.
+- `Build Context` is advisory context, not a dismissal mechanism. Use it to sharpen exploitability and remediation accuracy, not to auto-close a finding just because the repo is on an older or newer compiler line.
 
 ---
 
@@ -49,6 +56,7 @@ Each finding entry should be specific enough that another engineer can reproduce
 - **Description**: [What is wrong in the actual code path]
 - **Attack Vector**: [Shortest credible exploit path]
 - **Impact**: [What the attacker gains]
+- **Build Context**: [Optional, only when version/dependency reality materially matters]
 - **PoC**: [Concrete payload, request, or steps]
 - **Evidence**:
   ```[lang]

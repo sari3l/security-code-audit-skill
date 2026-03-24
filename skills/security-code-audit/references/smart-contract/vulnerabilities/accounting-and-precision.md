@@ -57,3 +57,13 @@ Track:
 - accounting drift
 - non-standard token incompatibility
 - donation or bootstrap manipulation
+
+---
+
+## Remediation Notes
+
+- Do not recommend "just increase precision" when the real bug is wrong proportional math, stale totals, or the wrong accounting source of truth.
+- Minimal fixes should preserve the intended economic model while making the exploit path impossible, for example by correcting rounding direction, zero-state bootstrap rules, or asset/share conversion formulas.
+- If the protocol claims support for rebasing, fee-on-transfer, or mixed-decimal assets, avoid suggesting a silent de-support as the default fix unless the product surface truly allows that narrowing.
+- If no local patch can restore the invariant safely, say that the accounting model needs redesign instead of forcing a one-line fix.
+- State the exact impossible post-fix condition, such as: "a user can no longer mint disproportionate shares through dust, donation, or first-depositor skew."

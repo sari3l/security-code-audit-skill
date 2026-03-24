@@ -4,6 +4,28 @@ Use this file when the repo contains `.sol` contracts, Foundry, Hardhat, or on-c
 
 ---
 
+## Version-Aware Review
+
+Always identify three things before trusting a remediation or dismissing a pattern:
+- the source `pragma` range in each contract
+- the actual compiler version selected by Foundry, Hardhat, or CI
+- the imported dependency version, especially OpenZeppelin upgrade and access-control helpers
+
+Do not assume these are the same. A repo can declare a broad pragma but compile with one pinned version, and library availability can differ again.
+
+Use this context to sharpen conclusions, not to suppress them automatically. Compiler reality should improve exploitability and remediation accuracy; it should not become a blanket excuse to ignore a suspicious pattern.
+
+Version-sensitive reminders:
+- pre-`0.8.x` arithmetic does not revert on overflow/underflow by default; remediation and exploitability differ sharply from `0.8.x`
+- `receive()` / `fallback()` semantics changed in the `0.6.x` era; do not recommend modern ETH-handling patterns without checking target compiler behavior
+- features such as custom errors, `unchecked`, `immutable`, `try/catch`, and `abi.encodeCall` are compiler-generation dependent; do not suggest them blindly
+- randomness and entropy guidance depends on chain and compiler era: `block.difficulty` vs `block.prevrandao` is not interchangeable advice
+- OpenZeppelin helpers such as `Ownable2Step`, newer upgrade base contracts, or specific guard utilities depend on the imported OZ release, not just the Solidity pragma
+
+If the safest remediation needs a compiler or dependency bump, say so explicitly instead of presenting it as a local one-line patch.
+
+---
+
 ## Key Risk Families
 
 ### External Calls and Reentrancy
@@ -43,6 +65,7 @@ Use this file when the repo contains `.sol` contracts, Foundry, Hardhat, or on-c
 - CEI broken indirectly by hook-based tokens
 - `safeTransfer` assumed to be safe when downstream code is still reentrant
 - role admin paths forgotten during proxy upgrades
+- pragma range, actual compiler, and imported OZ version silently diverge, so the suggested fix does not compile or changes semantics
 - `abi.encodePacked` collisions in signature or authorization schemes
 - chain-specific assumptions missing from signed payloads
 - admin rescue functions that can drain user funds or bypass accounting

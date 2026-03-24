@@ -9,11 +9,12 @@ Smart contract review should treat contract code, off-chain signers, upgrade inf
 ## What To Enumerate First
 
 1. all privileged roles: owner, admin, upgrader, pauser, rescuer, keeper, signer
-2. every external call path, callback surface, and token transfer hook
-3. accounting-critical state: balances, shares, exchange rates, debt, collateral, reward indices
-4. oracle and pricing sources, especially spot-price or pool-reserve dependencies
-5. upgrade paths: proxy admin, initializer, reinitializer, implementation auth
-6. signature-based flows: permit, meta-transactions, approvals, off-chain orders
+2. compiler reality: `pragma`, actual build compiler, optimizer settings, and imported dependency versions
+3. every external call path, callback surface, and token transfer hook
+4. accounting-critical state: balances, shares, exchange rates, debt, collateral, reward indices
+5. oracle and pricing sources, especially spot-price or pool-reserve dependencies
+6. upgrade paths: proxy admin, initializer, reinitializer, implementation auth
+7. signature-based flows: permit, meta-transactions, approvals, off-chain orders
 
 ---
 
@@ -40,6 +41,7 @@ Smart contract review should treat contract code, off-chain signers, upgrade inf
 - permit implementations that accept cross-chain or cross-contract replay
 - admin timelock or multisig assumptions that are not actually enforced on-chain
 - proxy + implementation storage collisions after upgrades
+- remediation assumes a newer compiler feature or OZ helper than the repo actually builds with
 
 ---
 
@@ -69,10 +71,11 @@ rg -n "for \\(|while \\(|claim|redeem|withdraw|liquidate|mint|burn|exchangeRate|
 ## Review Strategy
 
 1. Map privileged roles and every state-changing entry point.
-2. Trace external calls and callback-capable token interactions.
-3. Reconstruct core invariants for balances, shares, collateral, and debt.
-4. Test whether pricing, signatures, or upgrades can break those invariants under adversarial timing.
-5. Separate pure code bugs from economic, governance, or deployment trust failures in reporting.
+2. Pin the actual compiler and dependency reality before proposing exploitability or remediation conclusions.
+3. Trace external calls and callback-capable token interactions.
+4. Reconstruct core invariants for balances, shares, collateral, and debt.
+5. Test whether pricing, signatures, or upgrades can break those invariants under adversarial timing.
+6. Separate pure code bugs from economic, governance, or deployment trust failures in reporting.
 
 ---
 

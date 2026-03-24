@@ -43,3 +43,13 @@ Use this file for proxies, beacons, factories, implementation initialization, de
 - storage layout delta
 - deployment script sequencing assumptions
 - admin key and environment dependency map
+
+---
+
+## Remediation Notes
+
+- Do not recommend a simple `onlyOwner` patch if the real issue is that upgrade authority, initializer reachability, or admin separation is fundamentally wrong.
+- Minimal fixes should preserve the intended upgrade and deployment flow while removing the unsafe state transition, for example by locking implementation initialization, tightening upgrade auth, or adding one-time sequencing assertions.
+- Avoid remediation that silently bricks proxy upgrades, reinitializers, or rescue flows unless the report explicitly says that shutdown is the least unsafe option.
+- When storage layout or migration risk is involved, say so directly. A code patch without a rollout or migration step is not a complete minimal fix for a live deployment.
+- State the exact impossible post-fix condition, such as: "an attacker can no longer initialize, upgrade, or migrate the system through an out-of-sequence or overly privileged path."

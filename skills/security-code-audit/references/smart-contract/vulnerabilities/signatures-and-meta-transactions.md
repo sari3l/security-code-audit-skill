@@ -41,3 +41,13 @@ Use this file for permit flows, EIP-712 signing, off-chain approvals, relayed ac
 - Is the beneficiary bound tightly enough to prevent redirection?
 - Does the relayer or forwarder gain authority it should not have?
 - Are signer rotation, domain updates, and nonce invalidation handled safely?
+
+---
+
+## Remediation Notes
+
+- Do not recommend "add a nonce" as the whole fix if replay is actually caused by missing domain separation, missing beneficiary/caller binding, or wrong signer scope.
+- Minimal fixes should bind signed intent to the exact context that matters: chain, contract, action, beneficiary, amount, deadline, and nonce as needed by the protocol flow.
+- Preserve the intended signing UX. A fix that invalidates legitimate relaying or breaks all existing signed payloads may still be correct, but it is not a "minimal" fix unless the report says that explicitly.
+- If already-issued signatures remain valid after the code patch, call out the migration or revocation requirement instead of implying the issue is closed by code alone.
+- State the exact impossible post-fix condition, such as: "a valid signature can no longer be replayed across contracts, chains, beneficiaries, or relay contexts."

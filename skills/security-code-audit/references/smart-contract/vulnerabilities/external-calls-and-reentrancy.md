@@ -18,6 +18,7 @@ Use this file for execution ordering, callback surfaces, delegation, and interac
 - CEI looks correct locally but another shared state path remains callable during callback
 - `safeTransfer` or `transferFrom` is treated as side-effect free
 - reentrancy guard applied to one entry point but not the paired settle/claim/withdraw path
+- same `nonReentrant` guard suggested on a synchronous flash-loan or hook callback even though the outer entrypoint already holds the lock
 - arbitrary target execution hidden behind adapters, plugins, vault hooks, or strategy contracts
 - `delegatecall` used for extensibility without strict target control
 
@@ -39,3 +40,15 @@ Use this file for execution ordering, callback surfaces, delegation, and interac
 - double-withdraw, double-claim, or under-collateralized borrow
 - stale state consumed after callback mutation
 - protocol context executing attacker-chosen logic
+
+---
+
+## Remediation Notes
+
+- Before recommending `nonReentrant`, trace whether the vulnerable callback is invoked synchronously from an outer function that already uses the same guard.
+- If the callback is part of the intended happy path, reusing the same guard can self-revert the protocol instead of safely fixing the bug.
+- Prefer one of these minimal-fix patterns when they preserve behavior:
+  - remove ETH/token payout from the callback and let the user pull funds later
+  - move payout until after the callback-sensitive settlement window closes
+  - add a dedicated callback-only guard or phase flag that blocks nested callback entry without blocking the initial flash-loan hook
+- State the concrete impossible condition after the fix, such as: "user-controlled code can no longer run before flash-loan settlement completes."
