@@ -1,6 +1,6 @@
 ---
 name: security-code-audit
-version: 1.0.2
+version: 1.0.3
 description: |
   Help: `/security-code-audit help` or `/security-code-audit --help`.
   Code security scanning capability for web/API and smart-contract repositories, provided by the RockBund Capital Security Team.
@@ -11,7 +11,7 @@ description: |
 
 A systematic, language-agnostic security audit framework with tiered scanning depth.
 
-Current skill version: `1.0.2`. Version bump rules live in `VERSIONING.md`.
+Current skill version: `1.0.3`. Version bump rules live in `VERSIONING.md`.
 
 ## Help Path
 
@@ -234,7 +234,7 @@ Mode-specific reconnaissance depth lives in `modes/*.md`:
 ```
 [RECON]
 Project: {name}
-Skill Version: {security-code-audit 1.0.2}
+Skill Version: {security-code-audit 1.0.3}
 Audit Profile: {application|smart-contract|artifact-centric}
 Knowledge Domain: {application|smart-contract}
 Size: {X files, Y directories}
@@ -264,7 +264,7 @@ Example preferred rendering:
 ```markdown
 **[RECON]**
 - `Project`: vuln-bank
-- `Skill Version`: `security-code-audit 1.0.2`
+- `Skill Version`: `security-code-audit 1.0.3`
 - `Audit Profile`: `application`
 - `Knowledge Domain`: `application`
 - `Size`: 5 Python files, 12 HTML templates, 2 JS files
@@ -494,6 +494,7 @@ Before finalizing each finding, verify:
 9. You promoted the issue to `Confirmed` using `references/shared/reporting/evidence-standard.md` instead of treating a suspicious pattern as a finding by default
 10. You recorded unresolved high-signal cases as `Candidate Signals` and partial or blocked review areas as `Coverage Debt`
 11. In `deep` mode or beta `multi` execution, you preserved material unresolved attack-chain or trust-boundary models as `Working Hypotheses` using `references/shared/reporting/hypothesis-standard.md`
+12. You placed reader-relevant operational risks, integration assumptions, and engineering notes into dedicated supplemental sections instead of inflating them into vulnerabilities
 
 ### Terminal Summary (All Modes)
 
@@ -504,7 +505,7 @@ Print directly in the conversation:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.2]
+**Skill Version:** [1.0.3]
 **Mode:** [quick|standard|deep|regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -523,6 +524,7 @@ Print directly in the conversation:
 - Confirmed Findings: X
 - Candidate Signals: X
 - Coverage Debt Items: X
+- Operational Risks / Assumptions / Notes: X (only when material)
 - Working Hypotheses: X (deep or multi when material)
 
 Use only the coverage table that matches the active knowledge domain.
@@ -579,7 +581,7 @@ Regression mode uses this summary shape instead:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.2]
+**Skill Version:** [1.0.3]
 **Mode:** [regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -604,7 +606,7 @@ Save to `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md
 
 ## Meta
 - **Date**: [YYYY-MM-DD HH:MM:SS TZ]
-- **Skill Version**: [1.0.2]
+- **Skill Version**: [1.0.3]
 - **Mode**: [quick|standard|deep|regression]
 - **Audit Profile**: [application|smart-contract|artifact-centric]
 - **Knowledge Domain**: [application|smart-contract]
@@ -672,6 +674,28 @@ Use only the coverage section that matches the active knowledge domain.
 - **Risk If Wrong**: [What may still be hidden here]
 - **Re-Audit Trigger**: [What change or condition should force review]
 - **Suggested Next Step**: [What the next audit should do]
+
+## Operational Risks (when material)
+
+### OPR-[NNN]: [Title]
+- **Why It Matters**: [Practical operational consequence]
+- **Where It Shows Up**: `file/path.ext:line` or [runtime/dependency path]
+- **Recommendation**: [Operational or product response]
+
+## Integration Assumptions (when material)
+
+### ASM-[NNN]: [Title]
+- **Assumption**: [What must already be true]
+- **Where It Matters**: `file/path.ext:line` or [runtime/dependency path]
+- **Failure Mode**: [What happens when the assumption is false]
+- **Recommendation**: [Validation, documentation, preflight, or guard]
+
+## Engineering Notes (when material)
+
+### ENG-[NNN]: [Title]
+- **Observation**: [Concise technical note]
+- **Where It Shows Up**: `file/path.ext:line`
+- **Recommendation**: [Useful cleanup or test/observability improvement]
 
 ## Attack Chains (standard/deep)
 
@@ -951,6 +975,7 @@ Load relevant references based on the project's tech stack. SKILL.md drives the 
 - Always provide actionable fix recommendations with code examples, not just problem descriptions
 - Prefer the smallest real fix that closes the exploit path now
 - Separate `Minimal Fix` from `Hardening`; do not hide a missing root-cause fix behind defense-in-depth advice
+- Keep operational or integration concerns readable, but place them in supplemental report sections instead of escalating them into findings unless they are real vulnerabilities
 - Reference specific files and line numbers for every finding
 - Use language-specific search patterns from `references/application/languages/index.md` or `references/smart-contract/languages/index.md` when available
 - **Include concrete PoC payloads** for all Critical and High findings — a finding without a PoC is incomplete

@@ -24,6 +24,7 @@ Statistics should support triage and coverage, not just make the report look com
 - number of affected endpoints for repeated patterns
 - number of attack chains identified
 - number of open working hypotheses in Deep or beta `multi` reports
+- number of operational risks, integration assumptions, or engineering notes when these sections are present
 - number of secrets or credentials exposed
 - number of critical paths still lacking a minimal fix
 
@@ -36,3 +37,4 @@ Statistics should support triage and coverage, not just make the report look com
 - keep repeated pattern counts aligned with the actual finding list
 - if a category is shallow or partial, reflect that in coverage notes rather than inflating counts
 - do not mix candidate signals into confirmed severity counts
+- do not mix supplemental-section items into confirmed finding, severity, or coverage-debt counts

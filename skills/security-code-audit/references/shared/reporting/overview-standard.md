@@ -13,6 +13,7 @@ The report overview should help a decision-maker understand risk quickly without
 - top findings: only confirmed highest-signal items
 - candidate signals: only unresolved high-signal cases worth explicit follow-up
 - coverage debt: partial, blocked, or invalidated surfaces that still matter
+- supplemental sections when material: operational risks, integration assumptions, and engineering notes that help readers without weakening the finding bar
 - attack chains for Standard or Deep mode when multiple findings combine
 - working-hypotheses appendix for Deep mode or beta `multi` when unresolved high-signal chains, trust assumptions, or shared-root-cause models remain material
 - historical comparison: new, recurring, regressed, fixed
@@ -28,4 +29,5 @@ The report overview should help a decision-maker understand risk quickly without
 - keep leadership-facing summary concise and engineer-facing action items specific
 - never present candidate signals as if they were confirmed findings
 - if coverage debt is material, surface it near the top instead of burying it
+- keep supplemental sections clearly outside the severity table and confirmed finding count
 - keep working hypotheses in an appendix so they remain visible without crowding the confirmed finding list

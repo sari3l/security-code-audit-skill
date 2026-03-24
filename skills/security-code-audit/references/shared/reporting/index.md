@@ -13,6 +13,7 @@ Use these files to keep reports consistent, auditable, and actionable:
 - `hypothesis-standard.md` for deep or multi-agent working hypotheses that remain unresolved but material
 - `regression-standard.md` for retesting the most recent timestamped report instead of running a broad new audit
 - `severity-guide.md` for severity calibration and context-sensitive grading
+- `supplemental-sections-standard.md` for operational risks, integration assumptions, and engineering notes that should stay outside the main findings list
 - `poc-standard.md` for exploit evidence and reproduction quality
 - `remediation-standard.md` for minimal real fixes and hardening guidance
 - `overview-standard.md` for executive summary, top findings, and action items
@@ -28,6 +29,7 @@ Use these files to keep reports consistent, auditable, and actionable:
 - Load `coverage-debt-standard.md` whenever a category or surface is partial, blocked, invalidated, or time-boxed.
 - Load `evidence-standard.md` before promoting suspicious patterns into the main findings list.
 - Load `hypothesis-standard.md` in `deep` mode or beta `multi` execution whenever unresolved high-signal hypotheses remain material after final verification.
+- Load `supplemental-sections-standard.md` when the audit has reader-relevant operational risks, integration assumptions, or engineering notes that should not be inflated into confirmed findings.
 - If the active knowledge domain is `smart-contract`, load `references/smart-contract/vulnerabilities/coverage.md` instead of relying only on the generic application coverage matrix.
 - Load `finding-detail-standard.md` and `remediation-standard.md` for every Standard or Deep audit report.
 - Load `history-standard.md` when reading `.security-code-audit-reports/` history files, ordering them by report timestamp, and writing `Historical Context`.

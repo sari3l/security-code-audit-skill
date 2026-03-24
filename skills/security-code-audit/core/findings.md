@@ -49,6 +49,13 @@ Use this file to keep finding boundaries, grouping, dedupe, and lifecycle handli
 - Coverage debt is not a finding, but it is required output for honest reporting.
 - Apply `references/shared/reporting/coverage-debt-standard.md` whenever a category or surface remains materially unresolved.
 
+## Supplemental-Section Rules
+
+- Use `Operational Risks`, `Integration Assumptions`, and `Engineering Notes` for reader-relevant context that should not become findings.
+- Do not smuggle weak findings into these sections to avoid evidence requirements.
+- Do not let these sections alter confirmed severity totals or replace real findings.
+- Apply `references/shared/reporting/supplemental-sections-standard.md` when these sections are used.
+
 ## False-Report Controls
 
 - If a suspicious pattern lacks exploitability or impact evidence, keep it out of the main findings list.
