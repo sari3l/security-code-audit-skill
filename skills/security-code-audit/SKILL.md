@@ -1,6 +1,6 @@
 ---
 name: security-code-audit
-version: 1.0.3
+version: 1.0.4
 description: |
   Help: `/security-code-audit help` or `/security-code-audit --help`.
   Code security scanning capability for web/API and smart-contract repositories, provided by the RockBund Capital Security Team.
@@ -11,7 +11,7 @@ description: |
 
 A systematic, language-agnostic security audit framework with tiered scanning depth.
 
-Current skill version: `1.0.3`. Version bump rules live in `VERSIONING.md`.
+Current skill version: `1.0.4`. Version bump rules live in `VERSIONING.md`.
 
 ## Help Path
 
@@ -192,8 +192,8 @@ This state is not the final report. It exists to preserve working precision, com
 ### Setup
 
 1. If the repo is large, long-running, multi-agent, already has `.security-code-audit-state/`, or recon detects state-worthy smart-contract surfaces, load `references/shared/state-standard.md`
-2. Create `.security-code-audit-state/` if state continuity is needed for the current run
-3. Write or update:
+2. Create `.security-code-audit-state/` only when the first state file is ready to be written; do not pre-create an empty directory as a placeholder
+3. During or immediately after recon, write or update at least:
    - `.security-code-audit-state/latest.json`
    - `.security-code-audit-state/index.json`
    - `.security-code-audit-state/runs/{timestamp}-{snapshot_type}-{snapshot_id}.json`
@@ -204,6 +204,8 @@ This state is not the final report. It exists to preserve working precision, com
 - always perform fresh recon even when prior state exists
 - use state to prioritize and restore context, not to prove safety
 - keep the run context compact and structured; do not turn it into a second report
+- if `.security-code-audit-state/` exists, it should contain machine-readable state files; an empty directory is invalid and indicates incomplete execution
+- if no state file can be written for the current run, do not leave an empty `.security-code-audit-state/` behind
 - if shared auth, authz, helper, dependency, config, or contract-control surfaces change, invalidate dependent audit state
 - for smart-contract audits, complexity beats size; a small repo with accounting, signature, oracle, proxy, initializer, or multi-contract trust surfaces should still create audit state
 
@@ -234,7 +236,7 @@ Mode-specific reconnaissance depth lives in `modes/*.md`:
 ```
 [RECON]
 Project: {name}
-Skill Version: {security-code-audit 1.0.3}
+Skill Version: {security-code-audit 1.0.4}
 Audit Profile: {application|smart-contract|artifact-centric}
 Knowledge Domain: {application|smart-contract}
 Size: {X files, Y directories}
@@ -264,7 +266,7 @@ Example preferred rendering:
 ```markdown
 **[RECON]**
 - `Project`: vuln-bank
-- `Skill Version`: `security-code-audit 1.0.3`
+- `Skill Version`: `security-code-audit 1.0.4`
 - `Audit Profile`: `application`
 - `Knowledge Domain`: `application`
 - `Size`: 5 Python files, 12 HTML templates, 2 JS files
@@ -505,7 +507,7 @@ Print directly in the conversation:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.3]
+**Skill Version:** [1.0.4]
 **Mode:** [quick|standard|deep|regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -581,7 +583,7 @@ Regression mode uses this summary shape instead:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.3]
+**Skill Version:** [1.0.4]
 **Mode:** [regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -606,7 +608,7 @@ Save to `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md
 
 ## Meta
 - **Date**: [YYYY-MM-DD HH:MM:SS TZ]
-- **Skill Version**: [1.0.3]
+- **Skill Version**: [1.0.4]
 - **Mode**: [quick|standard|deep|regression]
 - **Audit Profile**: [application|smart-contract|artifact-centric]
 - **Knowledge Domain**: [application|smart-contract]

@@ -44,6 +44,8 @@ Optional future subdirectories:
 
 Keep the initial implementation small. Start with `latest.json`, `index.json`, and `runs/`.
 
+Do not create `.security-code-audit-state/` as an empty placeholder. If the directory exists, it should already contain machine-readable state files.
+
 ---
 
 ## Activation Triggers
@@ -303,6 +305,11 @@ In these cases:
 1. initialize a run context early in recon
 2. update the surface profile and coverage ledger as the scan progresses
 3. revisit the run context before stage `5/6` and final reporting
+
+Execution rule:
+- create the directory only at the moment the first state file is written
+- write a minimal usable state during or immediately after recon
+- if the run cannot persist `latest.json`, `index.json`, or a `runs/{...}.json` snapshot, do not leave an empty state directory behind
 
 ---
 
