@@ -13,11 +13,6 @@ Use when:
 - you want actionable findings with structured coverage
 - you need historical comparison and a full report
 
-Report style is independent from standard-mode scan depth:
-- `governance` favors shared root-cause grouping when the remediation boundary is materially the same
-- `exploit-first` promotes operator-significant exploit paths into standalone findings when that materially improves reader understanding
-- `both` emits both concrete styles after one standard audit
-
 ---
 
 ## Required Load
@@ -54,9 +49,7 @@ In addition to the shared base recon in `SKILL.md`, standard mode requires:
 
 - execute the primary domain audit path from `SKILL.md`
 - enumerate repeated vulnerable patterns across the codebase
-- apply finding boundaries through the active report style:
-  - `governance` may group multiple downstream exploit paths when the failed control, trust boundary, and minimal fix are materially shared
-  - `exploit-first` should split key exploit paths when a standalone title materially improves operator understanding
+- treat each endpoint × vulnerability type as a separate finding unless explicit grouping is justified
 - run native dependency audit commands for detected ecosystems when lock files/manifests exist, and document any tooling blockers instead of skipping C8
 
 If the active profile is `smart-contract`, treat `references/smart-contract/index.md` as the primary audit spine and use only the shared categories that genuinely map to the contract trust model.
@@ -103,5 +96,3 @@ Standard mode is complete when:
 - category or domain coverage
 - historical context
 - prioritized action items
-
-If `both` is selected, emit two full reports from the same audit run: one `governance` report and one `exploit-first` report.

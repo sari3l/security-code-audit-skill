@@ -13,11 +13,6 @@ Use when:
 - you need stronger assurance than standard mode
 - attack chains, version drift, business logic, and state integrity matter
 
-Report style is independent from deep-mode scan depth:
-- `governance` keeps deep output root-cause-first for long-term remediation governance
-- `exploit-first` makes the most dangerous exploit paths headline findings when that improves operator clarity
-- `both` emits both concrete styles after one deep audit
-
 ---
 
 ## Required Load
@@ -43,9 +38,6 @@ Deep mode includes standard recon plus:
 - execute the primary domain audit path from `SKILL.md`
 - trace sensitive inputs and control paths more exhaustively
 - review compound risks across modules and versions
-- apply finding boundaries through the active report style:
-  - `governance` may merge same-root-cause exploit paths when remediation and trust boundary are materially shared
-  - `exploit-first` should split operator-significant exploit paths while preserving cross-links to the shared root cause
 - run native dependency audit commands for detected ecosystems, then review transitive, runtime, and base-image exposure where feasible
 
 If the active profile is `smart-contract`, make `references/smart-contract/index.md` the main audit methodology and deepen exploit-path, accounting, signature, upgrade, oracle, and economic-abuse analysis instead of preserving a web-style category cadence.
@@ -97,5 +89,3 @@ Deep mode is complete when:
 - detailed attack-chain section or appendix
 - `Working Hypotheses` appendix when unresolved material chains, trust assumptions, or shared-root-cause models remain after verification
 - prioritized action items with compound-risk awareness
-
-If `both` is selected, emit two deep reports from the same timestamp family rather than one blended report.
