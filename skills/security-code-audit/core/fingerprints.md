@@ -18,6 +18,7 @@ Derive a fingerprint from:
 - Do not include line numbers.
 - Do not include severity.
 - Do not include issue titles written for humans.
+- Do not include report style.
 - Use route or resource families such as `user-profile update`, `admin user delete`, or `invoice object read`.
 - Use trust boundaries such as `public -> app`, `user -> admin`, `tenant A -> tenant B`, or `app -> metadata service`.
 
@@ -36,9 +37,12 @@ One fingerprint may cover multiple locations only when:
 - the exploit path is materially the same
 - the fix is materially the same
 
+One governance finding may map to multiple exploit-first presented findings only when the shared fingerprint logic still holds. If splitting the presentation would require different fingerprints under these rules, keep them as different underlying issues.
+
 ## Usage
 
 - Compute a fingerprint before assigning `New`, `Recurring`, or `Regression`.
 - Use it to merge worker output in multi-agent mode.
 - Use it to avoid double counting native dependency audit results and external SCA results.
+- Keep the same fingerprint across governance and exploit-first reports when the underlying issue is materially the same.
 - If the fingerprint is uncertain, keep the finding separate until evidence is stronger.

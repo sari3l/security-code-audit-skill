@@ -20,14 +20,30 @@ Chinese documentation: [README-CN.md](README-CN.md)
   Show parameters, modes, execution options, and examples.
 
 Parameters:
-- depth: `quick` | `standard` | `deep` | `regression`
-- execution: `single` | `multi`
+- audit mode: `quick` | `standard` | `deep` | `regression`
+- execution mode: `single` | `multi`
+- report style / output strategy: `governance` | `exploit-first` | `both`
+- `governance` keeps the report root-cause-first and is the preferred internal reference for remediation governance, history, and regression.
+- `exploit-first` makes attacker capability and blast radius more visible for external or non-specialist readers.
+- `both` runs one audit and emits both concrete report styles; each saved report records `governance` or `exploit-first` in its filename and report metadata.
+- audit mode, execution mode, and report style are independent axes
 - `multi` is beta and falls back to `single` if the host cannot delegate
 
 Examples:
+- `/security-code-audit quick --report-style=exploit-first`
+- `/security-code-audit deep --report-style=governance`
+- `/security-code-audit regression --report-style=both`
 - `/security-code-audit deep multi`
-- `/security-code-audit regression`
-- `/security-code-audit deep --agents=multi`
+- `/security-code-audit deep --agents=multi --report-style=both`
+
+What changed:
+- report style is now a separate output axis from audit mode and execution mode
+- when `both` is selected, the skill emits two independently labeled reports instead of one blended report
+- report filenames use `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{mode}-{report-style}-{short-hash}.md`
+
+Style examples:
+- [Governance sample](docs/examples/report-styles/governance-sample.md)
+- [Exploit-first sample](docs/examples/report-styles/exploit-first-sample.md)
 
 ## 2. Features
 
@@ -58,10 +74,10 @@ Runtime architecture: staged scanning with profile routing, on-demand loading, a
 
 ```mermaid
 flowchart TD
-    A["User command<br/>/security-code-audit [mode] [execution]"]
+    A["User command<br/>/security-code-audit [mode] [execution] [--report-style=...]"]
     B["SKILL.md<br/>entry router + shared workflow"]
 
-    C["Bootstrap control plane<br/>parse mode + execution<br/>load core controls and mode rules"]
+    C["Bootstrap control plane<br/>parse mode + execution<br/>carry report-style request<br/>load core controls and mode rules"]
     D["Recon phase<br/>map repo surface, stack, artifacts, and risk areas"]
     E["Profile selection<br/>application | smart-contract | artifact-centric"]
 
@@ -71,7 +87,7 @@ flowchart TD
 
     I["Targeted audit pass<br/>follow selected references for the active surface"]
     J["Evidence and consolidation<br/>validate findings, dedupe repeats, track coverage debt"]
-    K["Reporting and regression<br/>write findings, compare history, retest fixes"]
+    K["Reporting and regression<br/>write one or two style-specific reports<br/>compare history, retest fixes"]
 
     S[".security-code-audit-state/<br/>run context, loading decisions, hypotheses, invalidations"]
     R[".security-code-audit-reports/<br/>human-readable findings and history"]

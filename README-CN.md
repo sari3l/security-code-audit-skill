@@ -18,14 +18,33 @@
   显示参数、模式、执行方式和示例。
 
 参数：
-- 深度：`quick` | `standard` | `deep` | `regression`
+- 审计模式：`quick` | `standard` | `deep` | `regression`
 - 执行模式：`single` | `multi`
+- 报告模式 / 输出策略：`governance` | `exploit-first` | `both`
+- `governance` / `治理型`
+  以根因为先，更适合长期整改治理、历史对比和回归复测。
+- `exploit-first` / `攻防型`
+  以攻击者能力和影响面为先，更适合让外部读者或非安全背景读者快速理解“攻击者具体能做什么”。
+- `both` / `同时创建`
+  一次审计输出两份独立报告；每份保存下来的报告都会在文件名和 Meta 里记录具体样式 `governance` 或 `exploit-first`。
+- 报告模式独立于审计模式和执行模式
 - `multi` 是 beta；如果宿主不支持 delegation，会自动回退到 `single`
 
 示例：
+- `/security-code-audit quick --report-style=exploit-first`
+- `/security-code-audit deep --report-style=governance`
+- `/security-code-audit regression --report-style=both`
 - `/security-code-audit deep multi`
-- `/security-code-audit regression`
-- `/security-code-audit deep --agents=multi`
+- `/security-code-audit deep --agents=multi --report-style=both`
+
+本次变更：
+- 报告模式现在是独立输出维度，不再附属于某一种审计模式
+- 选择 `both` 时，会输出两份独立标记的报告，而不是一份混合报告
+- 报告文件名使用 `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{mode}-{report-style}-{short-hash}.md`
+
+风格示例：
+- [治理型样例](docs/examples/report-styles/governance-sample.md)
+- [攻防型样例](docs/examples/report-styles/exploit-first-sample.md)
 
 ## 2. 特性
 
@@ -56,10 +75,10 @@
 
 ```mermaid
 flowchart TD
-    A["用户命令<br/>/security-code-audit [mode] [execution]"]
+    A["用户命令<br/>/security-code-audit [mode] [execution] [--report-style=...]"]
     B["SKILL.md<br/>入口路由 + 共享工作流"]
 
-    C["启动控制面<br/>解析 mode 和 execution<br/>加载 core 控制与模式规则"]
+    C["启动控制面<br/>解析 mode 和 execution<br/>携带 report-style 请求<br/>加载 core 控制与模式规则"]
     D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts 和风险面"]
     E["目标画像选择<br/>application | smart-contract | artifact-centric"]
 
@@ -69,7 +88,7 @@ flowchart TD
 
     I["定向审计阶段<br/>按当前目标面加载并执行对应审计方法"]
     J["证据收敛与整理<br/>验证 findings、去重、记录 coverage debt"]
-    K["报告与回归<br/>输出 findings、对比历史、验证修复"]
+    K["报告与回归<br/>输出一份或两份风格化报告<br/>对比历史、验证修复"]
 
     S[".security-code-audit-state/<br/>run context、加载决策、假设、失效记录"]
     R[".security-code-audit-reports/<br/>人类可读 findings 和历史报告"]

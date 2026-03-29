@@ -6,7 +6,7 @@ The report overview should help a decision-maker understand risk quickly without
 
 ## Required Sections
 
-- project meta: date, mode, project, skill version, audit profile, knowledge domain, tech stack, files analyzed, and compiler reality for smart-contract audits when material
+- project meta: date, mode, report style, project, skill version, audit profile, knowledge domain, tech stack, files analyzed, and compiler reality for smart-contract audits when material
 - executive summary: 2 to 3 sentences on overall posture and dominant risks
 - risk overview by severity
 - category coverage or domain coverage, plus notable blind spots
@@ -26,6 +26,9 @@ The report overview should help a decision-maker understand risk quickly without
 - prioritize exploitability and blast radius first
 - favor findings with a clear minimal fix over broad wishlist items
 - call out when one fix removes multiple downstream risks
+- follow the active report style for framing:
+  - governance should summarize shared control failures and remediation leverage first
+  - exploit-first should make the most operationally important attacker capability obvious early
 - keep leadership-facing summary concise and engineer-facing action items specific
 - never present candidate signals as if they were confirmed findings
 - if coverage debt is material, surface it near the top instead of burying it

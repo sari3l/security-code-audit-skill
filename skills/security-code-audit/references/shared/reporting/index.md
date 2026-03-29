@@ -11,6 +11,8 @@ Use these files to keep reports consistent, auditable, and actionable:
 - `finding-detail-standard.md` for each individual finding entry
 - `history-standard.md` for comparing current findings against previous timestamped reports
 - `hypothesis-standard.md` for deep or multi-agent working hypotheses that remain unresolved but material
+- `styles/governance.md` for the governance-style report framing
+- `styles/exploit-first.md` for the exploit-first report framing
 - `regression-standard.md` for retesting the most recent timestamped report instead of running a broad new audit
 - `severity-guide.md` for severity calibration and context-sensitive grading
 - `supplemental-sections-standard.md` for operational risks, integration assumptions, and engineering notes that should stay outside the main findings list
@@ -24,6 +26,15 @@ Use these files to keep reports consistent, auditable, and actionable:
 ---
 
 ## Loading Guidance
+
+### Style Files
+
+- Load exactly one style file for single-style runs:
+  - `styles/governance.md`
+  - `styles/exploit-first.md`
+- Load both style files for `--report-style=both`.
+- Treat `both` as a dual-output strategy, not as a concrete persisted report style value.
+- Keep shared reporting standards mandatory for all styles; style files change framing and finding boundaries, not evidence rigor.
 
 - Load `coverage-matrix.md` before writing the final report.
 - Load `coverage-debt-standard.md` whenever a category or surface is partial, blocked, invalidated, or time-boxed.
@@ -39,4 +50,4 @@ Use these files to keep reports consistent, auditable, and actionable:
 - Apply `core/severity.md` first when assigning severity, then use `severity-guide.md` for example mappings and report phrasing.
 - Load `overview-standard.md` and `statistics-standard.md` when generating the final report summary.
 - Load `VERSIONING.md` when writing report metadata so the output records the skill revision used.
-- Keep the report concise, but never drop exploitability, evidence, or minimal-fix guidance.
+- Keep the report concise, but never drop exploitability, evidence, minimal-fix guidance, candidate signals, coverage debt, or historical context in exploit-first mode.

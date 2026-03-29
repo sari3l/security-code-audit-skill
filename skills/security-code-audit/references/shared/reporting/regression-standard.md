@@ -14,12 +14,17 @@ It answers:
 
 ## Baseline Selection
 
-- read the most recent usable standardized report from `.security-code-audit-reports/`, choosing by parsed filename timestamp first
+- read the most recent usable standardized report family from `.security-code-audit-reports/`, choosing by parsed filename timestamp first
+- when the latest timestamp family contains both concrete styles, prefer the `governance` report as the retest baseline and fall back to `exploit-first` only if governance is unavailable
 - use that report as the only required retest baseline
 - do not merge multiple older reports into one retest target set unless the user explicitly asks
 
 Preferred recency order:
 - parse the leading filename timestamp in the format `YYYY-MM-DD-HHMMSS`
+- if multiple reports share the same timestamp family, prefer:
+  1. `governance`
+  2. `exploit-first`
+  3. legacy no-style reports
 - treat placeholder times as invalid if they were not generated from the real wall-clock time for that report
 - if filename timestamp and report `Date` metadata disagree materially, prefer the value backed by the real captured timestamp or file mtime
 - if parsing fails or the name is non-standard, fall back to the report `Date` metadata
@@ -72,6 +77,7 @@ Terminal summary should include:
 - count of `Still Present`
 - count of `Partially Fixed`
 - count of `Unable To Verify`
+- the concrete report style or styles emitted for the current retest output strategy
 
 History file should include:
 - baseline report metadata

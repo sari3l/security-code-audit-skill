@@ -13,6 +13,11 @@ Use when:
 - the repo is large and you need immediate signal
 - you want likely-exploitable issues first
 
+Report style is independent from quick-mode scan depth:
+- `governance` keeps the brief report root-cause-first
+- `exploit-first` makes attacker capability more visible
+- `both` emits both concrete styles after one quick scan
+
 ---
 
 ## Required Load
@@ -88,6 +93,8 @@ If one high-risk pattern is found, search for all occurrences of the same patter
 
 - terminal summary
 - brief history file in `.security-code-audit-reports/`
+
+Quick mode may keep the report compact, but it must still honor governance vs exploit-first presentation rules and must still record the concrete `Report Style` in report metadata.
 
 Critical and High findings still require evidence and concrete PoC when feasible.
 
