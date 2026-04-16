@@ -34,7 +34,7 @@ The visible progress should reflect contract trust boundaries, accounting, signa
 - external calls, callbacks, reentrancy, and delegation should dominate control-surface review
 - accounting, precision, permits, oracle assumptions, and deployment/proxy risk should dominate later stages
 - post-category analysis should use exploit-path and economic-abuse language instead of generic business-logic phrasing
-- when recon finds accounting/precision, permit/signature/meta-transaction, oracle/price, proxy/upgrade/initializer, or multi-contract delegation/callback trust surfaces, initialize audit state even if the repo is small
+- when recon finds accounting/precision, permit/signature/meta-transaction, oracle/price, proxy/upgrade/initializer, or multi-contract delegation/callback trust surfaces, keep richer audit state and function-chain detail even if the repo is small
 
 ---
 

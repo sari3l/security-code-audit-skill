@@ -48,6 +48,7 @@ Typical impact includes:
 
 - multi-file upload where two files share the same name and the later one overwrites the earlier validated one
 - filename normalization differences between application code, filesystem, object storage, and CDN
+- proxy, framework, archive, and storage layers disagreeing on separators, suffix markers, or decoded path segments
 - mobile or API uploads bypassing web-form limits
 - download endpoints with stronger checks in HTML pages than in raw API routes
 - signed URLs that expire slowly, can be replayed, or can be reused across tenants
@@ -74,6 +75,7 @@ Typical impact includes:
 ## Audit Questions
 
 - Who chooses the stored filename or object key: the client or the server?
+- Do proxy, framework, filesystem, CDN, or object-store layers interpret the same filename or key differently?
 - Can one user replace, overwrite, or download another user's file by reusing IDs or names?
 - Are upload size, file count, and aggregate quotas enforced server-side?
 - Are dangerous formats such as SVG, HTML, or archives handled with extra controls?
@@ -109,6 +111,7 @@ rg -n "signed url|presign|pre-signed|temporaryUrl|generatePresigned|SAS|attachme
 
 ## Related References
 
+- `references/application/vulnerabilities/path-traversal.md`
 - `references/application/exploits/path-traversal.md`
 - `references/application/exploits/idor.md`
 - `references/application/vulnerabilities/authorization.md`

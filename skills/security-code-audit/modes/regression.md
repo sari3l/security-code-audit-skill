@@ -60,7 +60,7 @@ Regression mode uses the shared 6-step progress display from `SKILL.md`, but the
 
 ## Scan Tasks
 
-- read the latest standardized report only
+- read the chosen baseline report only
 - retest each prior finding using its fingerprint, route/resource family, and exploit path
 - verify whether the prior fix actually breaks exploitation
 - record `Fixed`, `Still Present`, `Partially Fixed`, or `Unable To Verify`

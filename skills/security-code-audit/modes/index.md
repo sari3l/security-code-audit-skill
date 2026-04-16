@@ -18,7 +18,7 @@ Common rules remain in:
 `help`, `-h`, and `--help` are not modes. They are handled as an early-exit help path in `SKILL.md`.
 
 - `quick`
-  Fast high-risk scan. Use `quick.md`.
+  Fast high-risk scan with incremental-first scope selection. Use `quick.md`.
 
 - `standard`
   Default full audit. Use `standard.md`.
@@ -55,9 +55,11 @@ If no argument is provided, use `standard`.
 All modes use the same shared stage-based progress display from `SKILL.md`.
 
 - Use `update_plan` for the canonical progress state.
+- Every `update_plan` call must include the full six-stage list in stable numeric order from `[1/6]` through `[6/6]`.
+- Do not reorder plan items when stage labels change or when a different stage becomes `in_progress`.
 - Stages `1/6`, `2/6`, and `6/6` are shared across all modes.
 - Before recon completes, stages `3/6`, `4/6`, and `5/6` must stay neutral placeholders.
-- For `quick`, `standard`, and `deep`, stages `3/6`, `4/6`, and `5/6` must switch to the exact labels defined by the active target profile file only after recon selects that profile.
+- For `quick`, `standard`, and `deep`, stages `3/6`, `4/6`, and `5/6` must switch in place to the exact labels defined by the active target profile file only after recon selects that profile.
 - `regression` keeps its own fixed labels from `modes/regression.md`.
 - Use commentary only to add concrete subtask context; do not repeat the exact stage title already shown in the plan.
 - Use ASCII bars only as a fallback when the host cannot render structured plan progress.

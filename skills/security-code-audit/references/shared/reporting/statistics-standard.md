@@ -6,12 +6,15 @@ Statistics should support triage and coverage, not just make the report look com
 
 ## Required Counts
 
-- confirmed findings by severity
+- confirmed findings by severity using underlying fingerprint-backed issue counts
 - findings by category or domain surface
-- findings by status: new, recurring, regression, fixed since last scan
+- findings by status: new, recurring, regression, fixed since last scan, but only when the historical-miss gate passes
+- historical miss count
 - candidate signal count
 - coverage debt item count
-- applicable categories or domain surfaces covered vs not applicable
+- skill optimization suggestion count when historical misses exist
+- applicable categories or domain surfaces by state: reviewed, partial, blocked, invalidated, time-boxed, not applicable
+- security-relevant functions in scope vs function chains recorded
 - number of API versions reviewed
 - number of template/view files reviewed
 - number of config and deployment files reviewed when present
@@ -20,10 +23,12 @@ Statistics should support triage and coverage, not just make the report look com
 
 ## Useful Optional Metrics
 
+- grouped finding count when one finding intentionally covers multiple downstream exploit paths under one remediation boundary
 - number of endpoints audited
 - number of affected endpoints for repeated patterns
 - number of attack chains identified
 - number of open working hypotheses in Deep or beta `multi` reports
+- number of agents contributing state in beta `multi`
 - number of operational risks, integration assumptions, or engineering notes when these sections are present
 - number of secrets or credentials exposed
 - number of critical paths still lacking a minimal fix
@@ -34,7 +39,9 @@ Statistics should support triage and coverage, not just make the report look com
 
 - never let counts replace narrative risk explanation
 - explain large clusters when one root cause fans out to many findings
-- keep repeated pattern counts aligned with the actual finding list
+- keep repeated pattern counts aligned with the actual finding list and explain when one finding intentionally groups multiple downstream exploit paths
 - if a category is shallow or partial, reflect that in coverage notes rather than inflating counts
+- keep function-chain counts aligned with coverage debt so missing chains are visible, not hidden
+- if historical misses exist, say lifecycle counts were withheld and do not zero-fill `Fixed since last scan`
 - do not mix candidate signals into confirmed severity counts
 - do not mix supplemental-section items into confirmed finding, severity, or coverage-debt counts

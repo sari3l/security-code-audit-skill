@@ -9,6 +9,7 @@ Use this standard for material unresolved hypotheses that should remain visible 
 `Working Hypotheses` are for broader models such as:
 - suspected attack chains that still need one or more proof steps
 - shared vulnerable helpers or shared trust assumptions
+- combinations of individually small weaknesses that may become serious when chained
 - control-boundary explanations that may connect multiple candidates
 - high-signal theories that could materially change risk if validated
 
@@ -57,6 +58,7 @@ Do not include `Rejected` items in the final report:
 - `Type`
 - `Status`
 - `Related Surfaces`
+- `Related Findings / Chain Inputs` when material
 - `Why It Matters`
 - `Evidence For`
 - `Evidence Against / Friction`
@@ -82,12 +84,13 @@ Do not include `Rejected` items in the final report:
 ## Working Hypotheses (deep or multi when material)
 
 ### [HYP]-[NNN]: [Title]
-- **Type**: Attack Chain / Shared Helper / Trust Boundary / Proof Challenge
+- **Type**: Attack Chain / Shared Helper / Trust Boundary / Compound Risk / Proof Challenge
 - **Status**: Open / Deprioritized
 - **Related Surfaces**: [routes, modules, contracts, trust boundaries]
+- **Related Findings / Chain Inputs**: [findings or candidate signals that compose]
 - **Why It Matters**: [What risk changes if this is true]
 - **Evidence For**: [Observed facts that support the hypothesis]
 - **Evidence Against / Friction**: [Observed facts that weaken it or blockers that remain]
 - **Next Validation Step**: [What should confirm or reject it next]
-- **Owner**: Supervisor / Auditor / Exploiter (multi only)
+- **Owner**: Supervisor / Surface-Auditor / Validator / Shared-Surface-Auditor / Dependency-Auditor (multi only)
 ```

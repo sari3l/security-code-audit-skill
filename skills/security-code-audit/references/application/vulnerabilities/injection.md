@@ -10,15 +10,20 @@ This category is intentionally broad, so do not stop here. Once you identify the
 
 ## Audit Model
 
-Use the same tracing rule across all injection-like issues:
+Use `core/bidirectional-tracing.md` as the tracing contract for all injection-like issues.
 
 `source -> transformation -> sink`
 
 Then ask:
+- which side is higher signal to enumerate first: candidate sources or candidate sinks?
+- which shared helper, parser, wrapper, or policy gate is the likely join point?
+- does the next search step narrow a concrete hypothesis, or only expand generic fan-out?
 - does attacker input reach a parser, interpreter, or object materializer?
+- where do decoding, normalization, reparsing, or grammar changes happen before the sink?
 - are values separated from structure?
 - are identifiers, modes, or types constrained by allowlists?
 - does any legacy or versioned path skip the safer wrapper?
+- would the same input be interpreted differently by another layer even if the visible payload changes?
 
 ---
 
@@ -78,6 +83,7 @@ Keep using this overview plus the language/framework modules until a deeper spec
 - stored data may become second-order injection later
 - no-shell process invocation can still be vulnerable through argument smuggling
 - object deserialization may be reachable through sessions, queues, import/export, or SSO flows
+- public POCs are probes for structure-changing interpretation, not the definition of the bug
 
 ---
 

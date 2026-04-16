@@ -25,6 +25,8 @@ The impact is not limited to code execution:
 - deserializing untrusted bytes into arbitrary classes
 - enabling polymorphic type resolution for client-controlled payloads
 - trusting signed or encrypted blobs as "safe" without constraining decoded types
+- validating a blob as plain data and later reparsing it into richer runtime types or privileged state
+- one layer reduces schema while a later converter, hook, or reviver reintroduces executable or authority-bearing structure
 - assuming internal message channels are trusted when any upstream producer is attacker-controlled
 - loading YAML/XML/JSON with object constructors instead of plain data types
 
@@ -37,6 +39,36 @@ The impact is not limited to code execution:
 - JSON libraries can become deserialization sinks through `@type`, `$type`, or custom converters
 - deserialization is often reachable in admin import/export endpoints, not just public APIs
 - "legacy compatibility" code paths may still accept unsafe serialized formats
+- signature or encryption checks prove origin but not safe type materialization
+- one parser reads a plain map while a downstream reviver, mapper, or framework hook turns it back into rich objects
+
+## Routing Boundary
+
+Route here when attacker input is decoded into rich objects, polymorphic types, or privileged internal state.
+
+Stay in:
+- `mass-assignment.md` when the issue is plain DTO or field overreach without object materialization
+- `authentication.md` when the main failure is token verification or session trust without rich-object decoding
+- `business-logic.md` when the decoded state is only one step in a larger workflow or accounting abuse chain
+
+---
+
+## Root-Cause Lens
+
+Do not define deserialization only by gadget-chain payloads.
+
+Define it by the semantic failure:
+- attacker-controlled bytes or structured data cross from inert data into richer runtime objects or privileged internal state
+- one layer believes the content is safe because it was signed, schema-checked, or previously reduced
+- a later parser, mapper, converter, or reviver restores dangerous type, behavior, or authority
+
+This means review should focus on:
+- where plain data becomes typed objects, hooks, magic methods, or privileged session state
+- whether every decode stage preserves the same constrained schema
+- whether transport safety, signing, or encryption is being confused with safe materialization
+
+The payload is only the probe.
+The root cause is materialization-boundary drift.
 
 ---
 
@@ -83,6 +115,7 @@ JSON.parse(body, reviveToClass)
 - Does the deserializer instantiate arbitrary classes, magic methods, or custom converters?
 - Are there legacy session, SSO, queue, or import formats still accepted?
 - Is signed or encrypted state decoded into rich objects after verification?
+- Does any later reviver, mapper, or hook reintroduce type or authority after an earlier schema check?
 - Can the same sink also trigger state corruption even if RCE is not reachable?
 
 ---
@@ -102,6 +135,7 @@ grep -rn 'session|viewstate|remember_me|queue|consumer|deserialize' .
 ## Related References
 
 - `references/application/vulnerabilities/injection.md`
+- `references/application/exploits/deserialization.md`
 - `references/application/languages/java.md`
 - `references/application/languages/python.md`
 - `references/application/languages/php.md`

@@ -20,6 +20,7 @@ Derive a fingerprint from:
 - Do not include issue titles written for humans.
 - Use route or resource families such as `user-profile update`, `admin user delete`, or `invoice object read`.
 - Use trust boundaries such as `public -> app`, `user -> admin`, `tenant A -> tenant B`, or `app -> metadata service`.
+- Normalize wording variants that describe the same failed control, for example `pause-unpause::no-events`, `pause::custom-no-event`, and `pause::no-events-no-pausable` when the real issue is the same missing observable pause-state transition.
 
 ## When To Split
 
@@ -35,6 +36,7 @@ One fingerprint may cover multiple locations only when:
 - the vulnerability family is the same
 - the exploit path is materially the same
 - the fix is materially the same
+- the wording differences are presentation-only and do not change the failed control being remediated
 
 ## Usage
 

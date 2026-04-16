@@ -20,10 +20,13 @@ It answers:
 
 Preferred recency order:
 - parse the leading filename timestamp in the format `YYYY-MM-DD-HHMMSS`
+- only treat files matching the current standard filename shape `{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md` as usable regression baselines
+- ignore older alternate filename shapes instead of trying to normalize them into the new flow
+- if multiple reports share the same timestamp, prefer the newest file mtime
 - treat placeholder times as invalid if they were not generated from the real wall-clock time for that report
 - if filename timestamp and report `Date` metadata disagree materially, prefer the value backed by the real captured timestamp or file mtime
-- if parsing fails or the name is non-standard, fall back to the report `Date` metadata
-- if metadata is missing or malformed, fall back to file mtime
+- if parsing fails or the name is non-standard, ignore that file as a regression baseline
+- if metadata is missing or malformed on an otherwise-standard file, fall back to file mtime
 
 If no usable baseline report exists:
 - print a concise note

@@ -67,8 +67,16 @@ If the safest remediation needs a compiler or dependency bump, say so explicitly
 - role admin paths forgotten during proxy upgrades
 - pragma range, actual compiler, and imported OZ version silently diverge, so the suggested fix does not compile or changes semantics
 - `abi.encodePacked` collisions in signature or authorization schemes
+- `keccak256(abi.encodePacked(...))` used for IDs, storage keys, or position keys without triaging whether inputs are fixed-width only or include ambiguous dynamic boundaries
 - chain-specific assumptions missing from signed payloads
 - admin rescue functions that can drain user funds or bypass accounting
+
+## Packed Encoding Triage
+
+- Treat `abi.encodePacked` in signed payloads, authorization material, and any mixed dynamic-input hash as high-signal.
+- Treat `keccak256(abi.encodePacked(...))` over fixed-width-only tuples such as `address + uint8 + uint8` as a low-signal anti-pattern unless you can show a real ambiguity or downstream security dependency.
+- When reporting the fixed-width case, frame it as defense-in-depth or normalization unless exploitability is concrete.
+- When in doubt, document why the packed layout is or is not ambiguous instead of skipping straight to a severe finding.
 
 ---
 
@@ -77,7 +85,7 @@ If the safest remediation needs a compiler or dependency bump, say so explicitly
 ```bash
 rg -n "delegatecall|call\\{|call\\(|staticcall|selfdestruct|tx\\.origin|ecrecover|permit|DOMAIN_SEPARATOR|initializer|reinitializer|onlyOwner|AccessControl|unchecked" .
 rg -n "transfer\\(|transferFrom\\(|safeTransfer\\(|safeTransferFrom\\(|onERC721Received|tokensReceived|flashLoan|swap|oracle|price" .
-rg -n "block\\.timestamp|blockhash|block\\.prevrandao|keccak256\\(abi\\.encodePacked" .
+rg -n "block\\.timestamp|blockhash|block\\.prevrandao|keccak256\\(abi\\.encodePacked|abi\\.encodePacked\\(" .
 rg -n "for \\(|while \\(|mapping|totalSupply|shares|assets|exchangeRate|previewMint|previewRedeem" .
 ```
 

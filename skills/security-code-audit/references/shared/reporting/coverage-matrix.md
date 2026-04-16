@@ -6,11 +6,13 @@ Post-audit verification checklist for the application knowledge domain. After co
 
 If the active knowledge domain is `smart-contract`, use `references/smart-contract/vulnerabilities/coverage.md` instead of forcing a contract audit into this application matrix.
 
+When the active profile is `artifact-centric` and the repo is a skill, agent, or instruction-bearing target, apply the artifact overlay below in addition to the application categories that still matter.
+
 ## Matrix
 
 | # | Category | Key Questions | Covered? | Findings |
 |---|----------|--------------|----------|----------|
-| C1 | Injection | All execute/query calls checked? All user input traced to sinks? ORM raw queries reviewed? Template rendering with user data? OS command construction? Deserialization of untrusted data? Column name / ORDER BY injection? | | |
+| C1 | Injection | All execute/query calls checked? All material source and sink families paired into bounded hypotheses? ORM raw queries reviewed? Template rendering with user data? OS command construction? Deserialization of untrusted data? Column name / ORDER BY injection? | | |
 | C2 | Authentication | JWT config verified (algorithm, expiry, secret strength)? Password reset flow reviewed? All login code paths (including legacy/versioned)? MFA bypass possible? Session fixation? Token rotation on privilege change? Brute force protection? Account lockout? Can a client downgrade to an older auth flow or weaker token path? | | |
 | C3 | Authorization | Every endpoint has access control? IDOR checked on all resource lookups? Horizontal and vertical privilege escalation tested? Admin routes protected? Role hierarchy enforced? Multi-tenancy isolation? API version parity (v1/v2/v3 all checked)? Do older versions expose weaker field filtering or ownership checks? Are upload replace, delete, export, download, and presigned URL issuance bound to the correct user or tenant? | | |
 | C4 | Mass Assignment | All create/update endpoints checked for unprotected fields? Role/admin/permission fields guarded? ORM model-level protection (allowlist vs blocklist)? Nested object assignment? Bulk update endpoints? Are filenames, object keys, storage paths, and archive extract paths server-controlled or safely constrained? Are size, count, and overwrite protections enforced? | | |
@@ -23,6 +25,16 @@ If the active knowledge domain is `smart-contract`, use `references/smart-contra
 | C11 | Logging & Monitoring | `references/application/vulnerabilities/logging-monitoring.md` loaded? No credentials in logs? No PII in logs without masking? Log injection prevented? Audit trail for auth events? Alerting on repeated failures? Log files access-controlled? Security events logged? | | |
 | C12 | Infrastructure (IaC) | `references/application/vulnerabilities/infrastructure.md` loaded when IaC exists? Container runs as non-root? Secrets not in Dockerfiles? Network policies defined? Resource limits set? Image pinned to digest? No privileged mode? Helm values reviewed? Terraform state secured? Compose and Kubernetes manifests reviewed? | | |
 
+## Artifact-Centric Overlay
+
+For skill, agent, and instruction-bearing repositories, also verify:
+
+- instruction-bearing assets inventoried: `SKILL.md`, `AGENTS.md`, prompt templates, tool manifests, setup docs, and command wrappers
+- operator-directed commands and bootstrap flows reviewed for remote execution, shell pipelines, and hidden helpers
+- secret access and exfiltration paths reviewed across docs, wrappers, and setup flows
+- environment mutation reviewed, including global installs, force reinstall flows, startup persistence, and host profile modification
+- benign defensive prose and fenced educational examples explicitly separated from confirmed findings, or carried as candidate / negative evidence
+
 ## Coverage Standards
 
 - **Mandatory**: C1, C2, C3, C5, C7 must reach a check mark for any web application
@@ -30,19 +42,22 @@ If the active knowledge domain is `smart-contract`, use `references/smart-contra
 - **Conditional**: C10 only if any URL-fetching or webhook functionality exists
 - **Conditional**: C12 only if IaC files (Dockerfile, docker-compose.yml, k8s manifests, terraform) are present
 - **Conditional**: C8 only if lock files (package-lock.json, go.sum, requirements.txt, pom.xml) are present
+- **Artifact overlay**: For skill, agent, or instruction-bearing repos, complete the artifact overlay checks above or record explicit coverage debt.
 - **Template check**: Did you scan ALL template/view files? This is mandatory regardless of scope.
 - **API versions**: Did you check ALL /v1/, /v2/, /v3/ variants? Legacy versions often lack newer security controls and may permit downgrade paths.
 - **Coverage debt**: If a category is partial, blocked, invalidated, or time-boxed, record it using `references/shared/reporting/coverage-debt-standard.md` instead of marking it clean.
+- **Function chains**: Every security-relevant function or state-changing transition in scope must end with a bounded function-chain record or explicit coverage debt.
 
 ## Audit Strategy by Category
 
-### Sink-driven (C1, C7)
+### Convergent tracing (C1, C7)
 
-Trace user inputs to dangerous functions. Start from the sinks and work backward.
+Trace between dangerous sources and dangerous functions. Start from the higher-signal side, then close the chain from both ends.
 
-1. Grep for all dangerous sinks (SQL execute, OS command, eval, innerHTML)
-2. For each sink, trace the data flow backward to find user-controlled input
-3. Verify sanitization/parameterization exists on every path
+1. Enumerate dangerous sinks and high-signal source families for the category
+2. Create bounded hypotheses linking source families to sink families
+3. Expand through shared helpers, wrappers, and policy gates only when that narrows the hypothesis
+4. Verify sanitization, parameterization, allowlists, or trusted boundaries on every surviving path
 
 ### Control-driven (C2, C3, C4)
 
@@ -77,7 +92,7 @@ Understand business rules and data flows.
 
 ### Quick Audit
 - All high-risk patterns scanned via grep
-- C1 and C7 sinks enumerated
+- C1 and C7 high-signal source and sink candidates triaged
 - C2 and C3 spot-checked on critical endpoints
 - No deep data-flow tracing required
 
@@ -87,11 +102,13 @@ Understand business rules and data flows.
 - All critical/high findings documented with reproduction steps
 - Template files and API versions fully covered
 - Each endpoint × vulnerability type treated as separate finding
+- Counted coverage totals reconciled and function-chain coverage recorded for in-scope security-relevant functions
 
 ### Deep Audit
 - All applicable categories at check mark
-- Data flow traced end-to-end for every user input
+- Every high-signal source/sink hypothesis is closed, bounded, or explicitly carried as coverage debt
 - Dependency tree fully reviewed (including transitive)
 - Infrastructure configs reviewed line by line
 - Business logic edge cases explored
 - Attack chains documented for compound risks
+- Every security-relevant function or state-changing transition in scope has a bounded chain record or explicit coverage debt

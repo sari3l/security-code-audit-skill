@@ -36,6 +36,8 @@ The context matters more than the input source.
 - raw output helpers such as `|safe`, `html_safe`, `Html.Raw`, `{!! !!}`, triple-stash
 - DOM sinks fed from `location`, `document.referrer`, `postMessage`, or API responses
 - markdown or rich-text sanitizers that preserve dangerous tags or attributes
+- sanitized or escaped content later decoded, rewrapped, or reparsed into a more dangerous browser context
+- URL, HTML entity, or template decoding happens after the apparent escaping step
 - file upload flows serving back SVG or HTML
 
 ---
@@ -46,6 +48,27 @@ The context matters more than the input source.
 - admin-only stored XSS where normal users can submit content that staff later views
 - sanitized HTML later re-wrapped as trusted again
 - CSP present but incomplete, leading to false confidence
+- markdown-to-HTML-to-DOM pipelines where each stage assumes the previous stage already made the content safe
+- browser canonicalization of URLs, protocols, or entities changes the final execution context after validation
+
+---
+
+## Root-Cause Lens
+
+Do not define XSS by a favorite tag or event-handler payload.
+
+Define it by the semantic failure:
+- untrusted data crosses into a browser-executable context
+- context changes across template rendering, markdown conversion, sanitization, DOM insertion, or client-side decoding
+- one layer escapes for one grammar while a later layer reparses under a different grammar
+
+This means review should focus on:
+- the final browser sink and exact context it sees
+- every decoding, sanitization, rendering, and DOM transformation step before that sink
+- whether trusted HTML wrappers or client frameworks reclassify previously untrusted content
+
+The payload is only the probe.
+The root cause is browser-context interpretation drift.
 
 ---
 
@@ -79,6 +102,8 @@ element.innerHTML = userInput
 - Where does the canary land exactly in the final HTML or DOM?
 - Is the escaping correct for that specific context?
 - Can the content be stored and replayed to another user or role?
+- Which rendering or decoding stages transform the content before the final sink?
+- Does any step sanitize for one context and then reparse the result in another context?
 - Do front-end frameworks unwrap trusted HTML later in the flow?
 
 ---

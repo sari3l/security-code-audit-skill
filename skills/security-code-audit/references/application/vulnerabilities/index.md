@@ -8,6 +8,7 @@ This directory contains principle- and methodology-focused vulnerability referen
 - what safe patterns look like
 
 Exploit reproduction and payload-heavy confirmation flows live in `references/application/exploits/`.
+Treat public POCs and sample payloads as examples only. The real audit target is the parser, normalizer, serializer, router, policy, or state logic that makes those probes work.
 
 ---
 
@@ -60,8 +61,13 @@ These are deeper topical references that complement the core set.
 | `references/application/vulnerabilities/command-injection.md` | shell, argument, option, and wrapper-based command execution abuse |
 | `references/application/vulnerabilities/deserialization.md` | unsafe object materialization, gadget paths, signed-state misuse |
 | `references/application/vulnerabilities/api-security.md` | API-specific object, property, flow, and cross-version security issues |
-| `references/application/vulnerabilities/business-logic.md` | workflow flaws, state violations, pricing and accounting abuse |
+| `references/application/vulnerabilities/business-logic.md` | router for stateful workflow flaws and invariant-driven review |
+| `references/application/vulnerabilities/pricing-and-accounting.md` | negative values, client-controlled amounts, rounding, and settlement abuse |
+| `references/application/vulnerabilities/state-machine-abuse.md` | invalid transitions, skipped prerequisites, and terminal-state violations |
+| `references/application/vulnerabilities/limits-and-quotas.md` | quota, cap, count, plan, and free-tier abuse |
+| `references/application/vulnerabilities/workflow-replay.md` | replay, reuse, idempotency, and one-time-step failures |
 | `references/application/vulnerabilities/file-upload-download.md` | upload, download, replace, object-key, filename, size, archive, and tokenized file access issues |
+| `references/application/vulnerabilities/path-traversal.md` | path joins, absolute-path abuse, parser differentials, Zip Slip, normalization, and prefix escape |
 | `references/application/vulnerabilities/configuration-files.md` | `.env`, container, proxy, CI, and deployment config review |
 | `references/application/vulnerabilities/sensitive-hardcoding.md` | hardcoded tokens, cloud keys, credentials, connection strings, and internal topology |
 | `references/application/vulnerabilities/race-conditions.md` | concurrency, TOCTOU, multi-request state corruption |
@@ -79,8 +85,10 @@ These are deeper topical references that complement the core set.
 - For C8, route to `references/shared/dependencies/index.md` and load the ecosystem modules that match the repo's manifests and lock files.
 - For C11, load `references/application/vulnerabilities/logging-monitoring.md` whenever the repo logs auth, errors, admin actions, exports, or security events.
 - For upload, download, export, archive extraction, or object storage flows, load `references/application/vulnerabilities/file-upload-download.md`.
+- For dynamic path composition, file viewers, archive extraction, filesystem/object-key escape risk, or proxy/framework path parsing drift, also load `references/application/vulnerabilities/path-traversal.md`.
 - For C5, include `references/application/vulnerabilities/sensitive-hardcoding.md` when scanning source, config, CI, examples, or generated artifacts for embedded secrets and topology.
 - For C6 and C12, include `references/application/vulnerabilities/configuration-files.md` whenever repo-tracked config or deployment files exist, and load `references/application/vulnerabilities/infrastructure.md` for IaC-specific trust and exposure review.
 - For AI, prompt, repo-doc, or instruction-bearing surfaces, include `references/application/vulnerabilities/prompt-injection.md`.
+- For business-state surfaces, start with `references/application/vulnerabilities/business-logic.md`, then route immediately into pricing/accounting, state-machine, limits/quotas, workflow-replay, and race-condition modules that match the observed invariant.
 - For `.sol` contracts, Foundry, Hardhat, or proxy/oracle/signature-heavy on-chain logic, switch primary routing to `references/smart-contract/index.md` and use `references/smart-contract/vulnerabilities/smart-contracts.md` as the compact overview.
 - Use `references/application/exploits/index.md` only after a vulnerability is verified or strongly suspected and you need confirmation guidance.

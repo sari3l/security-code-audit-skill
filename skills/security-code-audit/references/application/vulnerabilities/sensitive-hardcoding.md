@@ -81,28 +81,28 @@ Internal topology is often lower impact than active credentials, but it still re
 ## Dangerous Patterns
 
 ```python
-GITHUB_TOKEN = "<example-github-token>"
-AWS_ACCESS_KEY_ID = "<example-aws-access-key-id>"
-DB_URL = "postgres://app:<example-db-password>@10.0.12.5:5432/prod"
+GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"
+DB_URL = "postgres://app:SuperSecret123@10.0.12.5:5432/prod"
 ```
 
 ```javascript
-const gitlabToken = "<example-gitlab-token>";
-const slackToken = "<example-slack-bot-token>";
+const gitlabToken = "glpat-xxxxxxxxxxxxxxxxxxxx";
+const slackToken = "xoxb-123456789012-123456789012-xxxxxxxxxxxxxxxxxxxxxxxx";
 const internalApi = "http://10.0.1.15:8080/admin";
 ```
 
 ```yaml
 env:
-  TENCENT_SECRET_ID: "<example-tencent-secret-id>"
-  TENCENT_SECRET_KEY: "<example-tencent-secret-key>"
-  ALIYUN_ACCESS_KEY_ID: "<example-aliyun-access-key-id>"
+  TENCENT_SECRET_ID: AKIDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  TENCENT_SECRET_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  ALIYUN_ACCESS_KEY_ID: LTAI5txxxxxxxxxxxxxxx
 ```
 
 ```env
 USERNAME=admin
-PASSWORD=<example-password>
-JWT_SECRET=<example-jwt-secret>
+PASSWORD=Welcome123!
+JWT_SECRET=dev-secret-still-used
 ```
 
 ---

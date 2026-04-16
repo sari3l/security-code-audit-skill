@@ -13,6 +13,7 @@ Track:
 - when values are rounded up or down
 - what assumptions are made about token decimals and transfer behavior
 - how mint, burn, deposit, withdraw, redeem, borrow, liquidate, and claim interact over time
+- which sibling helpers enforce the same invariant, threshold, or minimum-output rule across open, manage, exit, queue, and claim paths
 
 ---
 
@@ -25,6 +26,9 @@ Track:
 - precision truncation around low-liquidity or low-share states
 - preview helpers disagreeing with actual state-changing functions
 - exchange-rate logic that can be nudged through dust, donation, or temporary price moves
+- one helper applies a dust, slippage, or rounding threshold while a sibling helper on the same invariant still uses a raw zero check
+- partial remediation that fixes the open path but leaves manage, exit, queue, or claim helpers on stale threshold or rounding logic
+- rebasing-token delta accounting that ignores token-specific 1-2 wei rounding behavior and turns edge-case drift into operational DoS
 
 ---
 
@@ -36,6 +40,8 @@ Track:
 - donation or griefing effects on future users
 - liquidation or reward distribution using stale totals
 - mixed-decimal assets, wrappers, LP tokens, and synthetic assets
+- compare equivalent invariants across open, add, withdraw, adjust, exit, queue, and claim helpers instead of reviewing each helper in isolation
+- verify dust thresholds, min-out checks, and rounding guards stay symmetric wherever the same balance source or collateral relationship is reused
 
 ---
 
@@ -46,6 +52,9 @@ Track:
 - Does the system behave safely with 6, 8, 18, and mismatched decimals?
 - What happens if tokens burn, skim fees, rebase, or return less than requested?
 - Can a tiny capital injection create a large accounting edge for later actions?
+- If a prior bug was "fixed," was the same invariant actually updated in every sibling helper and state transition?
+- Can dust, donation, rebasing drift, or rounding residuals block management or exit even though the open path now looks safe?
+- Do balance-before / balance-after reads tolerate token-specific rounding quirks without converting them into false insolvency or hard reverts?
 
 ---
 
@@ -57,6 +66,9 @@ Track:
 - accounting drift
 - non-standard token incompatibility
 - donation or bootstrap manipulation
+- partial-fix drift
+- helper inconsistency
+- dust-threshold mismatch
 
 ---
 

@@ -47,6 +47,7 @@ If multiple surfaces exist, choose the dominant audit target, not just the first
 - stages `1/6`, `2/6`, and `6/6` remain shared
 - before recon completes, stages `3/6`, `4/6`, and `5/6` must stay neutral placeholders
 - after recon completes, stages `3/6`, `4/6`, and `5/6` come from the active profile for the active mode
+- replace stages `3/6`, `4/6`, and `5/6` in place without changing the overall `[1/6]` to `[6/6]` plan order
 - `regression` stays profile-independent and continues using `modes/regression.md`
 
 ---

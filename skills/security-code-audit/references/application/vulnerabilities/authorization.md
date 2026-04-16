@@ -35,6 +35,8 @@ Do not treat `is logged in` as equivalent to `is authorized`.
 - object lookups by `id` without owner or tenant scoping
 - admin actions protected only in the UI
 - middleware applied on some routes but not versioned or nested routes
+- the policy checks one resource, tenant, or slug while the mutation later uses another representation or ID
+- route, tenant, or object identity is canonicalized differently across gateway, router, serializer, cache, and data access layers
 - batch operations validating the caller once but not every object
 - global query filters bypassed by raw queries or explicit opt-outs
 
@@ -47,6 +49,28 @@ Do not treat `is logged in` as equivalent to `is authorized`.
 - internal service or webhook handlers assume upstream auth implies user auth
 - support tooling has broader visibility than intended
 - nested resource parents are checked, children are not
+- policy checks a parent slug, path segment, or body field while the actual lookup uses a different child ID or internal key
+- alternate routes, version selectors, or background handlers reach the same action without the same object-resolution path
+- object or tenant scope is cached or preloaded under one canonical form and reused for another request shape
+
+---
+
+## Root-Cause Lens
+
+Do not define authorization bugs only by `id=2` style IDOR probes.
+
+Define them by the semantic failure:
+- the application resolves a different subject, resource, action, or tenant than the policy was meant to protect
+- the authorization check and the real data access or state change do not operate on the same canonical target
+- one layer narrows scope, but a later layer re-expands it through a different identifier, route shape, or background path
+
+This means review should focus on:
+- where the protected object or tenant is first selected
+- whether that same canonical object is the one actually read, mutated, exported, or deleted
+- whether alternate transports, aliases, nested routes, background jobs, or admin tools resolve the same target differently
+
+The payload is only the probe.
+The root cause is subject-resource-action resolution drift.
 
 ---
 
@@ -83,6 +107,8 @@ These patterns are only safe if scope is enforced elsewhere and actually verifia
 - If I keep my token but alter the body or path tenant field, what changes?
 - Can a low-privilege user hit a staff/admin action directly?
 - Do v1 and v2 of the same endpoint enforce the same policy depth?
+- Which field or route segment actually selects the protected object or tenant?
+- Does the policy check the same canonical object that the final read, write, export, or delete step uses?
 - Are file, export, and PDF endpoints scoped as tightly as JSON endpoints?
 
 ---

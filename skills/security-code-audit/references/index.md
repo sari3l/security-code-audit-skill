@@ -33,8 +33,11 @@ Execution strategy files live in `../modes/` and quality-control files live in `
 - `references/shared/dependencies/index.md`
   Ecosystem-specific dependency audit flows, native tooling choices, and future SCA integration guidance.
 
+- `references/shared/audit-artifact-initialization.md`
+  Shared ignore maintenance and directory-bootstrap rules for `.security-code-audit-reports/` and `.security-code-audit-state/`.
+
 - `references/shared/state-standard.md`
-  Audit state, run-context, and change-aware re-audit guidance for large, long-running, or high-complexity scans.
+  Mandatory audit-state storage, trace-checkpoint persistence, function-chain inventory, and change-aware re-audit guidance for every scan.
 
 - `references/application/exploits/index.md`
   Application exploit verification playbooks and confirmation guidance.
@@ -55,7 +58,8 @@ Execution strategy files live in `../modes/` and quality-control files live in `
   - `application` audits should load `references/application/languages/index.md` and only the detected `references/application/frameworks/*.md` files
   - `smart-contract` audits should load `references/smart-contract/languages/index.md`
 - Artifact surfaces: load `references/shared/artifacts/index.md` when the repo contains rendered markdown, `SKILL.md`, `AGENTS.md`, prompt templates, API specs, notebooks, or other instruction-bearing files.
-- Scan-state continuity: load `references/shared/state-standard.md` when the repo is large, long-running, multi-agent, already has `.security-code-audit-state/`, or recon detects state-worthy smart-contract surfaces.
+- Audit artifact bootstrap: load `references/shared/audit-artifact-initialization.md` immediately before first creating `.security-code-audit-reports/` or `.security-code-audit-state/`.
+- Scan-state continuity: load `references/shared/state-standard.md` for every run, then keep richer detail when the repo is large, long-running, beta `multi`, or state-worthy smart-contract.
 - Phase 2: use the chosen domain as the main audit map, then pull the relevant shared artifact, dependency, and exploit modules.
 - C8 and supply-chain review: load `references/shared/dependencies/index.md`, then the ecosystem files matching detected manifests and lock files. If external SCA output exists, also load `references/shared/dependencies/sca-integration.md`.
 - Verification:

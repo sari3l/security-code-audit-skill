@@ -23,6 +23,8 @@ Impact ranges from:
 
 - user-supplied URLs passed directly to HTTP client libraries
 - allowlists based only on string prefix or hostname text
+- validation performed with one URL parser while the actual fetch uses another parser or redirect stack
+- hostname, scheme, or port checks applied before canonicalization of userinfo, dots, IDNA, IPv6, or alternate numeric forms
 - following redirects without re-validating destination
 - blocking `127.0.0.1` but not decimal, hex, IPv6, or metadata hosts
 - support for dangerous schemes such as `file://` or `gopher://`
@@ -35,6 +37,27 @@ Impact ranges from:
 - DNS rebinding after initial validation
 - webhook edit vs webhook fire using different validation depth
 - server-side HEAD, GET, and DNS checks treated as harmless even when network reachability itself is sensitive
+- validators run on raw input while the HTTP client fetches a decoded, normalized, or redirected destination
+- proxy settings, service mesh behavior, or internal redirectors change the final target after initial host checks
+
+---
+
+## Root-Cause Lens
+
+Do not define SSRF by a fixed blacklist of localhost strings.
+
+Define it by the semantic failure:
+- the destination that is validated is not the destination that is finally reached
+- one layer classifies the target as external while another layer resolves or redirects it to an internal resource
+- scheme, host, port, path, or DNS meaning changes across parsers, redirects, or network layers
+
+This means review should focus on:
+- which parser extracts scheme, host, and port before the request is made
+- whether the same canonical destination is revalidated after redirects, DNS resolution, proxy routing, or client normalization
+- whether harmless-looking fetch features still provide sensitive reachability, credentials, or trust context
+
+The payload is only the probe.
+The root cause is destination-resolution drift.
 
 ---
 
@@ -52,6 +75,8 @@ Impact ranges from:
 - Which hosts, schemes, and ports can the server reach because of this feature?
 - Is destination validation based on string parsing or actual resolution?
 - Are redirects and alternate address encodings handled?
+- Which parser and network layer decide the final scheme, host, port, and resolved IP?
+- Can validation and fetch operate on different URL representations or redirect chains?
 - Can the feature hit metadata endpoints or service mesh/admin ports?
 
 ---

@@ -31,6 +31,7 @@ Execution mode is a separate dimension from scan depth:
    - `execution/multi-agent.md`
 5. If execution mode is `multi`, also load:
    - `execution/sharding.md`
+   - `execution/worker-contract.md`
    - `execution/merge.md`
 
 ## Design Intent

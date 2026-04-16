@@ -8,6 +8,10 @@ Use this file to minimize shallow scans, skipped surfaces, and false negatives.
 - Do not stop at backend handlers; templates, views, jobs, config, and storage paths matter too.
 - Check all relevant API versions, legacy routes, alternate transports, and admin paths.
 - When uploads, exports, webhooks, background jobs, or object storage exist, include them explicitly in scope.
+- Coverage is not complete until the audit state contains counted totals for `applicable`, `reviewed`, `partial`, `blocked`, `invalidated`, and `time_boxed`.
+- Every security-relevant function or state-changing transition in scope must have a bounded function-chain record or an explicit coverage-debt entry.
+- In `quick`, `standard`, and `deep`, prior findings touching the same helper, sink, route family, or trust boundary must be reopened against current code before they can be counted as covered or fixed.
+- A still-live prior vulnerability that the current scan missed is a historical miss, not a valid clean comparison; record it as coverage debt and emit `Skill Optimization Suggestions`.
 
 ## Exhaustiveness Rules
 
@@ -30,3 +34,7 @@ Do not finish the audit until:
 - templates and views were considered where relevant
 - API version parity was checked where versions exist
 - dependency and config surfaces were reviewed when present
+- counted coverage totals reconcile with the report summary
+- in-scope function chains are either recorded as bounded/open/blocked/invalidated or explicitly carried as coverage debt
+- historical `Fixed` claims affecting in-scope current code were explicitly reopened or carried as coverage debt
+- deferred history replay either found no historical misses, or every historical miss is recorded with coverage debt, `Skill Optimization Suggestions`, and a withheld lifecycle comparison

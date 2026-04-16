@@ -26,6 +26,7 @@ Create a coverage-debt item when a surface is:
 - `Blocked`
 - `Invalidated`
 - `Time-boxed`
+- missing bounded function-chain output for a security-relevant function still in scope
 
 Typical examples:
 - auth middleware reviewed on core routes but not all legacy routes
@@ -41,6 +42,7 @@ Typical examples:
 - `Surface`
 - `State`
 - `Reason`
+- `Affected Functions / Chains`
 - `Risk If Wrong`
 - `Re-Audit Trigger`
 - `Suggested Next Step`
@@ -53,6 +55,7 @@ Typical examples:
 ### [DEBT]-[NNN]: [Surface]
 - **State**: Partial / Blocked / Invalidated / Time-boxed
 - **Reason**: [Why this surface was not fully verified]
+- **Affected Functions / Chains**: [functions, helpers, or transitions still lacking bounded chain output]
 - **Risk If Wrong**: [What may still be hidden here]
 - **Re-Audit Trigger**: [What change or condition should force review]
 - **Suggested Next Step**: [What the next audit should do]
@@ -65,3 +68,4 @@ Typical examples:
 - Include coverage debt in the final report whenever the audit is not truly exhaustive.
 - Treat high-risk unresolved control surfaces as more important than low-severity cosmetic findings.
 - If a category or domain surface is marked partial in coverage, create at least one coverage-debt note explaining why.
+- If an in-scope security-relevant function lacks a bounded call-chain record, create at least one coverage-debt note explaining why.

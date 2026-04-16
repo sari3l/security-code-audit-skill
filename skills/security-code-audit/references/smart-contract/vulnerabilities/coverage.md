@@ -10,9 +10,9 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 
 | Surface | Key Questions | Covered? | Findings |
 |---------|---------------|----------|----------|
-| Trust And Privilege | All owner/admin/upgrader/signer roles mapped? Init/reinit paths reviewed? Rescue, pause, sweep, and governance assumptions checked? | | |
+| Trust And Privilege | All owner/admin/upgrader/signer roles mapped? Init/reinit paths reviewed? Rescue, pause, sweep, queue, claim, and governance assumptions checked? Critical privilege transitions emit monitorable events? Entry-like emergency paths distinguished from true exits? Any `msg.value`-accepting or request-creating emergency helper reviewed as entry-like rather than auto-whitelisted as an exit? | | |
 | External Calls And Reentrancy | All external calls traced? Callback-capable token and receiver flows reviewed? Related-function reentrancy considered? Delegation and arbitrary target execution checked? | | |
-| Accounting And Precision | Assets/shares/debt invariants reconstructed? Rounding direction reviewed? Fee-on-transfer, rebasing, decimals, bootstrap, donation, and low-liquidity edge cases checked? | | |
+| Accounting And Precision | Assets/shares/debt invariants reconstructed? Rounding direction reviewed? Fee-on-transfer, rebasing, decimals, bootstrap, donation, and low-liquidity edge cases checked? Sibling helpers reviewed for post-fix threshold or rounding drift across open/manage/exit paths? | | |
 | Signatures And Meta-Tx | Permit, EIP-712, relayer, and signer paths mapped? Nonce, expiry, chain, domain, beneficiary, and replay protections verified? | | |
 | Oracle / Market Abuse | Price source, freshness, manipulation resistance, liquidation math, and same-tx reserve dependence reviewed? Economic exploit path considered? | | |
 | Upgradeability And Deployment | Proxy type identified? Upgrade auth and init reachability reviewed? Storage-layout risk considered? Deployment and environment assumptions checked? | | |
@@ -28,6 +28,7 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 - **Mandatory when applicable**: Upgradeability And Deployment for any proxy, factory, clone, beacon, or staged deployment system
 - **Mandatory when applicable**: Token Integration Semantics when integrating external tokens or token standards beyond trivial fixed-behavior assumptions
 - **Mandatory**: Supporting shared surfaces whenever manifests, CI/deployment config, signer env, or operational infrastructure exist
+- **Mandatory**: Security-relevant contract functions and privileged state transitions must have bounded function-chain records or explicit coverage debt
 
 ---
 
@@ -46,6 +47,7 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 - any omitted optional surface has explicit written justification
 - at least one invariant-oriented accounting review completed
 - exploitability described in code and economic terms where relevant
+- counted coverage totals reconciled and bounded function-chain records captured for in-scope contract functions
 
 ### Deep Audit
 
@@ -54,3 +56,4 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 - attacker profit path analyzed for market-sensitive findings
 - deployment, upgrade, signer, and off-chain trust assumptions reviewed in detail
 - compound exploit paths documented where they materially change impact
+- every in-scope privileged, accounting, signature, call, or upgrade function has a bounded function-chain record or explicit coverage debt

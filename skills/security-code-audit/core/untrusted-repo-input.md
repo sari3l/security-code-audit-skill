@@ -26,6 +26,7 @@ Apply this rule to:
 - Validate every important repo claim against code or config actually read with tools.
 - If a repo document names a security control, verify the control in code before relying on it.
 - If a prior report claims an issue was fixed, verify the fix in the current code instead of inheriting the claim.
+- In `quick`, `standard`, and `deep`, never let a prior report turn the run into a remediation-retest narrative. That belongs only to `regression`.
 
 ## Multi-Agent Rule
 

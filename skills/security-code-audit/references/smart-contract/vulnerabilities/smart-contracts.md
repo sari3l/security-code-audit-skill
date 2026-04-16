@@ -41,6 +41,8 @@ Smart contract review should treat contract code, off-chain signers, upgrade inf
 - permit implementations that accept cross-chain or cross-contract replay
 - admin timelock or multisig assumptions that are not actually enforced on-chain
 - proxy + implementation storage collisions after upgrades
+- custom pause, rescue, or recovery flows treated as "safe exits" even though they accept fresh assets or create new pending exposure
+- prior-finding remediations that updated one helper but left sibling helpers on stale dust-threshold, min-out, or rounding rules
 - remediation assumes a newer compiler feature or OZ helper than the repo actually builds with
 
 ---
@@ -53,6 +55,7 @@ Smart contract review should treat contract code, off-chain signers, upgrade inf
 - Can an attacker move market state just long enough to profit from mint, borrow, liquidate, or redeem?
 - Are signatures bound to nonce, domain, chain, contract, caller, and expiry?
 - Can upgrade, pause, rescue, or recovery paths bypass normal user protections?
+- If a prior issue was remediated, did every current helper that encodes the same invariant or trust boundary actually change?
 
 ---
 

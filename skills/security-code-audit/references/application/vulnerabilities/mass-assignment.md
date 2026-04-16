@@ -34,9 +34,31 @@ This often enables:
 
 - blocklists instead of allowlists
 - alternate field naming: `is_admin`, `isAdmin`, `admin`
+- duplicate keys, alias fields, case-folding, or dash/underscore normalization changing which field wins
 - nested writes through `profile`, `organization`, `membership`, or `settings`
+- JSON, form-data, GraphQL, patch, and merge-patch handlers applying different binding or allowlist logic
 - entity binding in internal/admin endpoints considered "safe"
 - PATCH handlers or object mappers broader than create flows
+- null, default, or merge semantics clearing server-controlled fields even when explicit assignment looks blocked
+
+---
+
+## Root-Cause Lens
+
+Do not define mass assignment by a short list of famous field names alone.
+
+Define it by the semantic failure:
+- attacker-controlled structure is reduced into server state more broadly than intended
+- the binder, serializer, mapper, or patch engine gives attacker input authority over server-owned fields
+- different field aliases, encodings, content types, or merge rules end up targeting the same protected state
+
+This means review should focus on:
+- which request representations the application accepts: JSON, form, GraphQL, patch, multipart, nested objects
+- how field names are normalized, aliased, flattened, or merged before persistence
+- whether server-managed values are recomputed and then accidentally overwritten by a later generic merge
+
+The payload is only the symptom.
+The root cause is state-binding scope drift.
 
 ---
 
@@ -74,6 +96,8 @@ public ResponseEntity<?> update(@RequestBody User user) { ... }
 - Can the client set a field that only business logic should control?
 - Do alternate casings or nested objects bypass field restrictions?
 - Are mass-assignment protections consistent across create, update, bulk, and patch flows?
+- Do different content types, duplicate keys, aliases, or merge semantics target the same protected field differently?
+- Which binder or mapper performs the final write, and does it operate on the same allowlist the reviewer thinks exists?
 - If a field is hidden in the UI, is it still accepted by the API?
 
 ---
@@ -92,3 +116,4 @@ grep -rn 'JsonPatchDocument|merge-patch|assign_attributes|fill\\(|forceFill\\(' 
 
 - `references/application/exploits/mass-assignment.md`
 - `references/application/vulnerabilities/business-logic.md`
+- `references/application/vulnerabilities/pricing-and-accounting.md`

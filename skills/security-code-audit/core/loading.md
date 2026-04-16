@@ -50,7 +50,7 @@ Load core modules only when their controls are actively needed:
   Load during stage `2/6` recon, then maintain one compact surface profile for the rest of the run.
 
 - `references/shared/state-standard.md`
-  Load during recon when the repo is large, long-running, multi-agent, already has `.security-code-audit-state/`, or recon detects state-worthy smart-contract surfaces, then keep a compact run context so large or high-complexity scans do not lose precision through context compression.
+  Load during recon for every run, then keep a compact run context so coverage, function-chain, and agent-log precision survive context compression.
 
 - `core/integrity.md`
   Load before recon or code scanning starts, before delegating audit work, and before finalizing findings if context may have drifted.
@@ -77,8 +77,11 @@ Route references by detected need:
 - `references/shared/index.md`
   Load only if a shared artifact, dependency, or reporting map is actually needed.
 
+- `references/shared/audit-artifact-initialization.md`
+  Load immediately before first creating `.security-code-audit-reports/` or `.security-code-audit-state/` so ignore files stay aligned without creating extra tool-specific ignore files unnecessarily.
+
 - `references/shared/state-standard.md`
-  Load when the repo is large, long-running, multi-agent, already has `.security-code-audit-state/`, or recon detects state-worthy smart-contract surfaces.
+  Load during recon for every run. Large, long-running, beta `multi`, or state-worthy smart-contract scans should keep richer detail, not different activation behavior.
 
 - `references/application/index.md`
   Load when the active domain is application.
@@ -142,7 +145,7 @@ After recon, route modules from the surface profile instead of generic intuition
 - Docker, compose, k8s, Helm, Terraform, cloud manifests -> `references/application/vulnerabilities/infrastructure.md` and `references/application/vulnerabilities/configuration-files.md`
 - manifests, lock files, SCA output -> `references/shared/dependencies/index.md` plus only matching ecosystem files
 - markdown renderers, wikis, docs previews, rich comments -> `references/shared/artifacts/index.md`, `references/shared/artifacts/markdown.md`, and `references/application/vulnerabilities/xss.md`
-- `SKILL.md`, `AGENTS.md`, prompt templates, tool manifests, repo-authored instruction files -> `references/shared/artifacts/index.md`, `references/shared/artifacts/skill-files.md`, and `references/application/vulnerabilities/prompt-injection.md`
+- `SKILL.md`, `AGENTS.md`, prompt templates, tool manifests, repo-authored instruction files, or skill-oriented setup flows -> `references/shared/artifacts/index.md`, `references/shared/artifacts/skill-files.md`, and `references/application/vulnerabilities/prompt-injection.md`
 - OpenAPI, Swagger, Postman, Insomnia, GraphQL schema, AsyncAPI, or environment collections -> `references/shared/artifacts/index.md`, `references/shared/artifacts/api-specs.md`, and the matching API/authz/data-exposure modules
 - `.ipynb` notebooks, saved outputs, notebook shell escapes, or analyst runbooks -> `references/shared/artifacts/index.md`, `references/shared/artifacts/notebooks.md`, `references/application/vulnerabilities/sensitive-hardcoding.md`, and `references/application/vulnerabilities/data-exposure.md`
 - `.sol`, Foundry, Hardhat, proxy, oracle, permit, or on-chain accounting surfaces -> `references/smart-contract/index.md`, `references/smart-contract/languages/index.md`, `references/smart-contract/languages/solidity.md`, the matching `references/smart-contract/vulnerabilities/*.md` deep-dive files, and `references/smart-contract/exploits/index.md` when validation is needed

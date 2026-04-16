@@ -4,6 +4,20 @@ This file focuses on runtime API weaknesses: authz drift, version downgrade, obj
 
 Use `references/shared/artifacts/api-specs.md` when reviewing OpenAPI, Swagger, Postman, GraphQL schema, or collection artifacts as recon sources. That artifact module helps discover hidden routes, stale examples, and auth-declaration drift; this file covers the runtime weakness itself.
 
+## Root-Cause Lens Across API Surfaces
+
+Do not define API bugs only by one transport-specific POC.
+
+Define them by the semantic failure:
+- gateway, router, serializer, and business logic disagree on version, subject, object, field set, or operation shape
+- one transport or version applies stronger parsing and policy than another
+- the same logical action becomes more permissive when expressed through a different path, header, media type, batch shape, or schema
+
+This means review should focus on:
+- how versions are selected and normalized
+- how object IDs, tenant keys, and field sets are parsed across REST, GraphQL, internal APIs, and background triggers
+- whether deprecated or alternate paths are still attached to weaker middleware or serializers
+
 ## Version Drift, Downgrade, And Cross-Version Authorization
 
 Treat each API version as a separate trust boundary.
