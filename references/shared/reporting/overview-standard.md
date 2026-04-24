@@ -6,7 +6,7 @@ The report overview should help a decision-maker understand risk quickly without
 
 ## Required Sections
 
-- project meta: date, mode, project, skill version, audit profile, knowledge domain, tech stack, files analyzed, and compiler reality for smart-contract audits when material
+- project meta: date, mode, project, audit profile, knowledge domain, tech stack, files analyzed, and compiler reality for smart-contract audits when material
 - executive summary: 2 to 3 sentences on overall posture and dominant risks
 - risk overview by severity
 - category coverage or domain coverage with counted states, plus notable blind spots

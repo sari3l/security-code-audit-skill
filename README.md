@@ -1,6 +1,6 @@
 # security-code-audit
 
-Current release: `v1.0.5`
+Current release: `v1.0.6`
 
 Code security audit skill for web/API, backend, full-stack, smart-contract, and artifact-centric repositories.
 
@@ -8,20 +8,7 @@ Code security audit skill for web/API, backend, full-stack, smart-contract, and 
 
 Chinese documentation: [README-CN.md](README-CN.md)
 
-## 1. What's New in v1.0.5
-
-- Profile-aware audit routing
-  Recon now separates execution mode, target profile, and primary knowledge domain so `application`, `smart-contract`, and `artifact-centric` targets do not get flattened into one workflow.
-- Always-on audit state
-  `.security-code-audit-state/` now supports every run and preserves surface inventories, bounded function chains, invalidations, and quick-mode incremental baselines.
-- Stronger tracing and history replay
-  Bidirectional tracing, fingerprint-based history matching, and historical-miss gates reduce both shallow scans and false "fixed" conclusions.
-- Expanded coverage
-  The reference set now goes deeper on authentication and authorization drift, API-version drift, mass assignment, deserialization, path traversal, prompt injection, SSRF, XSS, accounting, workflow replay, and limits or quota abuse.
-- Higher-signal reporting
-  Reports more clearly separate confirmed findings, candidate signals, coverage debt, historical context, working hypotheses, and counted coverage summaries.
-
-## 2. Usage
+## 1. Usage
 
 - `/security-code-audit`
   Default full audit. Equivalent to `standard single`.
@@ -44,7 +31,7 @@ Examples:
 - `/security-code-audit regression`
 - `/security-code-audit deep --agents=multi`
 
-## 3. Core Capabilities
+## 2. Core Capabilities
 
 - Target-aware routing
   Recon selects a target profile first, then routes into the right knowledge domain and shared modules for the observed surface.
@@ -67,7 +54,7 @@ Examples:
 - Optional multi-agent execution
   `multi` can widen coverage for large repos while keeping a single reporting path.
 
-## 4. Architecture
+## 3. Architecture
 
 Runtime architecture: staged scanning with profile routing, lazy loading, bounded tracing, and persistent state.
 

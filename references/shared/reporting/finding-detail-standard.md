@@ -25,6 +25,8 @@ Each finding entry should be specific enough that another engineer can reproduce
 
 - `Build Context`
   Use for smart-contract findings when `pragma`, actual compiler, optimizer, proxy model, or key dependency version materially affects exploitability, severity confidence, or remediation compatibility.
+- `Deployment Context`
+  Use when host-app auth, reverse-proxy policy, mount prefix, service placement, or network reachability materially affects exploitability, severity confidence, or residual risk.
 
 ---
 
@@ -42,6 +44,7 @@ Each finding entry should be specific enough that another engineer can reproduce
 - Candidate entries belong in a separate `Candidate Signals` section and should follow `evidence-standard.md`.
 - `Minimal Fix` must be exploit-breaking and execution-preserving; avoid proposing patches that would self-revert or disable the intended happy path.
 - `Build Context` is advisory context, not a dismissal mechanism. Use it to sharpen exploitability and remediation accuracy, not to auto-close a finding just because the repo is on an older or newer compiler line.
+- `Deployment Context` is advisory context, not a dismissal mechanism. Use it to record real exposure and compensating boundaries without calling the underlying code weakness fixed unless the exploit path is materially broken.
 - Use `Pending historical validation` only when the finding is confirmed but lifecycle labels are withheld because the post-scan historical-miss gate failed for the run.
 
 ---
@@ -60,6 +63,7 @@ Each finding entry should be specific enough that another engineer can reproduce
 - **Attack Vector**: [Shortest credible exploit path]
 - **Impact**: [What the attacker gains]
 - **Build Context**: [Optional, only when version/dependency reality materially matters]
+- **Deployment Context**: [Optional, only when host-app auth, reverse proxy, mount path, or network placement materially changes exploitability or residual risk]
 - **PoC**: [Concrete payload, request, or steps]
 - **Evidence**:
   ```[lang]
