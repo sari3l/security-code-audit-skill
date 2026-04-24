@@ -36,6 +36,7 @@ Required:
 - load the latest usable `.security-code-audit-reports/` report
 - extract the prior finding set and their fingerprints
 - map only the files, routes, helpers, configs, and trust boundaries needed to retest those findings
+- reopen the current deployment or integration path when auth, exposure, or reachability depends on a host app, reverse proxy, mount prefix, or internal-only network boundary
 
 Not required:
 - full route inventory
@@ -63,8 +64,10 @@ Regression mode uses the shared 6-step progress display from `SKILL.md`, but the
 - read the chosen baseline report only
 - retest each prior finding using its fingerprint, route/resource family, and exploit path
 - verify whether the prior fix actually breaks exploitation
+- separately record whether current deployment or integration context narrowed, shifted, or otherwise changed the real attack surface relative to the baseline report
 - record `Fixed`, `Still Present`, `Partially Fixed`, or `Unable To Verify`
 - note if a finding moved, widened, or changed shape while remaining materially unfixed
+- do not mark a finding `Fixed` only because compensating controls such as Superset auth, reverse-proxy policy, or internal network placement reduced exposure; if the underlying code weakness remains, keep the retest status tied to the current code path and explain the reduced preconditions as context drift or residual risk
 
 Do not turn regression mode into a broad new audit.
 

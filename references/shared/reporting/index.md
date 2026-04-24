@@ -18,7 +18,6 @@ Use these files to keep reports consistent, auditable, and actionable:
 - `remediation-standard.md` for minimal real fixes and hardening guidance
 - `overview-standard.md` for executive summary, top findings, and action items
 - `statistics-standard.md` for counts, coverage, and trend reporting
-- `VERSIONING.md` for the skill version carried into report metadata
 - `references/smart-contract/vulnerabilities/coverage.md` when the active domain is `smart-contract`
 
 ---
@@ -40,5 +39,4 @@ Use these files to keep reports consistent, auditable, and actionable:
 - Apply `core/severity.md` first when assigning severity, then use `severity-guide.md` for example mappings and report phrasing.
 - Load `overview-standard.md` and `statistics-standard.md` when generating the final report summary.
 - Reconcile counted coverage totals and function-chain totals against audit state before finalizing the report.
-- Load `VERSIONING.md` when writing report metadata so the output records the skill revision used.
 - Keep the report concise, but never drop exploitability, evidence, minimal-fix guidance, candidate signals, coverage debt, or historical context.

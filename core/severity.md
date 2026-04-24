@@ -35,7 +35,9 @@ Suggested mapping:
 - Similar issue class plus similar context should land at similar severity.
 - Proven pre-auth compromise should usually outrank post-auth edge cases.
 - Publicly reachable data access or code execution should usually outrank local or admin-only paths.
+- Use the actually enforced exposure boundary when scoring `exposure`, including host-app auth, reverse-proxy policy, mount path, and internal-only network placement when those controls are evidenced in current code or config.
 - Do not inflate severity because the issue feels familiar or scary.
+- Do not call a weakness fixed solely because external controls narrowed reachability; severity may drop while remediation status remains `Still Present` or `Partially Fixed`.
 - Do not deflate severity because the code path looks inconvenient if the exploit path is still credible.
 
 ## Compound-Risk Rules

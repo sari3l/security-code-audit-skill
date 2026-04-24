@@ -1,6 +1,6 @@
 # security-code-audit
 
-当前版本：`v1.0.5`
+当前版本：`v1.0.6`
 
 面向 Web/API、后端、全栈、智能合约，以及 artifact-centric 仓库的代码安全审计 skill。
 
@@ -8,20 +8,7 @@
 
 English documentation: [README.md](README.md)
 
-## 1. v1.0.5 更新
-
-- 按目标画像路由
-  RECON 之后会先区分 execution mode、target profile 和 primary knowledge domain，避免把 `application`、`smart-contract`、`artifact-centric` 混成同一条扫描路径。
-- 每次运行都启用 audit state
-  `.security-code-audit-state/` 现在服务于所有 run，用来保存 surface inventory、bounded function chain、失效记录，以及 quick 模式的增量基线。
-- tracing 和历史比对更强
-  新的 bidirectional tracing、基于 fingerprint 的历史匹配，以及 historical-miss gate 能减少浅扫和“误判已经修复”。
-- 覆盖面扩展
-  对 authentication 和 authorization drift、API version drift、mass assignment、deserialization、path traversal、prompt injection、SSRF、XSS、accounting、workflow replay、limits 和 quotas 的指导更完整。
-- 报告信号更清晰
-  报告会更明确地区分 confirmed findings、candidate signals、coverage debt、historical context、working hypotheses 和 counted coverage summary。
-
-## 2. 使用方式
+## 1. 使用方式
 
 - `/security-code-audit`
   默认完整审计。等价于 `standard single`。
@@ -44,7 +31,7 @@ English documentation: [README.md](README.md)
 - `/security-code-audit regression`
 - `/security-code-audit deep --agents=multi`
 
-## 3. 核心能力
+## 2. 核心能力
 
 - 按目标面路由
   RECON 后先选择 target profile，再根据实际 surface 路由到主知识域和共享模块。
@@ -67,7 +54,7 @@ English documentation: [README.md](README.md)
 - 可选多 agent
   `multi` 可在大仓库里扩覆盖，但仍保持单一报告出口。
 
-## 4. 架构
+## 3. 架构
 
 运行时架构：分阶段扫描、按目标画像路由、按需加载，并通过 bounded tracing 和持久化 state 保持一致性。
 
