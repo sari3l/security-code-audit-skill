@@ -8,6 +8,8 @@
 
 ## Preferred Audit Paths
 
+Apply `references/shared/tooling/command-resolution.md` before running these commands. Treat them as candidates to confirm with the installed Composer or scanner help output, not as immutable version contracts.
+
 ```bash
 composer audit --locked
 composer show -t

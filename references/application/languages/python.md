@@ -715,9 +715,7 @@ grep -rn "dependencies" pyproject.toml
 grep -rn "extra-index-url" pip.conf requirements*.txt
 grep -rn "index-url" pip.conf requirements*.txt
 
-# Run audit
-# pip audit
-# safety check -r requirements.txt
+# Resolve and confirm Python audit tooling before execution.
 ```
 
 ---

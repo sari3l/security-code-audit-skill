@@ -21,6 +21,7 @@ Use when:
 ## Required Load
 
 - everything required by `modes/standard.md`
+- `core/deep-semantic-controls.md`
 - `references/shared/dependencies/sca-integration.md` whenever external SCA data exists or dependency results come from non-native tooling
 - additional specialist modules whenever the surface suggests deeper analysis
 - exploit playbooks for verified or strongly suspected findings that need safe confirmation
@@ -42,9 +43,11 @@ Deep mode includes standard recon plus:
 - execute the primary domain audit path from `SKILL.md`
 - trace sensitive inputs and control paths more exhaustively
 - review compound risks across modules and versions
+- create and update durable deep semantic gates for high-risk surfaces; persist gate checkpoints, dependency semantics, design/implementation conflicts, proof obligations, semantic assumptions, evidence refs, and negative evidence in audit state as the scan progresses
+- do not mark a high-risk surface covered from category completion alone; if the relevant deep gate is missing, partial, blocked, or invalidated, carry it as coverage debt
 - group multiple downstream exploit paths into one finding only when the failed control, trust boundary, and minimal fix are materially shared
 - surface the most important exploit paths clearly in the title, `Attack Vector`, `Impact`, `Related Findings`, and `Attack Chains` instead of splitting findings by default
-- run native dependency audit commands for detected ecosystems, then review transitive, runtime, and base-image exposure where feasible
+- resolve native, external, or repo-configured dependency audit commands with `references/shared/tooling/command-resolution.md`, then run the confirmed command or document the blocker/manual fallback before reviewing transitive, runtime, and base-image exposure where feasible
 
 If the active profile is `smart-contract`, make `references/smart-contract/index.md` the main audit methodology and deepen exploit-path, accounting, signature, upgrade, oracle, and economic-abuse analysis instead of preserving a web-style category cadence.
 
@@ -56,6 +59,7 @@ After category coverage, perform:
 - deeper data-flow tracing
 - full race-condition review
 - API-specific depth checks
+- deep semantic gate reconciliation: every applicable high-risk gate is `covered` or has explicit coverage debt, and every open proof obligation is routed to a finding, candidate signal, working hypothesis, integration assumption, or coverage debt
 - counted coverage reconciliation and exhaustive bounded function-chain review
 - deferred history replay only after current findings and coverage are stable
 - historical-miss gate first: reopen prior findings that touch the same current helper, sink, route family, or trust boundary and check whether any still-live path was missed by the current scan
@@ -86,6 +90,8 @@ Deep mode is complete when:
 - for the application domain: all applicable categories reach covered status
 - for the smart-contract domain: all applicable contract surfaces reach covered status
 - no applicable category or domain surface remains shallow without an explicit blocker
+- every high-risk deep semantic gate in scope is `covered`, or the incomplete state is represented as coverage debt with a proof obligation, blocker, or re-audit trigger
+- dependency semantics, design/implementation conflicts, and semantic assumptions that materially affect exploitability or remediation are checkpointed in audit state
 - templates, API versions, config files, and trust boundaries are all reviewed when the active domain is application
 - dependency review includes transitive risk where feasible
 - infrastructure configs are reviewed line by line when present

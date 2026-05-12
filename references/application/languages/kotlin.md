@@ -165,7 +165,7 @@ grep -rn 'markdown|sanitize|Jsoup.clean' --include="*.kt"
 
 ### Review Checklist
 - Review Gradle dependencies, BOMs, plugin versions, and transitive serializers.
-- Run `gradle dependencyCheckAnalyze` or equivalent SCA tooling.
+- Use `references/shared/tooling/command-resolution.md` before running `gradle dependencyCheckAnalyze` or equivalent SCA tooling.
 - Check Spring Boot, Ktor, Jackson, Netty, OkHttp, and AndroidX security posture.
 - Flag EOL JDK, Kotlin, AGP, and framework versions.
 

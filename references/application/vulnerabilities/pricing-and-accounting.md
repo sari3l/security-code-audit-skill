@@ -23,6 +23,21 @@ Use this file when money, credits, balances, fees, exchange rates, quotas with m
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create a `pricing_accounting` gate for each money, credit, balance, refund, discount, exchange-rate, quota-with-monetary-value, or settlement flow.
+
+The gate is not `covered` until the audit records:
+- source of truth for every price, amount, fee, discount, tax, rate, balance, credit, debit, refund, quota, and ledger entry
+- precision and rounding behavior across preview, quote, invoice, settlement, refund, reconciliation, export, and provider callback paths
+- dependency semantics for decimal/money libraries, currency conversion, payment SDK callbacks, database numeric types, serializer coercion, and frontend/server unit conversion
+- negative evidence that client-controlled values, negative/zero/large values, stale quotes, signed-state replay, mixed units, or provider retry behavior cannot create profit or loss
+- proof obligations for external provider behavior, FX source, tax/rate source, or runtime configuration that cannot be verified locally
+
+If source of truth or rounding behavior cannot be reconciled through final settlement, keep the gate `partial` and create coverage debt.
+
+---
+
 ## Grep Starting Points
 
 ```bash

@@ -113,6 +113,27 @@ These patterns are only safe if scope is enforced elsewhere and actually verifia
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create an `authorization_resolution` gate for each protected resource family, tenant boundary, admin action family, or alternate transport that can expose or mutate sensitive data.
+
+The gate is not `covered` until the audit records:
+- actor, action, resource, and tenant model for the resource family
+- every entry path that can reach the action: HTML, API, mobile, GraphQL, websocket, webhook, background job, export, download, admin/support tool, and legacy API version where present
+- the canonical object or tenant selected by the policy check and the canonical object or tenant actually read, mutated, exported, deleted, or enqueued
+- dependency semantics for middleware ordering, router mounting, policy framework behavior, ORM global scopes, serializer includes, GraphQL resolver auth, or gateway-auth assumptions when they affect enforcement
+- negative evidence that alternate routes, version drift, nested IDs, body/path mismatches, bulk operations, cached scopes, and raw queries do not bypass the same policy
+- proof obligations for upstream gateway, service-to-service, or deployment assumptions that cannot be verified locally
+
+Record design/implementation conflicts when:
+- docs or API specs claim admin-only, internal-only, tenant-scoped, or read-only behavior but route, middleware, policy, or query evidence contradicts it
+- one API version, route family, export path, file endpoint, or background job enforces weaker policy than a sibling path
+- the policy checks a parent, slug, body field, or cached object while the final operation uses another ID or internal key
+
+If a high-risk resource family lacks complete route and object-binding reconciliation, keep the gate `partial` and create coverage debt instead of marking Authorization covered.
+
+---
+
 ## Grep Starting Points
 
 ```bash

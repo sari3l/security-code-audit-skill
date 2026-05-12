@@ -108,6 +108,27 @@ element.innerHTML = userInput
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create an `xss_browser_context` gate for each rendering pipeline, rich-text/markdown surface, template family, DOM sink group, or file-preview path that can place attacker-controlled content in a browser.
+
+The gate is not `covered` until the audit records:
+- source-to-sink lifecycle for reflected, stored, DOM, markdown/rich-text, uploaded-file, and admin-viewed content
+- final browser context for each sink: HTML body, attribute, script string, URL/protocol, CSS/style, raw DOM HTML, iframe/document, SVG/HTML/PDF preview, or framework hydration boundary
+- dependency semantics for template autoescaping, sanitizer allowlists, markdown renderer, frontend framework trust APIs, DOMPurify-like configuration, CSP, URL parsing, entity decoding, and server/client rendering order
+- every decode, sanitize, escape, rewrap, hydrate, or DOM insertion stage that can change the grammar or trust classification of the content
+- negative evidence that storage points, alternate renderers, admin/staff views, notification templates, export/preview paths, and client-side hydration do not reintroduce executable context
+- proof obligations for runtime sanitizer config, CSP deployment, CDN preview behavior, or browser-only transformations that cannot be verified statically
+
+Record design/implementation conflicts when:
+- documentation claims sanitized or markdown-only content but code later marks it trusted HTML
+- CSP is cited as mitigation but the exploitable context allows same-origin script, inline script, unsafe protocols, or trusted-types bypasses
+- one renderer escapes content while another renderer, admin panel, email template, preview, or frontend component unwraps it
+
+If the final browser context cannot be identified for a high-risk content path, keep the gate `partial` or `blocked` and create coverage debt.
+
+---
+
 ## Grep Starting Points
 
 ```bash

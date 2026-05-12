@@ -34,6 +34,29 @@ Use this file when prices, reserves, liquidity, liquidation thresholds, or time-
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create an `oracle_market_abuse` entry in `deep_gate_ledger` for every price-sensitive or liquidity-sensitive trust boundary.
+
+The gate is not `covered` until the audit records:
+- every trusted price source, adapter, fallback, reserve read, TWAP, off-chain signer, and keeper-fed value that can influence mint, borrow, redeem, liquidation, settlement, or reward math
+- dependency semantics for each oracle or adapter, including decimals, answer type, stale-round behavior, round completeness, heartbeat expectations, revert behavior, and whether zero or negative answers can appear
+- implementation evidence for freshness, deviation, upper/lower bounds, zero/negative handling, fallback ordering, pause/circuit-breaker behavior, and same-transaction manipulation resistance
+- normalization and rounding evidence for converting oracle answers into protocol accounting units, including who benefits from truncation or rounding
+- consumer mapping: every state-changing function that consumes the price and the invariant it is expected to preserve
+- negative evidence showing that spot price, low-liquidity reserve state, stale data, dependency semantic mismatch, or same-transaction reserve shaping does not drive a profitable path
+- proof obligations for any runtime-only liquidity, heartbeat, deployment, or off-chain signer assumption that cannot be verified from code and config
+
+Record design/implementation conflicts when:
+- documentation claims TWAP or independent oracle use but code reads spot reserves or manipulable balances
+- a dependency's decimals, round, or failure semantics differ from the code's assumptions
+- one consumer applies bounds, min-out, freshness, or circuit-breaker checks while a sibling consumer of the same price source does not
+- fallback logic silently accepts stale, zero, negative, or lower-confidence data after the primary source fails
+
+If any of these checks is incomplete for an in-scope price-sensitive path, keep the gate `partial` or `blocked` and create coverage debt instead of marking Oracle / Market Abuse covered.
+
+---
+
 ## Reporting Guidance
 
 Separate:

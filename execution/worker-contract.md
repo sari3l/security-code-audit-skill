@@ -29,8 +29,14 @@ Every worker handoff should include:
   - `worker_role`
   - `owned_scope`
   - `loaded_modules`
+- `project_context_delta`
+  - verified claims, rejected claims, relevant invariants, git-change themes, and context conflicts discovered inside the owned scope
+- `tool_invocation_delta`
+  - command-resolution probes, executed scanner commands, skipped unsafe scripts, blockers, and manual fallbacks inside the owned scope
 - `coverage_delta`
   - counted review state for what was reviewed, partial, blocked, invalidated, time-boxed, or still pending inside the owned scope
+- `deep_gate_delta`
+  - semantic gate status, evidence refs, negative evidence, dependency semantics, design/implementation conflicts, proof obligations, semantic assumptions, and coverage debt refs inside the owned scope
 - `candidate_signals`
   - localized suspicious cases with concrete evidence and negative evidence
 - `trace_delta`
@@ -132,6 +138,42 @@ That decision belongs to the `supervisor` after merge.
 - **Stage**: [recon / scan / validation / report]
 - **Summary**: [key decision or blocker]
 - **Evidence Refs**: [files, routes, findings, or chain ids]
+```
+
+### Project Context Delta
+
+```markdown
+- **Claim**: [repo-authored or inferred claim]
+- **Source**: [README, config, code, git metadata, API spec]
+- **Expected Control**: [auth middleware, ingress, role guard, invariant check]
+- **Verification Result**: unverified / validated / contradicted / partial / stale / not_applicable
+- **Security Relevance**: [surface or invariant]
+```
+
+### Tool Invocation Delta
+
+```markdown
+- **Candidate**: [tool or repo script]
+- **Resolution Source**: repo-configured / ecosystem-default / manual
+- **Probe**: [command -v, --help, -h, version]
+- **Executed Command**: [exact command or none]
+- **Status**: executed / unavailable / unsupported / blocked / skipped_unsafe / manual_fallback
+- **Limitation**: [one sentence if any]
+```
+
+### Deep Gate Delta
+
+```markdown
+- **Gate ID**: [stable local gate id]
+- **Surface**: [Authorization / SSRF / Oracle / File Lifecycle / etc.]
+- **Status**: not_started / in_progress / partial / blocked / invalidated / covered
+- **Scope**: [owned files, routes, contracts, helpers, or dependency]
+- **Evidence Refs**: [file:line, function, command result, dependency version]
+- **Negative Evidence**: [what was checked that weakens the issue]
+- **Dependency Semantics**: [library/framework behavior that matters, or none]
+- **Design / Implementation Conflicts**: [claim vs code/config mismatch, or none]
+- **Proof Obligations**: [specific remaining proof steps]
+- **Coverage Debt Needed**: yes / no, with reason
 ```
 
 ### Handoff Request

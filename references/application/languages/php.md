@@ -239,7 +239,7 @@ grep -rn 'dangerously|loadHTML|innerHTML' --include="*.php" --include="*.js"
 ## C8: Dependencies
 
 ### Review Checklist
-- Run `composer audit` and review abandoned packages.
+- Use `references/shared/tooling/command-resolution.md` before running `composer audit` or repo-defined PHP security tasks.
 - Check dev-only tools like PHPUnit, Laravel Telescope, and Debugbar are absent from production.
 - Review WordPress plugins/themes and bundled vendor trees, not just top-level `composer.json`.
 - Flag EOL PHP runtimes and frameworks as security debt even without a single code-level sink.
@@ -247,7 +247,7 @@ grep -rn 'dangerously|loadHTML|innerHTML' --include="*.php" --include="*.js"
 ### Detection
 
 ```bash
-composer audit
+# Resolve and confirm Composer audit support before execution.
 grep -rn '"require-dev"|phpunit|laravel/telescope|barryvdh/laravel-debugbar' composer.json composer.lock
 grep -rn '"php":' composer.json
 ```

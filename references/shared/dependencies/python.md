@@ -11,6 +11,8 @@
 
 ## Preferred Audit Paths
 
+Apply `references/shared/tooling/command-resolution.md` before running these commands. Treat command names and flags as candidates to confirm with the installed tool's help output.
+
 ```bash
 pip-audit -r requirements.txt
 pip-audit -r requirements-dev.txt

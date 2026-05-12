@@ -11,6 +11,8 @@ Always identify three things before trusting a remediation or dismissing a patte
 - the actual compiler version selected by Foundry, Hardhat, or CI
 - the imported dependency version, especially OpenZeppelin upgrade and access-control helpers
 
+Before running optional smart-contract tooling such as Foundry, Hardhat, Slither, Mythril, or repo-defined audit scripts, load `references/shared/tooling/command-resolution.md`. Prefer safe repo-configured commands when present, probe installed tools and help output, and record blockers or manual review instead of inventing command names or stale flags.
+
 Do not assume these are the same. A repo can declare a broad pragma but compile with one pinned version, and library availability can differ again.
 
 Use this context to sharpen conclusions, not to suppress them automatically. Compiler reality should improve exploitability and remediation accuracy; it should not become a blanket excuse to ignore a suspicious pattern.

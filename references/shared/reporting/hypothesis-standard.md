@@ -59,6 +59,7 @@ Do not include `Rejected` items in the final report:
 - `Status`
 - `Related Surfaces`
 - `Related Findings / Chain Inputs` when material
+- `Related Deep Gates / Proof Obligations` when the hypothesis came from deep semantic state
 - `Why It Matters`
 - `Evidence For`
 - `Evidence Against / Friction`
@@ -72,6 +73,7 @@ Do not include `Rejected` items in the final report:
 - Keep hypotheses concrete enough that another reviewer can continue validation.
 - Tie each hypothesis to actual surfaces, files, or trust boundaries already observed.
 - Make the missing proof step explicit.
+- Tie hypotheses back to deep semantic gates or proof obligations when those led to the unresolved model.
 - Prefer one hypothesis per attack or control model; do not merge unrelated theories.
 - Do not restate confirmed findings here.
 - If the hypothesis becomes a concrete code-level suspicion, move it into `Candidate Signals`.
@@ -88,6 +90,7 @@ Do not include `Rejected` items in the final report:
 - **Status**: Open / Deprioritized
 - **Related Surfaces**: [routes, modules, contracts, trust boundaries]
 - **Related Findings / Chain Inputs**: [findings or candidate signals that compose]
+- **Related Deep Gates / Proof Obligations**: [gate ids or proof obligation ids when material]
 - **Why It Matters**: [What risk changes if this is true]
 - **Evidence For**: [Observed facts that support the hypothesis]
 - **Evidence Against / Friction**: [Observed facts that weaken it or blockers that remain]

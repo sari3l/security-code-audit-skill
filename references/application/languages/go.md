@@ -783,13 +783,13 @@ grep -rn 'Content-Type.*text/html' --include="*.go" | grep -v "template"
 ## C8: Dependencies
 
 ### Key Questions
-- Has `govulncheck` been run?
+- Has Go vulnerability tooling been resolved through `references/shared/tooling/command-resolution.md` and run or recorded as blocked/manual fallback?
 - Are dependencies in `go.sum` current?
 - Are there known CVEs in imported packages?
 - Is the Go version itself current?
 
 ### Commonly Missed
-- `govulncheck` not part of CI pipeline
+- Go vulnerability tooling not part of CI pipeline
 - Indirect dependencies with vulnerabilities
 - Go standard library CVEs (update Go version)
 - Using deprecated or unmaintained packages
@@ -810,8 +810,7 @@ grep -rn 'Content-Type.*text/html' --include="*.go" | grep -v "template"
 ### Grep Detection Patterns
 
 ```bash
-# Run vulnerability check
-# govulncheck ./...
+# Resolve and confirm Go vulnerability tooling before execution.
 
 # Check go.mod for known problematic packages
 grep -rn "dgrijalva/jwt-go" go.mod go.sum

@@ -796,7 +796,7 @@ grep -rn 'href={' --include="*.jsx" --include="*.tsx" | grep -v "http\|#\|/"
 ## C8: Dependencies
 
 ### Key Questions
-- Has `npm audit` or `yarn audit` been run?
+- Has package-manager audit tooling been resolved through `references/shared/tooling/command-resolution.md` and run or recorded as blocked/manual fallback?
 - Are there pinned versions with known CVEs?
 - Are any dependencies end-of-life?
 - Is `package-lock.json` or `yarn.lock` committed and up to date?
@@ -828,9 +828,7 @@ grep -rn 'href={' --include="*.jsx" --include="*.tsx" | grep -v "http\|#\|/"
 ### Grep Detection Patterns
 
 ```bash
-# Run audit
-npm audit
-yarn audit
+# Resolve and confirm package-manager audit support before execution.
 
 # Check for known vulnerable versions in lockfile
 grep -n "lodash" package-lock.json | head -5

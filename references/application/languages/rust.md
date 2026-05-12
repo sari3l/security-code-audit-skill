@@ -185,7 +185,7 @@ grep -rn 'render_str\\(|markdown|pulldown_cmark|comrak' --include="*.rs"
 ## C8: Dependencies
 
 ### Review Checklist
-- Run `cargo audit` and inspect yanked crates.
+- Use `references/shared/tooling/command-resolution.md` before running `cargo audit`, `cargo deny`, or repo-defined Rust security tasks.
 - Review unsafe-heavy crates, parser crates, image libraries, and TLS stacks.
 - Verify `Cargo.lock` is committed for applications.
 - Check optional features that expand attack surface, especially admin or test helpers.
@@ -193,7 +193,7 @@ grep -rn 'render_str\\(|markdown|pulldown_cmark|comrak' --include="*.rs"
 ### Detection
 
 ```bash
-cargo audit
+# Resolve and confirm Cargo audit tooling before execution.
 grep -rn 'default-features = false|features = \\[' Cargo.toml
 test -f Cargo.lock && echo "Cargo.lock present"
 ```

@@ -8,6 +8,8 @@
 
 ## Preferred Audit Paths
 
+Apply `references/shared/tooling/command-resolution.md` before running these commands. Treat command names and flags as candidates to confirm with the installed tool's help output.
+
 ```bash
 cargo audit
 cargo tree -i <crate>

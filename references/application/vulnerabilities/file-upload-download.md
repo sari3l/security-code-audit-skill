@@ -86,6 +86,28 @@ Typical impact includes:
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create a `file_lifecycle` gate for each upload/download/export/import/storage surface that handles user-controlled files, object keys, archives, generated reports, or signed URLs.
+
+The gate is not `covered` until the audit records:
+- end-to-end lifecycle: upload/import, temp storage, validation, scan, transform, move, publish, replace, delete, download, export, preview, CDN/object-store serving, and signed URL issuance
+- authority binding for every operation: who owns the record, who owns the object/key, who may replace/delete/download/export, and whether the same canonical object is used throughout
+- dependency semantics for framework upload parsing, filename normalization, filesystem path APIs, archive extraction, object-storage ACL/policy, presign behavior, CDN caching, content-type sniffing, and response header encoding
+- validation order for authz, size, count, aggregate quota, extension, MIME, content sniffing, active content, AV scan, archive limits, symlinks, and post-processing
+- collision and race behavior for duplicate names, overwrite, scan-then-move, validate-then-publish, multi-file batches, and cross-tenant object keys
+- negative evidence that filenames, object keys, paths, archive entries, signed URLs, previews, and public serving cannot create traversal, overwrite, stored XSS, parser exploit, DoS, or unauthorized access
+- proof obligations for bucket policy, CDN behavior, AV/transcode runtime, or external storage permissions that cannot be verified locally
+
+Record design/implementation conflicts when:
+- docs claim private storage but object-store ACLs, bucket policy, CDN rules, or presigned URLs expose files differently
+- upload authorization is stronger than replace, delete, download, export, or preview authorization
+- one layer normalizes or validates a filename/key differently from the filesystem, archive library, object store, CDN, or response header layer
+
+If the file lifecycle cannot be traced from ingress to final access or deletion, keep the gate `partial` and create coverage debt.
+
+---
+
 ## Grep Starting Points
 
 ```bash

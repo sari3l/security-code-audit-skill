@@ -6,10 +6,11 @@ The report overview should help a decision-maker understand risk quickly without
 
 ## Required Sections
 
-- project meta: date, mode, project, audit profile, knowledge domain, tech stack, files analyzed, and compiler reality for smart-contract audits when material
+- project meta: date, mode, project, skill version, audit profile, knowledge domain, tech stack, files analyzed, and compiler reality for smart-contract audits when material
 - executive summary: 2 to 3 sentences on overall posture and dominant risks
 - risk overview by severity
 - category coverage or domain coverage with counted states, plus notable blind spots
+- deep semantic gate summary for `deep` mode or beta `multi` when high-risk gates were used, including covered, partial, blocked, invalidated, and open proof-obligation counts
 - top findings: only confirmed highest-signal items
 - candidate signals: only unresolved high-signal cases worth explicit follow-up
 - coverage debt: partial, blocked, or invalidated surfaces that still matter
@@ -30,11 +31,13 @@ The report overview should help a decision-maker understand risk quickly without
 - call out when one fix removes multiple downstream risks
 - call out when individually moderate findings combine into materially higher impact, but only when the chain is supported by evidence
 - use function-chain summaries to support later verification and attack-chain review, not to replace finding evidence
+- use deep semantic gate summaries to show which high-risk surfaces were semantically reconciled; do not let the gate summary replace concrete finding evidence or coverage debt
 - summarize shared control failures and remediation leverage early, while keeping the most important exploit paths obvious in titles, attack vectors, impact, and attack-chain sections
 - keep leadership-facing summary concise and engineer-facing action items specific
 - never present candidate signals as if they were confirmed findings
 - for artifact-centric audits of skill, agent, or instruction-bearing repos, summarize confirmed dangerous instructions early when material, while keeping benign examples in candidate or negative-evidence language instead of inventing a second verdict system
 - if coverage debt is material, surface it near the top instead of burying it
+- if a high-risk deep gate is incomplete, surface it as coverage debt near the top instead of burying it in raw state
 - if historical misses exist, surface them near the top because they indicate active false-negative risk in the audit process
 - keep supplemental sections clearly outside the severity table and confirmed finding count
 - keep working hypotheses in an appendix so they remain visible without crowding the confirmed finding list

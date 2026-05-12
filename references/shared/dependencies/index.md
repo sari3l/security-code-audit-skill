@@ -15,10 +15,11 @@ Load this directory whenever the repo contains any of:
 
 1. Detect every ecosystem present in the repo.
 2. Load the matching ecosystem file(s) from this directory.
-3. Run the strongest native or repo-configured audit path that the ecosystem file recommends.
-4. If results come from an external scanner, also load `references/shared/dependencies/sca-integration.md`.
-5. Triage direct vs transitive, runtime vs dev-only, reachable vs unreachable, and base-image or vendored exposure.
-6. Cross-reference dependency findings with code findings before final severity decisions.
+3. Before invoking native, external, or repo-configured audit tools, load `references/shared/tooling/command-resolution.md`, inspect safe repo scripts, probe the installed tool, and read current help so command names and flags come from the environment rather than memory.
+4. Run the strongest native or repo-configured audit path that the ecosystem file recommends and command resolution confirms.
+5. If results come from an external scanner, also load `references/shared/dependencies/sca-integration.md`.
+6. Triage direct vs transitive, runtime vs dev-only, reachable vs unreachable, and base-image or vendored exposure.
+7. Cross-reference dependency findings with code findings before final severity decisions.
 
 ## Ecosystem Modules
 
@@ -44,6 +45,25 @@ Load this directory whenever the repo contains any of:
 - vendored or copied libraries outside the package manager
 - container base-image and OS package exposure when app dependencies are clean
 - private registries, feed trust, and package source pinning
+
+## Deep Semantic Gate
+
+In `deep` mode, create a `dependency_semantics` gate for each dependency or ecosystem whose behavior materially affects exploitability, remediation, parsing, trust, authorization, serialization, rendering, networking, storage, cryptography, or smart-contract semantics.
+
+The gate is not `covered` until the audit records:
+- actual dependency source of truth: manifest, lock file, vendored code, generated package graph, base image, deployment image, or runtime package list
+- direct vs transitive and runtime vs dev/build-only exposure
+- relevant dependency behavior, not only version: parser rules, escaping defaults, redirect handling, serializer typing, auth middleware order, ORM raw APIs, storage ACL/presign semantics, crypto defaults, or contract library behavior
+- command-resolution evidence for native or repo-configured audit tooling, or a blocker/manual fallback
+- negative evidence that a vulnerable or assumption-sensitive dependency is unreachable, dev-only, not shipped, or otherwise not part of the reviewed runtime
+- proof obligations for runtime images, private registries, generated locks, base-image packages, or external SCA claims that cannot be verified locally
+
+Record design/implementation conflicts when:
+- docs or code assume one dependency behavior but the actual version, configuration, or transitive implementation behaves differently
+- build and runtime install from different manifests or registries
+- external SCA, native tooling, and lock-file inspection disagree and the difference affects risk
+
+If dependency behavior materially affects a high-risk surface but cannot be verified, keep the gate `partial` or `blocked` and create coverage debt.
 
 ## External SCA
 

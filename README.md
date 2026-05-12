@@ -1,6 +1,6 @@
 # security-code-audit
 
-Current release: `v1.0.6`
+Current release: `v1.0.7`
 
 Code security audit skill for web/API, backend, full-stack, smart-contract, and artifact-centric repositories.
 
@@ -64,42 +64,52 @@ flowchart TD
     B["SKILL.md<br/>entry router + shared workflow"]
 
     C["Bootstrap control plane<br/>parse mode + execution<br/>load core controls and mode rules"]
-    D["Recon phase<br/>map repo surface, stack, artifacts, and risk areas"]
+    D["Recon phase<br/>map repo surface, stack, artifacts,<br/>project claims, and risk areas"]
+    PC["core/project-context.md<br/>verify repo-authored claims,<br/>business invariants, deployment assumptions,<br/>and recent change themes"]
     E["Profile selection<br/>application | smart-contract | artifact-centric"]
 
     F["core/loading.md<br/>lazy loading + on-demand routing"]
     G["Primary knowledge domain<br/>application or smart-contract"]
-    H["Shared modules<br/>artifacts, dependencies, reporting, and state standards"]
+    H["Shared modules<br/>artifacts, dependencies, tooling,<br/>reporting, and state standards"]
     T["Core quality controls<br/>integrity, coverage, severity,<br/>and bidirectional tracing"]
+    Q["core/deep-semantic-controls.md<br/>deep gates, dependency semantics,<br/>proof obligations, and conflicts"]
+    U["references/shared/tooling/command-resolution.md<br/>resolve optional scanners and repo audit commands<br/>from repo config, installed help, and blockers"]
 
     I["Targeted audit pass<br/>follow selected references for the active surface"]
-    J["Evidence and consolidation<br/>validate findings, dedupe repeats, track coverage debt"]
+    J["Evidence and consolidation<br/>validate findings, dedupe repeats,<br/>reconcile gates, tools, and coverage debt"]
     K["Reporting and regression<br/>write findings, compare history, retest fixes"]
 
-    S[".security-code-audit-state/<br/>run context, function chains,<br/>loading decisions, hypotheses, invalidations"]
+    S[".security-code-audit-state/<br/>run context, project context, tool invocations,<br/>coverage ledgers, deep gates, function chains,<br/>hypotheses, invalidations"]
     R[".security-code-audit-reports/<br/>human-readable findings and history"]
 
     A --> B
     B --> C
     C --> D
+    D --> PC
     D --> E
     E --> F
 
     F --> G
     F --> H
     F --> T
+    F --> Q
+    H --> U
 
     G --> I
     H --> I
     T --> I
+    Q --> I
+    U --> I
     I --> J
     J --> K
     K --> R
 
     D -. initialize or refresh scan state .-> S
+    PC -. persist verified claims, invariants,<br/>conflicts, and change themes .-> S
     F -. persist selected modules .-> S
-    I -. update findings, traces, and coverage .-> S
-    J -. carry forward hypotheses and invalidations .-> S
+    U -. record command probes, executions,<br/>blockers, and manual fallbacks .-> S
+    I -. update findings, traces, tools,<br/>deep gates, and coverage .-> S
+    J -. carry forward hypotheses,<br/>proof obligations, and invalidations .-> S
     S -. support quick baselines, long scans,<br/>regression, and multi-agent continuity .-> I
     R -. latest report reused by regression mode .-> K
 ```
@@ -109,11 +119,11 @@ The skill is intentionally split into layers:
 | Path | Purpose |
 | --- | --- |
 | `SKILL.md` | Router, help path, shared workflow, and progress rules |
-| `core/` | Integrity, coverage, findings, severity, lazy loading, and bidirectional tracing controls |
+| `core/` | Integrity, coverage, findings, severity, project context, lazy loading, bidirectional tracing, and deep semantic controls |
 | `profiles/` | Post-recon target semantics: `application`, `smart-contract`, or `artifact-centric` |
 | `references/application/` | Primary methodology for web/API/backend audits |
 | `references/smart-contract/` | Primary methodology for Solidity and on-chain audits |
-| `references/shared/` | Shared artifact, dependency, reporting, and audit-state standards |
+| `references/shared/` | Shared artifact, dependency, tooling, reporting, and audit-state standards |
 | `modes/` | `quick`, `standard`, `deep`, and `regression` depth contracts |
 
 Output layers:
@@ -121,4 +131,4 @@ Output layers:
 | Path | Purpose |
 | --- | --- |
 | `.security-code-audit-reports/` | Human-readable findings, history, regression baselines, and action items |
-| `.security-code-audit-state/` | Machine-readable run context, surface inventories, function chains, hypotheses, and invalidations for every run |
+| `.security-code-audit-state/` | Machine-readable run context, surface inventories, project context, tool invocation records, deep gate ledgers, function chains, hypotheses, and invalidations for every run |

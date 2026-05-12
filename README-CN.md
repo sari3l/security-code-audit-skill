@@ -1,6 +1,6 @@
 # security-code-audit
 
-当前版本：`v1.0.6`
+当前版本：`v1.0.7`
 
 面向 Web/API、后端、全栈、智能合约，以及 artifact-centric 仓库的代码安全审计 skill。
 
@@ -64,42 +64,52 @@ flowchart TD
     B["SKILL.md<br/>入口路由 + 共享工作流"]
 
     C["启动控制面<br/>解析 mode 和 execution<br/>加载 core 控制与模式规则"]
-    D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts 和风险面"]
+    D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts、<br/>项目声明和风险面"]
+    PC["core/project-context.md<br/>验证仓库文档声明、业务不变量、<br/>部署假设和近期变更主题"]
     E["目标画像选择<br/>application | smart-contract | artifact-centric"]
 
     F["core/loading.md<br/>懒加载 + 按需路由"]
     G["主知识域<br/>application 或 smart-contract"]
-    H["共享模块<br/>artifacts、dependencies、reporting、state 标准"]
+    H["共享模块<br/>artifacts、dependencies、tooling、<br/>reporting、state 标准"]
     T["核心质量控制<br/>integrity、coverage、severity<br/>以及 bidirectional tracing"]
+    Q["core/deep-semantic-controls.md<br/>deep gates、dependency semantics、<br/>proof obligations 和 conflicts"]
+    U["references/shared/tooling/command-resolution.md<br/>基于仓库配置、已安装工具帮助和 blocker<br/>解析可选 scanner 与仓库审计命令"]
 
     I["定向审计阶段<br/>按当前目标面加载并执行对应审计方法"]
-    J["证据收敛与整理<br/>验证 findings、去重、记录 coverage debt"]
+    J["证据收敛与整理<br/>验证 findings、去重，<br/>收敛 gates、tools 与 coverage debt"]
     K["报告与回归<br/>输出 findings、对比历史、验证修复"]
 
-    S[".security-code-audit-state/<br/>run context、function chain、<br/>加载决策、假设、失效记录"]
+    S[".security-code-audit-state/<br/>run context、project context、tool invocations、<br/>coverage ledgers、deep gates、function chains、<br/>hypotheses、invalidations"]
     R[".security-code-audit-reports/<br/>人类可读 findings 和历史报告"]
 
     A --> B
     B --> C
     C --> D
+    D --> PC
     D --> E
     E --> F
 
     F --> G
     F --> H
     F --> T
+    F --> Q
+    H --> U
 
     G --> I
     H --> I
     T --> I
+    Q --> I
+    U --> I
     I --> J
     J --> K
     K --> R
 
     D -. 初始化或刷新扫描 state .-> S
+    PC -. 持久化已验证声明、业务不变量、<br/>冲突与变更主题 .-> S
     F -. 持久化已选模块 .-> S
-    I -. 更新 findings、traces 与 coverage .-> S
-    J -. 延续假设与失效记录 .-> S
+    U -. 记录命令探测、执行、<br/>blocker 与 manual fallback .-> S
+    I -. 更新 findings、traces、tools、<br/>deep gates 与 coverage .-> S
+    J -. 延续假设、proof obligations<br/>与失效记录 .-> S
     S -. 支撑 quick 基线、长扫描、<br/>回归与多 agent 连续性 .-> I
     R -. regression 模式复用最新报告 .-> K
 ```
@@ -109,11 +119,11 @@ flowchart TD
 | 路径 | 作用 |
 | --- | --- |
 | `SKILL.md` | 主路由、help path、共享流程和进度规则 |
-| `core/` | integrity、coverage、findings、severity、懒加载和 bidirectional tracing 控制 |
+| `core/` | integrity、coverage、findings、severity、project context、懒加载、bidirectional tracing 和 deep semantic 控制 |
 | `profiles/` | RECON 后的目标语义：`application`、`smart-contract`、`artifact-centric` |
 | `references/application/` | Web/API/后端审计主知识域 |
 | `references/smart-contract/` | 智能合约与链上逻辑审计主知识域 |
-| `references/shared/` | artifact、dependency、reporting 和 audit-state 的共享标准 |
+| `references/shared/` | artifact、dependency、tooling、reporting 和 audit-state 的共享标准 |
 | `modes/` | `quick`、`standard`、`deep`、`regression` 的深度契约 |
 
 输出层：
@@ -121,4 +131,4 @@ flowchart TD
 | 路径 | 作用 |
 | --- | --- |
 | `.security-code-audit-reports/` | 人类可读 findings、历史、回归基线和 action items |
-| `.security-code-audit-state/` | 机器可读 run context、surface inventory、function chain、hypothesis 和 invalidation，适用于每次运行 |
+| `.security-code-audit-state/` | 机器可读 run context、surface inventory、project context、tool invocation 记录、deep gate ledger、function chain、hypothesis 和 invalidation，适用于每次运行 |

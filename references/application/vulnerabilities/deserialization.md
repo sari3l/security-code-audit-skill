@@ -120,6 +120,27 @@ JSON.parse(body, reviveToClass)
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create a `deserialization_materialization` gate for each native serializer, polymorphic binder, signed state blob, queue/RPC payload, cache/session format, import/export path, or framework mapper that can materialize attacker-influenced data.
+
+The gate is not `covered` until the audit records:
+- all producers and consumers of the serialized format, including public requests, signed cookies, SSO, queues, background jobs, cache entries, imports, admin tools, and legacy compatibility paths
+- materialization boundary: where inert bytes or plain data become runtime objects, polymorphic types, magic methods, custom converters, privileged session state, or authority-bearing fields
+- dependency semantics for serializer type metadata, default typing, revivers, hooks, object constructors, schema validation, signing/encryption, compression, size/depth limits, and gadget availability where relevant
+- schema continuity across every decode, verify, map, convert, enqueue, dequeue, cache, and hydrate step
+- negative evidence that signing, encryption, transport trust, or prior schema checks cannot be confused with safe type materialization
+- proof obligations for runtime serializer config, classpath/package availability, signing-key strength, queue trust, or legacy format reachability that cannot be verified locally
+
+Record design/implementation conflicts when:
+- docs or comments describe a payload as plain data while framework configuration enables polymorphic type recovery
+- a signed or encrypted blob is treated as safe even though decoded type or privileged fields remain attacker-controlled
+- one consumer enforces a constrained schema while another legacy or background consumer materializes richer objects from the same data
+
+If materialization semantics or producer trust cannot be reconciled, keep the gate `partial` or `blocked` and create coverage debt.
+
+---
+
 ## Grep Starting Points
 
 ```bash

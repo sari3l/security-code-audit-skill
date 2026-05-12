@@ -817,9 +817,7 @@ grep -rn "jackson-databind" pom.xml build.gradle
 grep -rn "commons-collections" pom.xml build.gradle
 grep -rn "snakeyaml" pom.xml build.gradle
 
-# Run dependency audit
-# mvn org.owasp:dependency-check-maven:check
-# gradle dependencyCheckAnalyze
+# Resolve and confirm Java dependency audit tooling before execution.
 
 # Check for dependency management
 grep -rn "<version>" pom.xml | grep -v "parent\|plugin"

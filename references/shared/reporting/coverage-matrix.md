@@ -19,11 +19,11 @@ When the active profile is `artifact-centric` and the repo is a skill, agent, or
 | C5 | Data Exposure | Passwords hashed with bcrypt/argon2? No secrets in source code? GitHub/GitLab tokens, cloud AK/SK, private keys, connection strings, usernames/passwords, or internal IPs/hostnames hardcoded? PII encrypted at rest? TLS enforced? Sensitive headers (HSTS, no-cache for auth pages)? API keys rotated? Verbose error messages? Stack traces in responses? Are signed download URLs, export tokens, or attachment links guessable or replayable? | | |
 | C6 | Misconfiguration | Debug mode off in production? Default credentials changed? Error messages generic? Security headers present? Directory listing disabled? CORS restrictive? Cookie flags (HttpOnly, Secure, SameSite)? `.env`, proxy, CI, and runtime config reviewed? | | |
 | C7 | XSS | All template outputs escaped? Raw/unescaped rendering justified? CSP header present? DOM-based XSS in client JS? Stored XSS via database fields? SVG/HTML file upload? All template engines checked (Jinja2, EJS, Handlebars, etc.)? | | |
-| C8 | Dependencies | Dependency audit path chosen per detected ecosystem? Native or repo-configured audit command run where available? Lock file reviewed? EOL frameworks/libraries? Transitive dependencies reviewed? Vendored/base-image risk reviewed where relevant? External SCA results normalized if present? Tooling blockers recorded if audit could not run? | | |
+| C8 | Dependencies | Dependency audit path chosen per detected ecosystem? `references/shared/tooling/command-resolution.md` applied before native, external, or repo-configured scanner execution? Native or repo-configured audit command run where available? Lock file reviewed? EOL frameworks/libraries? Transitive dependencies reviewed? Vendored/base-image risk reviewed where relevant? External SCA results normalized if present? Tooling blockers recorded if audit could not run? | | |
 | C9 | Cryptography | CSPRNG used for tokens? No MD5/SHA1 for passwords? TLS 1.2+ enforced? No hardcoded keys/IVs? Certificate validation enabled? Key length adequate (RSA >= 2048, AES >= 128)? Timing-safe comparison for secrets? | | |
 | C10 | SSRF | All URL-fetching endpoints checked? Internal network access blocked? DNS rebinding mitigated? Allowlist vs blocklist for target URLs? Cloud metadata endpoint (169.254.169.254) blocked? Redirect following restricted? Can unrestricted upload, archive extraction, or storage fetch paths become server-side file write/read primitives? | | |
 | C11 | Logging & Monitoring | `references/application/vulnerabilities/logging-monitoring.md` loaded? No credentials in logs? No PII in logs without masking? Log injection prevented? Audit trail for auth events? Alerting on repeated failures? Log files access-controlled? Security events logged? | | |
-| C12 | Infrastructure (IaC) | `references/application/vulnerabilities/infrastructure.md` loaded when IaC exists? Container runs as non-root? Secrets not in Dockerfiles? Network policies defined? Resource limits set? Image pinned to digest? No privileged mode? Helm values reviewed? Terraform state secured? Compose and Kubernetes manifests reviewed? | | |
+| C12 | Infrastructure (IaC) | `references/application/vulnerabilities/infrastructure.md` loaded when IaC exists? Command resolution applied before optional IaC/container scanners? Container runs as non-root? Secrets not in Dockerfiles? Network policies defined? Resource limits set? Image pinned to digest? No privileged mode? Helm values reviewed? Terraform state secured? Compose and Kubernetes manifests reviewed? | | |
 
 ## Artifact-Centric Overlay
 
@@ -31,6 +31,7 @@ For skill, agent, and instruction-bearing repositories, also verify:
 
 - instruction-bearing assets inventoried: `SKILL.md`, `AGENTS.md`, prompt templates, tool manifests, setup docs, and command wrappers
 - operator-directed commands and bootstrap flows reviewed for remote execution, shell pipelines, and hidden helpers
+- command wrappers resolved with `references/shared/tooling/command-resolution.md` before execution; unsafe repo-configured commands skipped or escalated rather than run blindly
 - secret access and exfiltration paths reviewed across docs, wrappers, and setup flows
 - environment mutation reviewed, including global installs, force reinstall flows, startup persistence, and host profile modification
 - benign defensive prose and fenced educational examples explicitly separated from confirmed findings, or carried as candidate / negative evidence
@@ -76,7 +77,7 @@ Review settings files and defaults.
 1. Read all config/settings files, including `.env*`, Docker, compose, proxy, ingress, CI, and orchestrator manifests
 2. Check environment-specific overrides (dev vs prod)
 3. Verify secure defaults are not overridden
-4. Run the dependency audit path defined by the matching `references/shared/dependencies/` module, or record the blocker and review lock files manually
+4. Apply `references/shared/tooling/command-resolution.md`, then run the dependency audit path defined by the matching `references/shared/dependencies/` module, or record the blocker and review lock files manually
 
 ### Logic-driven (C5, C10, C11)
 

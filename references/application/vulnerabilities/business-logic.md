@@ -68,6 +68,27 @@ Look for combinations that were never meant to exist.
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create a `business_invariant` gate for each sensitive business flow involving money, credits, approvals, entitlements, quotas, lifecycle states, one-time actions, or resource ownership.
+
+The gate is not `covered` until the audit records:
+- the invariant in enforceable terms, including actor, action, resource, value bounds, allowed order, replay limits, and final state
+- every entry path that can affect the invariant: public API, admin/support UI, mobile, webhook, worker, scheduler, import/export, retry, and compensating job
+- source of truth for values and state, including server recomputation, signed state, cached previews, provider callbacks, ledger entries, quota counters, and database constraints
+- dependency semantics for payment/provider retries, workflow libraries, queue delivery, cache consistency, ORM transactions, rate-limit stores, and signed-state verification when relevant
+- negative evidence that client-controlled values, stale previews, alternate transitions, duplicate execution, partial failures, and compound chains cannot break the invariant
+- proof obligations for provider behavior, runtime feature flags, deployment topology, or external workflow state that cannot be verified locally
+
+Record design/implementation conflicts when:
+- docs say a workflow is one-time, terminal, server-priced, quota-limited, or approval-gated but implementation allows alternate paths or weaker source-of-truth checks
+- public, admin, webhook, and worker paths enforce different invariants for the same resource
+- a preview, quote, signed value, or cached count is treated as authoritative during final settlement or mutation
+
+If the invariant cannot be reconstructed across all state-changing paths, keep the gate `partial` and create coverage debt.
+
+---
+
 ## Related References
 
 - `references/application/vulnerabilities/authentication.md`

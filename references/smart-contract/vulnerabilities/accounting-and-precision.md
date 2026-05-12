@@ -58,6 +58,30 @@ Track:
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create an `accounting_precision` entry in `deep_gate_ledger` for every asset/share/debt/collateral/reward invariant in scope.
+
+The gate is not `covered` until the audit records:
+- the source of truth for every accounting unit: assets, shares, collateral, debt, rewards, fees, indexes, cached totals, virtual offsets, and external balances
+- a rounding matrix for mint, burn, deposit, withdraw, redeem, borrow, repay, liquidate, claim, preview, quote, and conversion helpers that identifies direction, precision unit, and beneficiary
+- dependency semantics for token behavior, math libraries, oracle adapters, vault standards, wrappers, LP tokens, rebasing behavior, fee-on-transfer behavior, and decimals
+- zero-state and near-zero-state behavior, including first depositor/minter, dust, donation, bootstrap, and low-liquidity cases
+- preview/action consistency: every preview, quote, simulation, or off-chain estimate that is expected to match a state-changing path
+- sibling-helper consistency across open, manage, adjust, queue, exit, claim, liquidate, emergency, and admin paths sharing the same invariant
+- negative evidence showing that rounding residuals, donations, rebasing drift, stale totals, cached values, or mixed decimals cannot become attacker profit or operational DoS
+- proof obligations for any economic or token-behavior assumption that cannot be verified locally
+
+Record design/implementation conflicts when:
+- documentation or comments describe proportional accounting but the implementation uses linear or stale totals
+- a fix or guard exists on one helper while a sibling path still uses a raw zero check, different precision, or weaker threshold
+- dependency or token semantics contradict assumptions about transfer amount, balance delta, decimals, or rounding
+- preview/quote helpers disagree with the state-changing function in a way that affects user safety or liquidation/settlement behavior
+
+If the invariant cannot be reconstructed end to end, keep the gate `partial` or `blocked` and create coverage debt. Do not replace missing invariant reconstruction with a generic "rounding reviewed" note.
+
+---
+
 ## Typical Reporting Language
 
 - share inflation

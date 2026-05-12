@@ -388,6 +388,27 @@ func (h *Handler) HandlePayment(w http.ResponseWriter, r *http.Request) {
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create a `race_state_integrity` gate for each money, balance, quota, approval, inventory, entitlement, idempotency, file, token, or state-machine flow where concurrent or repeated actions can change security or business outcomes.
+
+The gate is not `covered` until the audit records:
+- the protected invariant before and after the action, including balance, count, quota, terminal state, entitlement, one-time use, ownership, or file/object binding
+- every actor and entry path that can trigger the transition: HTTP, mobile, webhook, worker, scheduler, retry, queue consumer, admin tool, and background compensating job
+- transaction and locking semantics for the framework, ORM, database isolation level, cache, queue, distributed lock, idempotency store, and external payment/provider callback behavior
+- read-check-write boundaries, TOCTOU windows, retry behavior, duplicate delivery behavior, async gaps, and external side effects that cannot be rolled back atomically
+- negative evidence that concurrent requests, replayed webhooks, duplicate queue deliveries, stale reads, partial failures, and retry storms cannot violate the invariant
+- proof obligations for runtime isolation level, distributed lock guarantees, external provider retry rules, or deployment topology that cannot be verified locally
+
+Record design/implementation conflicts when:
+- documentation says an action is one-time, terminal, idempotent, or atomic but implementation uses separate check and update steps without an authoritative guard
+- API, worker, webhook, and admin paths mutate the same invariant with different locking or idempotency behavior
+- external side effects occur before the durable state transition that prevents replay or duplicate execution
+
+If the invariant cannot be modeled across retries and concurrency, keep the gate `partial` or `blocked` and create coverage debt.
+
+---
+
 ## Rate Limit / Quota Bypass via Concurrent Requests
 
 ### Bypass Pattern

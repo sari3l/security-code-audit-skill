@@ -36,8 +36,10 @@ Give each worker only:
 - execution mode
 - `core/untrusted-repo-input.md`
 - `core/integrity.md`
+- `core/deep-semantic-controls.md` when `deep` mode or a high-risk semantic gate is assigned
 - the compact surface profile
 - the required state-delta contract for coverage counts, function chains, and agent logs
+- the required deep-gate delta contract when semantic review is assigned
 - exact owned files, routes, services, or ecosystems
 - only the reference modules needed for that owned scope
 

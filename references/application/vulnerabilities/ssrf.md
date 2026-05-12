@@ -81,6 +81,27 @@ The root cause is destination-resolution drift.
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create an `ssrf_destination_resolution` gate for each URL-fetching feature, webhook, preview, renderer, crawler, import flow, or HTTP client wrapper that can cross a network trust boundary.
+
+The gate is not `covered` until the audit records:
+- source-to-fetch mapping for user-controlled URL, host, path, headers, redirect targets, webhooks, uploaded documents, rendered HTML, imported metadata, or queued fetch jobs
+- parser and client semantics for URL normalization, userinfo, IDNA, dots, ports, IPv6, decimal/hex/octal IPs, redirects, DNS resolution, proxy use, timeout, response-size limits, and scheme handling
+- egress and deployment context that changes reachability: cloud metadata, service mesh, loopback, container networks, internal admin ports, proxy credentials, and outbound allowlists
+- validation timing: before parse, after canonicalization, after DNS, after redirect, and at final request target
+- negative evidence that redirects, DNS rebinding, alternate IP encodings, parser/client drift, proxy routing, and dangerous schemes cannot reach internal or credential-bearing targets
+- proof obligations for runtime DNS, proxy, network policy, or renderer behavior that cannot be verified from code/config
+
+Record design/implementation conflicts when:
+- docs claim external-only fetching but deployment or client behavior can reach internal networks
+- validation uses one parser while the HTTP client, redirect stack, proxy, renderer, or DNS layer interprets the target differently
+- webhook edit validation is stronger than webhook fire, retry, or queued execution validation
+
+If the final destination cannot be reconciled through redirects, DNS, proxy, and client normalization, keep the gate `partial` or `blocked` and create coverage debt.
+
+---
+
 ## Grep Starting Points
 
 ```bash

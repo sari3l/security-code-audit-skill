@@ -107,6 +107,27 @@ NoOpPasswordEncoder.getInstance();
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create an `authentication_identity_resolution` gate for each login, session, token, reset, invite, magic-link, OTP, MFA, API-key, gateway-auth, or privileged reauthentication flow.
+
+The gate is not `covered` until the audit records:
+- every credential source and precedence rule: cookie, header, query token, bearer token, forwarded identity, API key, refresh token, remember-me token, reset token, OTP, magic link, and service credential
+- the canonical subject selected by gateway, proxy, middleware, library, framework, and application code, including duplicate header/cookie behavior and first-win/last-win parsing where relevant
+- dependency semantics for JWT/session libraries, password hashing, cookie parsing, token revocation, refresh rotation, MFA state, rate limiter, reset-token storage, and gateway header trust
+- lifecycle checks for creation, rotation, expiry, revocation, logout, password change, role change, account recovery, MFA enrollment, and privilege elevation
+- negative evidence that fallback paths, legacy API versions, mobile/admin/support flows, failure handlers, and multiple credential sources cannot weaken identity assurance
+- proof obligations for upstream gateway guarantees, key management, runtime cookie settings, or external IdP configuration that cannot be verified locally
+
+Record design/implementation conflicts when:
+- docs claim MFA, gateway-only identity, one-time recovery, or token revocation but code or config leaves alternate weaker paths
+- one layer verifies a token while a later layer chooses identity from an unverified copy, fallback claim, query parameter, or trusted header
+- logout, password change, or role change invalidates one credential family but not another equivalent path
+
+If effective identity cannot be reconciled across all credential sources and layers, keep the gate `partial` or `blocked` and create coverage debt.
+
+---
+
 ## Grep Starting Points
 
 ```bash

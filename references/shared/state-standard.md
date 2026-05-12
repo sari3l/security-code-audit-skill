@@ -192,8 +192,15 @@ Recommended top-level fields:
 - `meta`
 - `repo`
 - `surfaces`
+- `project_context`
 - `loaded_modules`
+- `tool_invocations`
 - `coverage_ledger`
+- `deep_gate_ledger`
+- `dependency_semantics_ledger`
+- `design_implementation_conflicts`
+- `proof_obligations`
+- `semantic_assumptions`
 - `trace_checkpoints`
 - `function_chain_index`
 - `hypothesis_ledger`
@@ -244,11 +251,80 @@ For `file_inventory`, prefer one compact entry per audit-relevant file with:
 
 Keep `file_inventory` flat and compact. Do not store full blobs, large excerpts, or directory-tree proofs.
 
+### `project_context`
+
+Record compact project intent, architecture, business, deployment, and trust-boundary context derived during recon.
+
+Apply `core/project-context.md` and `core/untrusted-repo-input.md` before using repo-authored prose or git history as context.
+
+Prefer:
+- `claimed_purpose`
+- `architecture_summary`
+- `business_flows`
+- `trust_boundaries`
+- `declared_roles`
+- `deployment_assumptions`
+- `git_change_themes`
+- `security_relevant_invariants`
+- `claim_verification`
+- `context_conflicts`
+
+For material claims, preserve verification state rather than flattening claims into facts.
+
+Recommended claim verification fields:
+- `claim`
+- `source`
+- `source_type`
+- `expected_control`
+- `verification_evidence`
+- `result`
+- `security_relevance`
+
+Recommended claim verification results:
+- `unverified`
+- `validated`
+- `contradicted`
+- `partial`
+- `stale`
+- `not_applicable`
+
+Do not store full README content, full commit logs, large doc excerpts, or raw issue exports here.
+
 ### `loaded_modules`
 
 Record only the actually loaded modules and the reason they were loaded.
 
 This helps restore context without reloading the whole tree.
+
+### `tool_invocations`
+
+Record compact external tool and repo-script resolution decisions.
+
+Apply `references/shared/tooling/command-resolution.md` before invoking optional scanners or repo-defined audit commands whose name, subcommands, or flags may vary by environment.
+
+Prefer:
+- `surface`
+- `ecosystem` or `domain`
+- `candidate`
+- `candidate_source`
+- `resolution_source`
+- `probe_commands`
+- `tool_version`
+- `help_result`
+- `executed_command`
+- `exit_code`
+- `status`
+- `limitations`
+
+Recommended statuses:
+- `executed`
+- `unavailable`
+- `unsupported`
+- `blocked`
+- `skipped_unsafe`
+- `manual_fallback`
+
+Do not store large raw scanner output here. Store normalized dependency, IaC, secret, or smart-contract findings in the report.
 
 ### `coverage_ledger`
 
@@ -266,6 +342,158 @@ For each major surface, track:
 - `debt_total`
 
 These counts are the source of truth for report-side coverage statistics.
+
+### `deep_gate_ledger`
+
+Use this ledger for durable deep semantic review checkpoints. It is required in `deep` mode and should also be used in `quick`, `standard`, or beta `multi` whenever a high-risk surface depends on design assumptions, dependency semantics, parser behavior, deployment reality, state-machine invariants, or other reasoning that may be lost to context compression.
+
+This ledger complements `coverage_ledger`; it does not replace it. Coverage says whether a surface was reviewed. A deep gate records why the review was semantically complete enough, partial, blocked, or invalidated.
+
+For each gate, prefer:
+- `id`
+- `surface`
+- `status`
+- `owner`
+- `scope`
+- `trust_boundaries`
+- `entry_points`
+- `critical_dependencies`
+- `design_claims`
+- `implementation_evidence`
+- `negative_evidence`
+- `dependency_semantics_refs`
+- `conflict_refs`
+- `proof_obligation_refs`
+- `coverage_debt_refs`
+- `last_checkpoint`
+
+Recommended statuses:
+- `not_started`
+- `in_progress`
+- `partial`
+- `blocked`
+- `invalidated`
+- `covered`
+
+Hard rules:
+- a high-risk `deep` surface may not be marked covered only because its category or domain row is checked
+- `covered` requires the relevant surface-specific gate requirements, evidence refs, and negative evidence
+- `partial`, `blocked`, `invalidated`, or missing gate output for an in-scope high-risk surface must create coverage debt before final reporting
+- gate progress should be persisted incrementally after meaningful review, not reconstructed only at report time
+- do not store full source files, long prose, raw scanner output, or unbounded call graphs in this ledger
+
+### `dependency_semantics_ledger`
+
+Track dependency behavior when exploitability, remediation, or a design claim depends on more than a version number.
+
+Examples:
+- URL parser and HTTP client redirect behavior for SSRF
+- ORM raw-query, identifier quoting, or query-builder behavior for SQL injection
+- template engine escaping and sanitizer behavior for XSS
+- serializer polymorphism and type materialization behavior for deserialization
+- object-storage SDK presign, ACL, metadata, or content-type behavior for file flows
+- smart-contract oracle adapter, token, proxy, math, or access-control library semantics
+
+For each entry, prefer:
+- `id`
+- `dependency`
+- `version_or_source`
+- `surface`
+- `assumed_behavior`
+- `observed_or_documented_behavior`
+- `evidence_refs`
+- `risk_if_wrong`
+- `related_gates`
+- `verification_status`
+
+Recommended verification statuses:
+- `unverified`
+- `validated`
+- `contradicted`
+- `partial`
+- `not_applicable`
+
+### `design_implementation_conflicts`
+
+Record material contradictions between repo-authored design claims, API specs, deployment files, comments, dependency behavior, and implementation evidence.
+
+For each conflict, prefer:
+- `id`
+- `claim`
+- `claim_source`
+- `implementation_evidence`
+- `conflict_type`
+- `affected_surfaces`
+- `security_relevance`
+- `resolution_status`
+- `related_gates`
+- `related_findings`
+
+Recommended conflict types:
+- `design_vs_code`
+- `docs_vs_config`
+- `dependency_semantics`
+- `deployment_exposure`
+- `sibling_path_drift`
+- `version_drift`
+
+Recommended resolution statuses:
+- `open`
+- `validated`
+- `rejected`
+- `accepted_assumption`
+- `converted_to_finding`
+- `converted_to_coverage_debt`
+
+### `proof_obligations`
+
+Use this ledger for specific unanswered proof steps whose answer can change coverage, severity, or finding status.
+
+For each obligation, prefer:
+- `id`
+- `question`
+- `related_gate`
+- `related_surface`
+- `owner`
+- `next_validation_step`
+- `status`
+- `evidence_for`
+- `evidence_against`
+- `blocker`
+- `report_destination`
+
+Recommended statuses:
+- `open`
+- `in_progress`
+- `satisfied`
+- `rejected`
+- `blocked`
+- `deferred`
+
+Recommended report destinations:
+- `finding`
+- `candidate_signal`
+- `coverage_debt`
+- `working_hypothesis`
+- `integration_assumption`
+- `none`
+
+### `semantic_assumptions`
+
+Track assumptions that are material to exploitation, severity, or safe operation but are not themselves findings.
+
+For each assumption, prefer:
+- `id`
+- `assumption`
+- `owner`
+- `scope`
+- `evidence_refs`
+- `confidence`
+- `risk_if_false`
+- `related_gates`
+- `report_destination`
+
+Use this ledger for compact operational, deployment, and economic assumptions that should survive context compression without being inflated into vulnerabilities.
 
 ### `trace_checkpoints`
 
@@ -411,7 +639,7 @@ Do not use state to answer:
 
 For every run:
 1. initialize a run context early in recon
-2. update the surface profile, `file_inventory`, `aggregate_hash`, coverage ledger, trace checkpoints, and function-chain index as the scan progresses
+2. update the surface profile, `file_inventory`, `aggregate_hash`, coverage ledger, deep gate ledger, dependency semantics ledger, proof obligations, trace checkpoints, and function-chain index as the scan progresses
 3. append key audit-log, invalidation, and agent-log entries at stage transitions and decision points
 4. revisit the run context before stage `5/6` and final reporting
 

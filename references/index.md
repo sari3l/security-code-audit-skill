@@ -33,6 +33,9 @@ Execution strategy files live in `../modes/` and quality-control files live in `
 - `references/shared/dependencies/index.md`
   Ecosystem-specific dependency audit flows, native tooling choices, and future SCA integration guidance.
 
+- `references/shared/tooling/command-resolution.md`
+  Shared command-resolution standard for optional external scanners, repo-defined audit scripts, ecosystem audit commands, IaC scanners, secret scanners, smart-contract tools, SBOM tools, and CI scanner wrappers.
+
 - `references/shared/audit-artifact-initialization.md`
   Shared ignore maintenance and directory-bootstrap rules for `.security-code-audit-reports/` and `.security-code-audit-state/`.
 
@@ -62,6 +65,7 @@ Execution strategy files live in `../modes/` and quality-control files live in `
 - Scan-state continuity: load `references/shared/state-standard.md` for every run, then keep richer detail when the repo is large, long-running, beta `multi`, or state-worthy smart-contract.
 - Phase 2: use the chosen domain as the main audit map, then pull the relevant shared artifact, dependency, and exploit modules.
 - C8 and supply-chain review: load `references/shared/dependencies/index.md`, then the ecosystem files matching detected manifests and lock files. If external SCA output exists, also load `references/shared/dependencies/sca-integration.md`.
+- External tool execution: load `references/shared/tooling/command-resolution.md` before running optional scanners or repo-defined audit commands whose availability, subcommands, or flags may vary.
 - Verification:
   - use `references/application/exploits/index.md` for application findings
   - use `references/smart-contract/exploits/index.md` for contract findings

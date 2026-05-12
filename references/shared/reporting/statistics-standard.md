@@ -15,6 +15,8 @@ Statistics should support triage and coverage, not just make the report look com
 - skill optimization suggestion count when historical misses exist
 - applicable categories or domain surfaces by state: reviewed, partial, blocked, invalidated, time-boxed, not applicable
 - security-relevant functions in scope vs function chains recorded
+- deep semantic gates by state when `deep` mode or beta `multi` used them: covered, partial, blocked, invalidated, not started
+- open proof obligations by destination: finding, candidate signal, coverage debt, working hypothesis, integration assumption, none
 - number of API versions reviewed
 - number of template/view files reviewed
 - number of config and deployment files reviewed when present
@@ -42,6 +44,7 @@ Statistics should support triage and coverage, not just make the report look com
 - keep repeated pattern counts aligned with the actual finding list and explain when one finding intentionally groups multiple downstream exploit paths
 - if a category is shallow or partial, reflect that in coverage notes rather than inflating counts
 - keep function-chain counts aligned with coverage debt so missing chains are visible, not hidden
+- keep deep-gate counts aligned with coverage debt so incomplete semantic review is visible, not hidden behind a covered category row
 - if historical misses exist, say lifecycle counts were withheld and do not zero-fill `Fixed since last scan`
 - do not mix candidate signals into confirmed severity counts
 - do not mix supplemental-section items into confirmed finding, severity, or coverage-debt counts

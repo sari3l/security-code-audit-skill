@@ -17,7 +17,7 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 | Oracle / Market Abuse | Price source, freshness, manipulation resistance, liquidation math, and same-tx reserve dependence reviewed? Economic exploit path considered? | | |
 | Upgradeability And Deployment | Proxy type identified? Upgrade auth and init reachability reviewed? Storage-layout risk considered? Deployment and environment assumptions checked? | | |
 | Token Integration Semantics | ERC20/777/721/1155 behavior assumptions reviewed? Non-standard return values, hooks, and transfer semantics handled safely? | | |
-| Supporting Shared Surfaces | Dependency/tooling, infrastructure, config, logging/monitoring, and off-chain trust reviewed where present? | | |
+| Supporting Shared Surfaces | Dependency/tooling, infrastructure, config, logging/monitoring, and off-chain trust reviewed where present? Command resolution applied before optional tools such as Foundry/Hardhat scripts, Slither, Mythril, dependency scanners, or IaC/container scanners? | | |
 
 ---
 
@@ -52,6 +52,7 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 ### Deep Audit
 
 - all applicable surfaces covered
+- every applicable high-risk smart-contract surface has a reconciled deep semantic gate in audit state, especially oracle, accounting, signature, upgrade, token integration, and multi-contract trust surfaces
 - accounting model reconstructed end to end
 - attacker profit path analyzed for market-sensitive findings
 - deployment, upgrade, signer, and off-chain trust assumptions reviewed in detail

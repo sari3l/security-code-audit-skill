@@ -12,6 +12,7 @@
 ## Preferred Audit Paths
 
 Use the package manager the repo actually uses.
+Apply `references/shared/tooling/command-resolution.md` before running repo scripts or package-manager audit commands. Treat the commands below as candidates to confirm with the installed tool's help output.
 
 ```bash
 npm audit --package-lock-only

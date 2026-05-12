@@ -200,7 +200,7 @@ grep -rn '<%= raw|!=|!=\\s' app/views --include="*.erb" --include="*.haml" --inc
 ## C8: Dependencies
 
 ### Review Checklist
-- Run `bundle audit` and `brakeman`.
+- Use `references/shared/tooling/command-resolution.md` before running `bundle audit`, `brakeman`, or repo-defined Ruby security tasks.
 - Review gems providing auth, file upload, markdown rendering, background jobs, and serialization.
 - Flag EOL Ruby and Rails versions even when no single sink is obvious.
 - Check vendored JavaScript and admin consoles, not just Gem dependencies.
@@ -208,8 +208,7 @@ grep -rn '<%= raw|!=|!=\\s' app/views --include="*.erb" --include="*.haml" --inc
 ### Detection
 
 ```bash
-bundle audit
-brakeman -q
+# Resolve and confirm Ruby audit tooling before execution.
 grep -rn 'ruby "|gem "rails"|gem "devise"|gem "sidekiq"|gem "carrierwave"|gem "paperclip"' Gemfile Gemfile.lock
 ```
 

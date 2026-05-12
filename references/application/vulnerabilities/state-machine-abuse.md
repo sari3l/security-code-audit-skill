@@ -22,6 +22,21 @@ Use this file when workflows depend on explicit states, prerequisite transitions
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create a `state_machine_integrity` gate for each workflow whose security depends on explicit states, prerequisite transitions, terminal states, approvals, or privileged state changes.
+
+The gate is not `covered` until the audit records:
+- valid state graph, prerequisite checks, terminal states, rollback or cancellation rules, and privileged override paths
+- every transition entry path: public handler, admin/support action, worker, scheduler, webhook, import/export, retry, and compensating job
+- dependency semantics for workflow engines, ORM transactions, queue delivery, optimistic/pessimistic locking, and enum/state validation
+- negative evidence that body-bound status fields, mass assignment, alternate routes, replay, out-of-order callbacks, and background jobs cannot skip or repeat protected transitions
+- proof obligations for runtime feature flags, external callback ordering, or deployment-specific workers that cannot be verified locally
+
+If the transition graph cannot be reconciled across all mutation paths, keep the gate `partial` and create coverage debt.
+
+---
+
 ## Grep Starting Points
 
 ```bash

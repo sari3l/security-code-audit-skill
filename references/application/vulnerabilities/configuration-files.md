@@ -80,6 +80,20 @@ add_header Access-Control-Allow-Origin *;
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create a `configuration_reality` gate when configuration affects authentication, authorization, exposure, secrets, parser behavior, rate limiting, CORS, TLS, proxy trust, debug behavior, or dependency/runtime selection.
+
+The gate is not `covered` until the audit records:
+- which config files, overlays, CI variables, container manifests, proxy rules, and startup scripts actually define runtime behavior
+- dependency semantics for framework environment selection, proxy header trust, CORS matching, cookie/security header defaults, TLS verification, feature flags, and debug/error handling
+- negative evidence that sample/dev config, deprecated route mounts, gateway rules, broad CORS, spoofable proxy headers, or insecure defaults do not reach the reviewed environment
+- proof obligations for secrets managers, CI-provided variables, production overlays, or host-level proxy config that cannot be verified locally
+
+Record design/implementation conflicts when docs or app code assume secure production config but checked config files, compose, Helm, Terraform, CI, or proxy evidence contradict that assumption. If the real runtime config cannot be identified and it affects risk, create coverage debt or an integration assumption.
+
+---
+
 ## Grep Starting Points
 
 ```bash

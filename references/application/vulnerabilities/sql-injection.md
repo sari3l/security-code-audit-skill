@@ -89,6 +89,27 @@ await context.Users.FromSqlRaw(sql).ToListAsync();
 
 ---
 
+## Deep Semantic Gate
+
+In `deep` mode, create a `sql_structure_control` gate for each query-builder family, raw SQL helper, reporting/export path, dynamic-filter system, or repository layer that accepts user-influenced input.
+
+The gate is not `covered` until the audit records:
+- every source that can influence SQL values, identifiers, operators, clauses, filters, sort order, table names, schemas, aliases, limits, offsets, or raw fragments
+- every sink family: raw query APIs, ORM escape hatches, dynamic report builders, analytics jobs, migrations/imports, scheduled SQL, and stored-data reuse
+- dependency semantics for the database driver, ORM, query builder, placeholder API, identifier quoting, raw fragment API, and framework filter binding
+- explicit separation of value parameterization from identifier/clause allowlisting; parameterized values do not prove dynamic identifiers, `ORDER BY`, `GROUP BY`, `LIMIT`, or operators are safe
+- negative evidence showing that each dynamic identifier, sort field, operator, filter key, and raw fragment is mapped to fixed server-side SQL or otherwise constrained before query construction
+- proof obligations for generated SQL, stored second-order flows, or runtime-only query builders that cannot be inspected statically
+
+Record design/implementation conflicts when:
+- documentation or code comments claim "parameterized queries" while the dangerous control point is an identifier, operator, sort, or raw fragment
+- an ORM helper appears safe at one call site but accepts raw fragments or disabled escaping at another
+- admin/reporting/internal jobs reuse user-controlled stored values under a different trust assumption
+
+If dynamic SQL structure cannot be reconciled from source to final query text, keep the gate `partial` or `blocked` and create coverage debt.
+
+---
+
 ## Grep Starting Points
 
 ```bash

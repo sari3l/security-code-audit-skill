@@ -49,6 +49,9 @@ Load core modules only when their controls are actively needed:
 - `core/surface-profile.md`
   Load during stage `2/6` recon, then maintain one compact surface profile for the rest of the run.
 
+- `core/project-context.md`
+  Load during stage `2/6` recon when repo-authored docs, git metadata, deployment notes, API specs, CI files, or recent change history can clarify project intent, business invariants, or trust-boundary claims. Apply `core/untrusted-repo-input.md` first.
+
 - `references/shared/state-standard.md`
   Load during recon for every run, then keep a compact run context so coverage, function-chain, and agent-log precision survive context compression.
 
@@ -57,6 +60,9 @@ Load core modules only when their controls are actively needed:
 
 - `core/coverage.md`
   Load before Phase 2 scanning, when considering early completion, and again before coverage verification in stage `5/6`.
+
+- `core/deep-semantic-controls.md`
+  Load in `deep` mode before high-risk surface review begins, and in beta `multi` before assigning workers to semantic review. Also load in `quick` or `standard` when a high-risk surface is unusually complex, prior coverage debt cites semantic ambiguity, or the finding depends on dependency behavior, deployment assumptions, design/implementation conflicts, or proof obligations that must survive context compression.
 
 - `core/findings.md`
   Load when converting notes into findings, grouping repeated locations, matching history, or deduplicating native and SCA dependency issues.
@@ -116,6 +122,9 @@ Route references by detected need:
 - `references/shared/dependencies/index.md`
   Load only when manifests, lock files, vendored packages, images, or SCA artifacts exist.
 
+- `references/shared/tooling/command-resolution.md`
+  Load before invoking optional external audit tools, repo-configured scanner scripts, ecosystem audit commands, secret scanners, IaC scanners, smart-contract tools, SBOM tools, or CI scanner wrappers.
+
 - dependency ecosystem modules
   Load only for ecosystems actually present in the repo.
 
@@ -144,6 +153,7 @@ After recon, route modules from the surface profile instead of generic intuition
 - logging or audit-event surface -> `references/application/vulnerabilities/logging-monitoring.md`
 - Docker, compose, k8s, Helm, Terraform, cloud manifests -> `references/application/vulnerabilities/infrastructure.md` and `references/application/vulnerabilities/configuration-files.md`
 - manifests, lock files, SCA output -> `references/shared/dependencies/index.md` plus only matching ecosystem files
+- optional external scanner or repo-defined audit command -> `references/shared/tooling/command-resolution.md` before execution
 - markdown renderers, wikis, docs previews, rich comments -> `references/shared/artifacts/index.md`, `references/shared/artifacts/markdown.md`, and `references/application/vulnerabilities/xss.md`
 - `SKILL.md`, `AGENTS.md`, prompt templates, tool manifests, repo-authored instruction files, or skill-oriented setup flows -> `references/shared/artifacts/index.md`, `references/shared/artifacts/skill-files.md`, and `references/application/vulnerabilities/prompt-injection.md`
 - OpenAPI, Swagger, Postman, Insomnia, GraphQL schema, AsyncAPI, or environment collections -> `references/shared/artifacts/index.md`, `references/shared/artifacts/api-specs.md`, and the matching API/authz/data-exposure modules

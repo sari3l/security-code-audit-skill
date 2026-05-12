@@ -54,7 +54,7 @@ In addition to the shared base recon in `SKILL.md`, standard mode requires:
 - enumerate repeated vulnerable patterns across the codebase
 - group multiple downstream exploit paths into one finding only when the failed control, trust boundary, and minimal fix are materially shared
 - surface operator-significant exploit paths clearly in the title, `Attack Vector`, `Impact`, `Related Findings`, or `Attack Chains` instead of splitting findings by default
-- run native dependency audit commands for detected ecosystems when lock files/manifests exist, and document any tooling blockers instead of skipping C8
+- resolve native, external, or repo-configured dependency audit commands with `references/shared/tooling/command-resolution.md` when lock files/manifests exist, then run the confirmed command or document the blocker/manual fallback instead of skipping C8
 
 If the active profile is `smart-contract`, treat `references/smart-contract/index.md` as the primary audit spine and use only the shared categories that genuinely map to the contract trust model.
 
