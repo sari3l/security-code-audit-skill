@@ -10,6 +10,7 @@ Prioritize Critical and High severity issues only. Do not attempt full category 
 
 Quick mode is an `incremental-first` discovery pass, not a remediation-retest mode.
 Use current diffs plus audit state to reduce scope when that comparison is reliable, but do not let prior reports suppress current findings.
+Audit state may provide advisory code facts and prior inventories for orientation; missing facts never prove a surface safe.
 
 `incremental-first` means:
 - use change detection to decide which files and shared surfaces enter quick scope
@@ -82,6 +83,7 @@ For git-backed repos:
 
 For non-git repos:
 - compare the current audit-relevant `surfaces.file_inventory` against the latest usable state inventory and `aggregate_hash`
+- use current `code_fact_snapshot.limitations` to decide whether dynamic, generated, reflected, framework-magic, or artifact-mediated behavior makes the incremental baseline unreliable
 - if the state inventory is missing, stale, or structurally incomparable, ask the user whether to expand to full quick scope before continuing
 
 Final quick scope is the union of:
@@ -97,6 +99,7 @@ Ask the user whether to expand to full quick scope when any of these is true:
 - a critical shared surface changed
 
 If the user declines expansion, continue in `strict incremental` mode and say explicitly that the result covers only change-impacted quick scope rather than a full quick audit of the current repo.
+Carry unresolved high-signal observations as `evidence_observations` and route them before reporting, even when strict incremental mode keeps the report compact.
 
 Critical shared surfaces include:
 - auth, authz, session, and permission middleware
@@ -149,6 +152,7 @@ After the current-code quick pass is complete, perform a deferred history replay
 - brief history file in `.security-code-audit-reports/`
 
 Quick mode may keep the report compact, but it must still preserve exploitability, evidence, remediation, coverage debt, and historical comparison when material.
+It must also preserve material evidence observations, tool-output blockers, negative evidence, and schema gaps when they affect current quick-scope confidence.
 
 Critical and High findings still require evidence and concrete PoC when feasible.
 
@@ -163,4 +167,5 @@ Quick mode is complete when:
 - obvious Critical/High findings are documented
 - repeated high-risk instances have been enumerated
 - any `strict incremental` limitation or expansion refusal is recorded when applicable
+- material evidence observations are routed to confirmed findings, candidate signals, negative evidence, coverage debt, working hypotheses, or schema-gap suggestions
 - report output is generated

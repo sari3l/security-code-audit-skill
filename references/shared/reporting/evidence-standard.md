@@ -8,6 +8,8 @@ Use this standard to decide whether a suspicious pattern becomes a confirmed fin
 
 Evidence handling exists to reduce false positives without suppressing useful audit intuition.
 
+Audit state may contain `evidence_observations`, a flexible evidence envelope for raw AI observations, tool output, blockers, negative evidence, and unknown-shaped signals. These observations are inputs to evidence review, not findings by themselves.
+
 This standard separates:
 - `Confirmed Findings`
   Issues with enough code, exploitability, and impact evidence to enter the main findings list.
@@ -15,6 +17,8 @@ This standard separates:
   High-signal suspicious cases that still need stronger proof.
 - `Negative Evidence`
   Concrete reasons a suspicious case was not promoted to a confirmed finding.
+- `Schema Gaps`
+  High-signal observations that do not yet fit known labels, source/sink families, or report shapes.
 
 ---
 
@@ -67,6 +71,8 @@ Close a candidate with negative evidence when the audit finds a concrete reason 
 
 Promote `Candidate` to `Confirmed` only when the missing proof has been filled.
 
+Promote an `evidence_observation` only after it has been routed through the same evidence bar as any other signal.
+
 Do not promote based on:
 - pattern match alone
 - generic sink presence alone
@@ -79,6 +85,8 @@ When in doubt:
 - keep it as `Candidate`
 - record the negative evidence or blocker
 - note what would be needed to confirm it
+
+If the concern is unfamiliar rather than weak, preserve it as `schema_gap`, `unstructured_hypothesis`, or `custom:*` in audit state and route it to a candidate signal, working hypothesis, coverage debt, or `Skill Optimization Suggestions` instead of dropping it.
 
 ## Instruction-Bearing Artifact Notes
 
@@ -124,3 +132,5 @@ Every candidate should record:
 - `Candidate Signals` section contains unresolved high-signal cases.
 - `Negative Evidence` may be attached to a candidate or summarized separately.
 - Do not inflate candidate counts into confirmed severity totals.
+- Do not inflate evidence-observation counts into confirmed severity totals.
+- When schema gaps reveal that the skill vocabulary failed to preserve or route a meaningful signal cleanly, include a concise `Skill Optimization Suggestions` note.

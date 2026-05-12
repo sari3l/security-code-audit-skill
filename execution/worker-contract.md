@@ -31,6 +31,10 @@ Every worker handoff should include:
   - `loaded_modules`
 - `project_context_delta`
   - verified claims, rejected claims, relevant invariants, git-change themes, and context conflicts discovered inside the owned scope
+- `code_fact_delta`
+  - newly observed entrypoints, routes, candidate sources, candidate sinks, state transitions, artifact surfaces, parser notes, and limitations inside the owned scope
+- `evidence_observation_delta`
+  - raw observations, tool-output summaries, blockers, negative evidence, schema gaps, and unknown-shaped signals that need supervisor routing
 - `tool_invocation_delta`
   - command-resolution probes, executed scanner commands, skipped unsafe scripts, blockers, and manual fallbacks inside the owned scope
 - `coverage_delta`
@@ -53,6 +57,8 @@ Every worker handoff should include:
   - environment, ownership, or proof blockers that prevented stronger confirmation
 
 Do not bury any of these inside a free-form narrative.
+
+Workers must preserve unfamiliar but high-signal evidence as `evidence_observation_delta` with open labels such as `custom:*`; they should not discard it because the current handoff vocabulary is too narrow.
 
 ---
 

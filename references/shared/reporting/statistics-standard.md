@@ -10,6 +10,8 @@ Statistics should support triage and coverage, not just make the report look com
 - findings by category or domain surface
 - findings by status: new, recurring, regression, fixed since last scan, but only when the historical-miss gate passes
 - historical miss count
+- evidence observations by kind and routed/unrouted status when material
+- schema gap count when nonzero
 - candidate signal count
 - coverage debt item count
 - skill optimization suggestion count when historical misses exist
@@ -30,6 +32,7 @@ Statistics should support triage and coverage, not just make the report look com
 - number of affected endpoints for repeated patterns
 - number of attack chains identified
 - number of open working hypotheses in Deep or beta `multi` reports
+- number of code fact limitations that became coverage debt
 - number of agents contributing state in beta `multi`
 - number of operational risks, integration assumptions, or engineering notes when these sections are present
 - number of secrets or credentials exposed
@@ -47,4 +50,5 @@ Statistics should support triage and coverage, not just make the report look com
 - keep deep-gate counts aligned with coverage debt so incomplete semantic review is visible, not hidden behind a covered category row
 - if historical misses exist, say lifecycle counts were withheld and do not zero-fill `Fixed since last scan`
 - do not mix candidate signals into confirmed severity counts
+- do not mix evidence observations or schema gaps into confirmed severity counts
 - do not mix supplemental-section items into confirmed finding, severity, or coverage-debt counts

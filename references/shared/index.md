@@ -21,7 +21,7 @@ These files are not a third audit domain. They are supporting layers that can be
   Shared command-resolution standard for optional external scanners and repo-defined audit commands.
 
 - `references/shared/state-standard.md`
-  Mandatory machine-readable audit-state storage, trace-checkpoint persistence, function-chain inventory, and re-audit guidance for every scan.
+  Mandatory machine-readable audit-state storage, advisory code fact snapshots, flexible evidence observations, trace-checkpoint persistence, function-chain inventory, and re-audit guidance for every scan.
 
 - `references/shared/reporting/index.md`
   Findings, severity, remediation, coverage, history, and reporting standards.
@@ -34,7 +34,7 @@ These files are not a third audit domain. They are supporting layers that can be
 - load `dependencies/` when manifests, lock files, vendored packages, images, SBOMs, or SCA output exist
 - load `tooling/command-resolution.md` before invoking optional external scanners, repo-configured audit scripts, ecosystem audit commands, IaC scanners, secret scanners, smart-contract tools, SBOM tools, or CI scanner wrappers
 - load `audit-artifact-initialization.md` immediately before first creating `.security-code-audit-reports/` or `.security-code-audit-state/`
-- load `state-standard.md` for every run; large, long-running, beta `multi`, or state-worthy smart-contract scans should preserve richer detail
+- load `state-standard.md` for every run; large, long-running, beta `multi`, or state-worthy smart-contract scans should preserve richer detail, but even compact runs should preserve advisory code facts and high-signal evidence observations
 - load `reporting/` near coverage verification, history comparison, severity calibration, and final report generation
 
 Tracing methodology itself lives in `core/bidirectional-tracing.md`, not in `shared/`.

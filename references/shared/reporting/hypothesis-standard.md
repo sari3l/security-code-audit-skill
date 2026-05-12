@@ -12,6 +12,7 @@ Use this standard for material unresolved hypotheses that should remain visible 
 - combinations of individually small weaknesses that may become serious when chained
 - control-boundary explanations that may connect multiple candidates
 - high-signal theories that could materially change risk if validated
+- unknown-shaped observations that appear security-relevant but do not yet fit the existing finding, candidate, or coverage vocabulary
 
 They are not a substitute for `Candidate Signals`.
 
@@ -74,6 +75,7 @@ Do not include `Rejected` items in the final report:
 - Tie each hypothesis to actual surfaces, files, or trust boundaries already observed.
 - Make the missing proof step explicit.
 - Tie hypotheses back to deep semantic gates or proof obligations when those led to the unresolved model.
+- Tie hypotheses back to evidence-observation ids when the model began as a flexible evidence-envelope item.
 - Prefer one hypothesis per attack or control model; do not merge unrelated theories.
 - Do not restate confirmed findings here.
 - If the hypothesis becomes a concrete code-level suspicion, move it into `Candidate Signals`.
@@ -91,6 +93,7 @@ Do not include `Rejected` items in the final report:
 - **Related Surfaces**: [routes, modules, contracts, trust boundaries]
 - **Related Findings / Chain Inputs**: [findings or candidate signals that compose]
 - **Related Deep Gates / Proof Obligations**: [gate ids or proof obligation ids when material]
+- **Related Evidence Observations**: [observation ids when material]
 - **Why It Matters**: [What risk changes if this is true]
 - **Evidence For**: [Observed facts that support the hypothesis]
 - **Evidence Against / Friction**: [Observed facts that weaken it or blockers that remain]

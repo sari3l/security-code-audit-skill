@@ -10,6 +10,8 @@ Merge worker output into one consistent result set with low duplication and stab
 
 Before a candidate becomes a finding, the supervisor must normalize:
 - project-context claim verification, business invariants, git change themes, and context conflicts
+- code fact deltas, including limitations and unknown dynamic or generated surfaces
+- evidence observation deltas, including raw AI observations, tool output, blockers, negative evidence, schema gaps, and unknown-shaped signals
 - tool invocation records, command-resolution blockers, skipped unsafe scripts, and manual fallbacks
 - coverage totals and ownership
 - deep gate status, dependency semantics, design/implementation conflicts, proof obligations, semantic assumptions, evidence refs, negative evidence, and coverage debt refs
@@ -31,7 +33,8 @@ Before a candidate becomes a finding, the supervisor must normalize:
 2. same vulnerability family plus same route or resource family
 3. same dependency advisory normalized across native tooling and external SCA
 4. same tool invocation or scanner result normalized across workers
-5. compound chain correlation when multiple small findings together create materially higher impact
+5. same evidence observation or schema gap reported across workers
+6. compound chain correlation when multiple small findings together create materially higher impact
 
 ## Conflict Rules
 
@@ -46,6 +49,7 @@ Before a candidate becomes a finding, the supervisor must normalize:
 - do not mark a surface fully covered until merged function-chain counts and coverage totals agree
 - do not mark a high-risk deep gate `covered` until its surface-specific requirements, evidence refs, negative evidence, dependency semantics, and open proof obligations have been reconciled
 - do not treat a scanner as run unless command resolution and execution evidence are present, or a blocker/manual fallback is recorded
+- do not drop a worker observation because it does not fit existing vulnerability labels; keep it as `schema_gap`, `unstructured_hypothesis`, or `custom:*` until the supervisor routes it
 
 ## Finalization Rules
 
@@ -54,6 +58,7 @@ Before a candidate becomes a finding, the supervisor must normalize:
 - only the supervisor may assign compound chain severity or collapse multiple worker findings into one shared root-cause finding
 - only the supervisor may finalize the shared coverage summary, merged function-chain section, and merged agent-log-backed audit state
 - only the supervisor may finalize shared `deep_gate_ledger`, `dependency_semantics_ledger`, `design_implementation_conflicts`, `proof_obligations`, and `semantic_assumptions`
+- only the supervisor may finalize shared `code_fact_snapshot` and `evidence_observations`
 - apply `core/fingerprints.md` before `references/shared/reporting/history-standard.md`
 - apply `core/severity.md` before `references/shared/reporting/severity-guide.md`
 - attach multiple locations to one finding only when fingerprint and remediation match
@@ -70,5 +75,6 @@ For each merged finding, keep:
 - exploit notes
 - related findings or chain refs when material
 - related function-chain refs when material
+- related evidence-observation refs when material
 - minimal fix
 - surviving working-hypothesis notes when a chain or shared-root-cause theory remains materially unresolved

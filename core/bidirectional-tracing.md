@@ -12,6 +12,7 @@ Use bidirectional tracing to:
 - avoid traditional one-way graph flooding from every apparent source
 - converge on real attack paths by searching from both source and sink sides
 - preserve compact trace checkpoints in audit state without turning `searched` into `safe`
+- link trace checkpoints to evidence observations when a path is still a candidate, blocked, negatively evidenced, or schema-conflicting
 - emit bounded per-function chain records that later attack-chain review can reuse
 - stop expanding when the current path is bounded, not merely unexplored
 - reason from parser, normalization, canonicalization, and trust-boundary behavior instead of memorizing payload lists
@@ -151,6 +152,7 @@ Hard rules:
 - `bounded` means "current evidence says more expansion is low value unless assumptions change"
 - `invalidated` means an upstream assumption, helper, parser, policy, or shared boundary changed enough that the old checkpoint can no longer be trusted
 - partial or version-specific mitigations should narrow confidence, not erase the checkpoint
+- trace gaps, parser surprises, or unfamiliar source/sink shapes should become `evidence_observations` rather than being lost because the model does not fit an expected category
 
 State should speed up re-orientation, not suppress fresh review.
 

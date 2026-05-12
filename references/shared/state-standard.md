@@ -10,6 +10,8 @@ This module defines the machine-readable audit state stored under `.security-cod
 
 Audit state exists to:
 - preserve the current scan's compact working context when repo size or scan length would otherwise cause compression drift
+- preserve a lightweight advisory code fact snapshot so AI has a stable map of observed files, entrypoints, routes, candidate sources, candidate sinks, state transitions, artifact surfaces, and known limitations
+- preserve flexible evidence observations so raw AI notes, tool output, blockers, negative evidence, and unknown-shaped signals survive before they are promoted, rejected, merged, or routed to coverage debt
 - preserve complex smart-contract reasoning when accounting, oracle, signature, upgrade, or multi-contract trust analysis would otherwise exceed working context
 - compare the current surface against prior snapshots so changed control surfaces are re-audited aggressively
 - support `quick` incremental-first scope selection from reliable git or audit-surface diffs without turning stored state into proof of safety
@@ -18,6 +20,8 @@ Audit state exists to:
 
 Audit state does **not** exist to:
 - prove unchanged code is safe
+- prove that code or behavior missing from `code_fact_snapshot` is absent
+- reject an observation because it does not fit a known vulnerability class, source/sink family, or schema shape
 - skip fresh recon
 - replace full reports in `.security-code-audit-reports/`
 - permanently store conclusions that should be revalidated
@@ -193,6 +197,8 @@ Recommended top-level fields:
 - `repo`
 - `surfaces`
 - `project_context`
+- `code_fact_snapshot`
+- `evidence_observations`
 - `loaded_modules`
 - `tool_invocations`
 - `coverage_ledger`
@@ -290,6 +296,125 @@ Recommended claim verification results:
 
 Do not store full README content, full commit logs, large doc excerpts, or raw issue exports here.
 
+### `code_fact_snapshot`
+
+Store a lightweight advisory code fact layer for the current run.
+
+This is a repo-orientation snapshot, not a platform indexer, full static-analysis IR, or proof of absence.
+
+Prefer:
+- `file_inventory`
+- `entrypoints`
+- `routes`
+- `security_relevant_functions`
+- `source_candidates`
+- `sink_candidates`
+- `state_transition_candidates`
+- `dependency_manifests`
+- `artifact_surfaces`
+- `parser_notes`
+- `limitations`
+
+For each fact, prefer compact references:
+- `id`
+- `kind`
+- `location`
+- `name`
+- `evidence_ref`
+- `confidence`
+- `limitations`
+
+Recommended confidence values:
+- `observed`
+- `inferred`
+- `partial`
+- `unknown`
+
+Hard rules:
+- missing entries do not prove absence
+- dynamic routes, generated code, reflection, framework magic, plugin behavior, build-time artifacts, and repo-authored instruction flow must become `limitations` or coverage-debt candidates when material
+- do not require IDE-grade symbol resolution, directory-level Merkle trees, or whole-program call graphs
+- do not store full source excerpts or large generated inventories here
+- if a discovered fact does not fit a known field, preserve it under `extensions` or as an `evidence_observations` item with a `custom:*` label
+
+### `evidence_observations`
+
+Store a flexible evidence envelope for high-signal observations before they become report outcomes.
+
+Use this for:
+- AI raw observations and analyst notes
+- suspicious candidates not yet proven
+- concrete negative evidence
+- blockers and unresolved proof gaps
+- compact external tool-output summaries
+- historical replay signals
+- unknown-shaped or schema-conflicting signals
+
+Each observation should preserve enough raw context to be mergeable and auditable without becoming a second report.
+
+Prefer:
+- `id`
+- `kind`
+- `summary`
+- `locations`
+- `raw_evidence`
+- `normalized_labels`
+- `trace_links`
+- `confidence`
+- `provenance`
+- `open_questions`
+- `status`
+- `routed_to`
+- `extensions`
+
+Recommended `kind` values:
+- `hypothesis`
+- `candidate`
+- `confirmed_evidence`
+- `negative_evidence`
+- `blocker`
+- `tool_output`
+- `history_signal`
+- `coverage_signal`
+- `schema_gap`
+- `unstructured_hypothesis`
+
+Recommended `provenance` values:
+- `ai`
+- `tool`
+- `history`
+- `manual`
+- `repo_context`
+
+Recommended `status` values:
+- `open`
+- `routed`
+- `merged`
+- `rejected`
+- `deprioritized`
+- `superseded`
+
+Recommended `routed_to` values:
+- `confirmed_finding`
+- `candidate_signal`
+- `negative_evidence`
+- `coverage_debt`
+- `working_hypothesis`
+- `integration_assumption`
+- `operational_risk`
+- `engineering_note`
+- `skill_optimization_suggestion`
+- `none`
+
+Hard rules:
+- this envelope is not a closed finding schema
+- labels are open-ended; allow `custom:*`
+- keep `extensions` open for unknown fields
+- schema mismatches must survive as `schema_gap`, `unstructured_hypothesis`, or `custom:*` observations instead of being dropped
+- observations do not count as confirmed findings until `core/findings.md` and `references/shared/reporting/evidence-standard.md` promote them
+- raw scanner output should not be stored wholesale; store compact summaries, file references, or extracted evidence instead
+- before final reporting, every high-signal open observation must be routed, rejected with negative evidence, or carried as coverage debt / working hypothesis / schema-gap suggestion
+
 ### `loaded_modules`
 
 Record only the actually loaded modules and the reason they were loaded.
@@ -361,6 +486,7 @@ For each gate, prefer:
 - `design_claims`
 - `implementation_evidence`
 - `negative_evidence`
+- `evidence_observation_refs`
 - `dependency_semantics_refs`
 - `conflict_refs`
 - `proof_obligation_refs`
@@ -428,6 +554,7 @@ For each conflict, prefer:
 - `resolution_status`
 - `related_gates`
 - `related_findings`
+- `related_observations`
 
 Recommended conflict types:
 - `design_vs_code`
@@ -444,6 +571,7 @@ Recommended resolution statuses:
 - `accepted_assumption`
 - `converted_to_finding`
 - `converted_to_coverage_debt`
+- `converted_to_observation`
 
 ### `proof_obligations`
 
@@ -461,6 +589,7 @@ For each obligation, prefer:
 - `evidence_against`
 - `blocker`
 - `report_destination`
+- `related_observations`
 
 Recommended statuses:
 - `open`
@@ -639,14 +768,16 @@ Do not use state to answer:
 
 For every run:
 1. initialize a run context early in recon
-2. update the surface profile, `file_inventory`, `aggregate_hash`, coverage ledger, deep gate ledger, dependency semantics ledger, proof obligations, trace checkpoints, and function-chain index as the scan progresses
-3. append key audit-log, invalidation, and agent-log entries at stage transitions and decision points
-4. revisit the run context before stage `5/6` and final reporting
+2. update the surface profile, `file_inventory`, `aggregate_hash`, `code_fact_snapshot`, coverage ledger, deep gate ledger, dependency semantics ledger, proof obligations, trace checkpoints, and function-chain index as the scan progresses
+3. append high-signal `evidence_observations` before promotion, rejection, merge, or coverage-debt routing
+4. append key audit-log, invalidation, and agent-log entries at stage transitions and decision points
+5. revisit the run context before stage `5/6` and final reporting
 
 For large, long-running, or beta `multi` runs:
 - keep owner fields filled
 - preserve more checkpoint detail
 - keep cross-shard function-chain joins explicit
+- keep worker-local evidence observations mergeable and route them through the supervisor before final reporting
 
 Execution rule:
 - before first creating `.security-code-audit-state/`, apply `references/shared/audit-artifact-initialization.md`
@@ -670,5 +801,7 @@ Use:
 - `.security-code-audit-reports/` for human-readable findings and history
 
 Coverage counts, function-chain counts, and agent-state evidence in the final report should reconcile back to `.security-code-audit-state/`.
+
+Confirmed findings, candidate signals, coverage debt, working hypotheses, negative evidence, and schema-gap suggestions should reconcile back to `evidence_observations` when those observations were material to the decision.
 
 If the two disagree, trust fresh code reading and current evidence over stored state.

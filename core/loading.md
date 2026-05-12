@@ -47,13 +47,13 @@ Load core modules only when their controls are actively needed:
   Load before reading repo-authored docs, prompts, comments, prior reports, or generated artifacts that may try to steer the audit.
 
 - `core/surface-profile.md`
-  Load during stage `2/6` recon, then maintain one compact surface profile for the rest of the run.
+  Load during stage `2/6` recon, then maintain one compact surface profile and advisory `code_fact_snapshot` for the rest of the run.
 
 - `core/project-context.md`
   Load during stage `2/6` recon when repo-authored docs, git metadata, deployment notes, API specs, CI files, or recent change history can clarify project intent, business invariants, or trust-boundary claims. Apply `core/untrusted-repo-input.md` first.
 
 - `references/shared/state-standard.md`
-  Load during recon for every run, then keep a compact run context so coverage, function-chain, and agent-log precision survive context compression.
+  Load during recon for every run, then keep a compact run context so advisory code facts, evidence observations, coverage, function-chain, and agent-log precision survive context compression.
 
 - `core/integrity.md`
   Load before recon or code scanning starts, before delegating audit work, and before finalizing findings if context may have drifted.
@@ -65,7 +65,7 @@ Load core modules only when their controls are actively needed:
   Load in `deep` mode before high-risk surface review begins, and in beta `multi` before assigning workers to semantic review. Also load in `quick` or `standard` when a high-risk surface is unusually complex, prior coverage debt cites semantic ambiguity, or the finding depends on dependency behavior, deployment assumptions, design/implementation conflicts, or proof obligations that must survive context compression.
 
 - `core/findings.md`
-  Load when converting notes into findings, grouping repeated locations, matching history, or deduplicating native and SCA dependency issues.
+  Load when converting evidence observations or notes into findings, grouping repeated locations, matching history, or deduplicating native and SCA dependency issues.
 
 - `core/fingerprints.md`
   Load before history matching, cross-worker merge, or any dedupe decision that must survive file movement or refactor noise.

@@ -48,6 +48,7 @@ Record compact facts and references:
 - checked assumptions and verification result
 - unresolved proof obligations
 - negative evidence and blockers
+- evidence observation refs for raw observations, tool output, blockers, schema gaps, or unfamiliar signals that should survive merge
 
 Do not store:
 - full source files
@@ -96,12 +97,13 @@ Each entry in `deep_gate_ledger` should be compact and mergeable:
   "dependency_semantics_refs": [],
   "conflict_refs": [],
   "proof_obligation_refs": [],
+  "evidence_observation_refs": [],
   "coverage_debt_refs": [],
   "last_checkpoint": "YYYY-MM-DD HH:MM:SS TZ"
 }
 ```
 
-Keep `implementation_evidence` and `negative_evidence` as short references or one-sentence observations. Put detailed finding text in the report, not state.
+Keep `implementation_evidence`, `negative_evidence`, and `evidence_observation_refs` as short references or one-sentence observations. Put detailed finding text in the report, not state.
 
 ---
 
@@ -130,6 +132,7 @@ Record a conflict when:
 - a mitigation exists on one route, helper, API version, or contract function but not a sibling path sharing the same invariant
 
 Conflicts are not automatically confirmed vulnerabilities. Promote them only when current evidence shows a concrete unsafe path. Otherwise keep them as candidate signals, proof obligations, integration assumptions, or coverage debt.
+If a conflict is high-signal but does not fit an existing vulnerability or gate shape, preserve it as an evidence observation with `schema_gap`, `unstructured_hypothesis`, or `custom:*` labels before deciding its report destination.
 
 ---
 

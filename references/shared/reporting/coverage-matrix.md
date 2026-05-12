@@ -48,6 +48,8 @@ For skill, agent, and instruction-bearing repositories, also verify:
 - **API versions**: Did you check ALL /v1/, /v2/, /v3/ variants? Legacy versions often lack newer security controls and may permit downgrade paths.
 - **Coverage debt**: If a category is partial, blocked, invalidated, or time-boxed, record it using `references/shared/reporting/coverage-debt-standard.md` instead of marking it clean.
 - **Function chains**: Every security-relevant function or state-changing transition in scope must end with a bounded function-chain record or explicit coverage debt.
+- **Code fact limitations**: Material `code_fact_snapshot.limitations` that affect dynamic, generated, reflected, framework-magic, or artifact-mediated behavior must be resolved or carried as coverage debt.
+- **Evidence observations**: High-signal `evidence_observations` must be routed to confirmed findings, candidate signals, negative evidence, coverage debt, working hypotheses, or schema-gap suggestions before coverage is called complete.
 
 ## Audit Strategy by Category
 
@@ -104,6 +106,7 @@ Understand business rules and data flows.
 - Template files and API versions fully covered
 - Each endpoint × vulnerability type treated as separate finding
 - Counted coverage totals reconciled and function-chain coverage recorded for in-scope security-relevant functions
+- Material evidence observations routed and code fact limitations reconciled or represented as coverage debt
 
 ### Deep Audit
 - All applicable categories at check mark
@@ -113,3 +116,4 @@ Understand business rules and data flows.
 - Business logic edge cases explored
 - Attack chains documented for compound risks
 - Every security-relevant function or state-changing transition in scope has a bounded chain record or explicit coverage debt
+- Every material evidence observation is routed, and every relevant code fact limitation is resolved, invalidated, or explicitly carried as coverage debt

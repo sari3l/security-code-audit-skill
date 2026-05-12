@@ -29,6 +29,7 @@ Create a coverage-debt item when a surface is:
 - missing bounded function-chain output for a security-relevant function still in scope
 - missing required deep semantic gate output for a high-risk `deep` surface
 - carrying unresolved proof obligations that affect coverage, exploitability, remediation, or severity
+- carrying material `code_fact_snapshot.limitations` or unrouted `evidence_observations` that affect security-relevant coverage
 
 Typical examples:
 - auth middleware reviewed on core routes but not all legacy routes
@@ -49,6 +50,7 @@ Typical examples:
 - `Reason`
 - `Affected Functions / Chains`
 - `Related Deep Gates / Proof Obligations`
+- `Related Evidence Observations / Code Fact Limitations`
 - `Risk If Wrong`
 - `Re-Audit Trigger`
 - `Suggested Next Step`
@@ -63,6 +65,7 @@ Typical examples:
 - **Reason**: [Why this surface was not fully verified]
 - **Affected Functions / Chains**: [functions, helpers, or transitions still lacking bounded chain output]
 - **Related Deep Gates / Proof Obligations**: [gate ids or proof obligation ids when applicable]
+- **Related Evidence Observations / Code Fact Limitations**: [observation ids or limitation ids when applicable]
 - **Risk If Wrong**: [What may still be hidden here]
 - **Re-Audit Trigger**: [What change or condition should force review]
 - **Suggested Next Step**: [What the next audit should do]
@@ -77,3 +80,4 @@ Typical examples:
 - If a category or domain surface is marked partial in coverage, create at least one coverage-debt note explaining why.
 - If an in-scope security-relevant function lacks a bounded call-chain record, create at least one coverage-debt note explaining why.
 - In `deep` mode, if a high-risk semantic gate is `partial`, `blocked`, `invalidated`, or absent, create at least one coverage-debt note tied to the gate or proof obligation.
+- If a material observation remains unrouted because the model shape is unknown, either route it to a working hypothesis / skill optimization suggestion or create coverage debt tied to the observation.

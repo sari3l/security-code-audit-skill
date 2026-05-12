@@ -2,6 +2,8 @@
 
 Use this file to keep finding boundaries, grouping, dedupe, and lifecycle handling consistent.
 
+Finding controls consume the flexible evidence envelope from audit state. An `evidence_observation` is preserved signal, not a confirmed finding.
+
 ## Granularity Rules
 
 - Each distinct vulnerability type should be its own finding.
@@ -34,6 +36,7 @@ Use this file to keep finding boundaries, grouping, dedupe, and lifecycle handli
 ## Maturity Rules
 
 - Distinguish finding maturity from historical status.
+- Treat `evidence_observations` as pre-promotion evidence. Route each material observation to a confirmed finding, candidate signal, negative evidence, coverage debt, working hypothesis, integration assumption, supplemental note, or skill optimization suggestion.
 - Use `Confirmed` for issues with enough code, exploitability, and impact evidence to enter the main findings list.
 - Use `Candidate` for high-signal suspicious cases that still lack sufficient proof.
 - Do not let `Candidate` entries appear in the main findings list.
@@ -42,6 +45,15 @@ Use this file to keep finding boundaries, grouping, dedupe, and lifecycle handli
 - Do not use `Working Hypotheses` to smuggle half-proven findings into the main report. If the concern is a concrete code path, keep it in `Candidate Signals` until proven.
 - For instruction-bearing artifacts such as `SKILL.md`, `AGENTS.md`, prompts, READMEs, and setup flows, default suspicious text to `Candidate` until the audit can show a real operator-directed execution path or trust-boundary failure.
 - A confirmed skill-repo finding should identify the instruction source, the execution or trust boundary, the affected asset or control surface, and the credible operator impact.
+
+## Evidence-Observation Rules
+
+- Preserve high-signal raw observations before forcing them into a category.
+- Do not drop an observation because its source family, sink family, vulnerability class, or schema shape is unfamiliar.
+- Use open labels such as `custom:*` when existing labels are too narrow.
+- If the observation cannot be normalized safely, keep it as `schema_gap` or `unstructured_hypothesis` and route it to coverage debt, working hypotheses, or `Skill Optimization Suggestions` as appropriate.
+- Promotion still requires current-code evidence and the reporting evidence standard; observation volume alone does not make a finding.
+- Rejection should keep the concrete negative evidence rather than deleting the observation.
 
 ## Negative-Evidence Rules
 

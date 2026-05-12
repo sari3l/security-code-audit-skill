@@ -9,6 +9,7 @@ Use this file to minimize shallow scans, skipped surfaces, and false negatives.
 - Check all relevant API versions, legacy routes, alternate transports, and admin paths.
 - When uploads, exports, webhooks, background jobs, or object storage exist, include them explicitly in scope.
 - Coverage is not complete until the audit state contains counted totals for `applicable`, `reviewed`, `partial`, `blocked`, `invalidated`, and `time_boxed`.
+- Coverage is not complete until material `code_fact_snapshot.limitations` and high-signal `evidence_observations` are either routed or represented as coverage debt / working hypotheses / negative evidence.
 - Every security-relevant function or state-changing transition in scope must have a bounded function-chain record or an explicit coverage-debt entry.
 - In `quick`, `standard`, and `deep`, prior findings touching the same helper, sink, route family, or trust boundary must be reopened against current code before they can be counted as covered or fixed.
 - A still-live prior vulnerability that the current scan missed is a historical miss, not a valid clean comparison; record it as coverage debt and emit `Skill Optimization Suggestions`.
@@ -36,5 +37,7 @@ Do not finish the audit until:
 - dependency and config surfaces were reviewed when present
 - counted coverage totals reconcile with the report summary
 - in-scope function chains are either recorded as bounded/open/blocked/invalidated or explicitly carried as coverage debt
+- advisory code fact gaps that affect security-relevant dynamic, generated, reflected, framework-magic, or artifact-mediated behavior are either resolved or carried as coverage debt
+- high-signal evidence observations are routed, rejected with negative evidence, or carried forward honestly
 - historical `Fixed` claims affecting in-scope current code were explicitly reopened or carried as coverage debt
 - deferred history replay either found no historical misses, or every historical miss is recorded with coverage debt, `Skill Optimization Suggestions`, and a withheld lifecycle comparison

@@ -40,7 +40,7 @@ Execution strategy files live in `../modes/` and quality-control files live in `
   Shared ignore maintenance and directory-bootstrap rules for `.security-code-audit-reports/` and `.security-code-audit-state/`.
 
 - `references/shared/state-standard.md`
-  Mandatory audit-state storage, trace-checkpoint persistence, function-chain inventory, and change-aware re-audit guidance for every scan.
+  Mandatory audit-state storage, advisory code fact snapshots, flexible evidence observations, trace-checkpoint persistence, function-chain inventory, and change-aware re-audit guidance for every scan.
 
 - `references/application/exploits/index.md`
   Application exploit verification playbooks and confirmation guidance.
@@ -62,7 +62,7 @@ Execution strategy files live in `../modes/` and quality-control files live in `
   - `smart-contract` audits should load `references/smart-contract/languages/index.md`
 - Artifact surfaces: load `references/shared/artifacts/index.md` when the repo contains rendered markdown, `SKILL.md`, `AGENTS.md`, prompt templates, API specs, notebooks, or other instruction-bearing files.
 - Audit artifact bootstrap: load `references/shared/audit-artifact-initialization.md` immediately before first creating `.security-code-audit-reports/` or `.security-code-audit-state/`.
-- Scan-state continuity: load `references/shared/state-standard.md` for every run, then keep richer detail when the repo is large, long-running, beta `multi`, or state-worthy smart-contract.
+- Scan-state continuity: load `references/shared/state-standard.md` for every run, then keep richer detail when the repo is large, long-running, beta `multi`, or state-worthy smart-contract. Preserve advisory code facts and high-signal evidence observations even in compact runs.
 - Phase 2: use the chosen domain as the main audit map, then pull the relevant shared artifact, dependency, and exploit modules.
 - C8 and supply-chain review: load `references/shared/dependencies/index.md`, then the ecosystem files matching detected manifests and lock files. If external SCA output exists, also load `references/shared/dependencies/sca-integration.md`.
 - External tool execution: load `references/shared/tooling/command-resolution.md` before running optional scanners or repo-defined audit commands whose availability, subcommands, or flags may vary.
