@@ -7,6 +7,7 @@ Operational quality controls such as false-positive prevention, coverage discipl
 Use these files to keep reports consistent, auditable, and actionable:
 - `coverage-matrix.md` for post-scan coverage verification before reporting
 - `coverage-debt-standard.md` for partial, blocked, invalidated, time-boxed, or missing-function-chain coverage gaps
+- `evidence-standard.md` for candidate vs confirmed findings and negative evidence handling
 - `evidence-standard.md` for flexible evidence-observation routing, candidate vs confirmed findings, schema gaps, and negative evidence handling
 - `finding-detail-standard.md` for each individual finding entry
 - `history-standard.md` for comparing current findings against previous timestamped reports
@@ -18,7 +19,7 @@ Use these files to keep reports consistent, auditable, and actionable:
 - `remediation-standard.md` for minimal real fixes and hardening guidance
 - `overview-standard.md` for executive summary, top findings, and action items
 - `statistics-standard.md` for counts, coverage, and trend reporting
-- `SKILL.md` metadata/body for the skill version carried into report metadata
+- the current version declared in root `SKILL.md` for the skill version carried into report metadata
 - `references/smart-contract/vulnerabilities/coverage.md` when the active domain is `smart-contract`
 
 ---
@@ -40,5 +41,5 @@ Use these files to keep reports consistent, auditable, and actionable:
 - Apply `core/severity.md` first when assigning severity, then use `severity-guide.md` for example mappings and report phrasing.
 - Load `overview-standard.md` and `statistics-standard.md` when generating the final report summary.
 - Reconcile counted coverage totals, function-chain totals, code fact limitations, and material evidence-observation routing against audit state before finalizing the report.
-- Read the current `SKILL.md` version when writing report metadata so the output records the skill revision used.
+- Use the current version declared in root `SKILL.md` when writing report metadata so the output records the skill revision used; do not load root-level internal maintainer docs at audit runtime.
 - Keep the report concise, but never drop exploitability, evidence, minimal-fix guidance, candidate signals, coverage debt, or historical context.

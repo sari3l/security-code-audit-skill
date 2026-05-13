@@ -4,6 +4,8 @@ Create one compact surface profile during recon. Reuse it to drive loading, dele
 
 Also create a compact advisory `code_fact_snapshot` for audit state. The snapshot gives AI a stable code map, but it must not limit AI exploration or prove that unlisted behavior is absent.
 
+`code_fact_snapshot` is advisory, compact, and non-authoritative. It is not a closed intermediate representation, a mandatory schema that every finding must fit, or a full static-analysis database.
+
 ## Purpose
 
 The surface profile is the smallest shared map of what the repo actually contains.
@@ -78,7 +80,8 @@ Hard rules:
 - keep it compact and evidence-referenced
 - do not require whole-program call graphs or IDE-grade symbol resolution
 - missing facts are limitations, not safety proof
-- if a security-relevant fact does not fit the fields, preserve it with `extensions` or an `evidence_observations` entry using a `custom:*` label
+- if a security-relevant fact does not fit the fields, preserve it with `extensions` or an `evidence_observations` entry using a `schema_gap`, `unstructured_hypothesis`, or `custom:*` label
+- never discard a finding candidate, trace clue, or unfamiliar security signal merely because it does not fit the preferred snapshot fields
 
 ## Update Rules
 

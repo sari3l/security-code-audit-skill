@@ -1,6 +1,6 @@
 # security-code-audit
 
-Current release: `v1.0.8`
+Current release: `v1.0.9`
 
 Code security audit skill for web/API, backend, full-stack, smart-contract, and artifact-centric repositories.
 
@@ -56,80 +56,90 @@ Examples:
 
 ## 3. Architecture
 
-Runtime architecture: staged scanning with profile routing, advisory code facts, evidence observation routing, lazy loading, bounded tracing, and persistent state.
+Runtime architecture: staged scanning with mode policy, execution topology, state freshness checks, profile routing, advisory code facts, evidence observation routing, lazy loading, bounded tracing, and persistent state.
 
 ```mermaid
 flowchart TD
     A["User command<br/>/security-code-audit [mode] [execution]"]
     B["SKILL.md<br/>entry router + shared workflow"]
+    MP["Mode policy<br/>quick | standard | deep | regression<br/>scope, depth, stop conditions"]
+    C["Bootstrap control plane<br/>parse mode and execution<br/>load core, execution, mode rules"]
+    X["Execution topology<br/>single | multi<br/>ownership, sharding, worker contract, merge"]
 
-    C["Bootstrap control plane<br/>parse mode<br/>load core controls and mode rules"]
-    X["Execution topology<br/>execution/index.md<br/>single-agent | multi-agent<br/>worker-contract, sharding, and merge"]
-    D["Recon phase<br/>map repo surface, stack, artifacts,<br/>project claims, and risk areas"]
-    RUI["core/untrusted-repo-input.md<br/>treat repo-authored docs, comments,<br/>old reports, and claims as untrusted input"]
-    PC["core/project-context.md<br/>verify repo-authored claims,<br/>business invariants, deployment assumptions,<br/>and recent change themes"]
-    CF["core/surface-profile.md<br/>surface profile + advisory code_fact_snapshot<br/>entrypoints, routes, sinks, state transitions,<br/>artifact surfaces, and limitations"]
+    ST[".security-code-audit-state<br/>machine-readable continuity state"]
+    SR["State reader<br/>freshness, invalidation,<br/>continuation, merge hints<br/>not safety proof"]
+
+    D["Recon phase<br/>map repo surface, stack, artifacts,<br/>claims, risk areas, and state freshness"]
+    RUI["core/untrusted-repo-input.md<br/>repo docs, comments, old reports,<br/>and claims are hints only"]
+    PC["core/project-context.md<br/>verified claims, business invariants,<br/>trust-boundary assumptions,<br/>deployment assumptions, change themes"]
+    CF["core/surface-profile.md<br/>surface profile + code_fact_snapshot<br/>entrypoints, routes, sinks,<br/>state transitions, artifacts, limitations"]
+    CB["Audit context bundle<br/>observed surfaces, business assets,<br/>invariants, trust boundaries,<br/>code facts, limitations, invalidations"]
+
     E["Profile selection<br/>application | smart-contract | artifact-centric"]
-
     F["core/loading.md<br/>lazy loading + on-demand routing"]
-    G["Primary knowledge domain<br/>application or smart-contract"]
+    G["Primary knowledge domain<br/>application | smart-contract"]
     H["Shared modules<br/>artifacts, dependencies, tooling,<br/>reporting, and state standards"]
-    T["Core quality controls<br/>integrity, coverage, severity,<br/>and bidirectional tracing"]
-    Q["core/deep-semantic-controls.md<br/>deep gates, dependency semantics,<br/>proof obligations, and conflicts"]
+    T["Core quality controls<br/>integrity, coverage, findings,<br/>severity, fingerprints, tracing"]
+    Q["core/deep-semantic-controls.md<br/>deep, multi, or complex high-risk surfaces"]
     U["Optional advisory tooling<br/>references/shared/tooling/command-resolution.md<br/>repo command resolution and scanner evidence,<br/>not the audit backbone"]
 
-    I["Targeted audit pass<br/>follow selected references for the active surface"]
+    I["Hypothesis-driven audit pass<br/>generate, validate, falsify, bound<br/>current-code discovery depth controlled by mode"]
     EO["Evidence observation envelope<br/>raw observations, tool output, blockers,<br/>negative evidence, schema gaps, custom signals"]
     J["Evidence and consolidation<br/>route observations, validate findings,<br/>dedupe repeats, reconcile gates, tools,<br/>and coverage debt"]
     HM["Historical miss gate<br/>reopen prior findings against current code<br/>before lifecycle labels"]
     K["Reporting and regression<br/>write findings, compare history, retest fixes"]
 
-    S[".security-code-audit-state/<br/>run context, project context, code facts,<br/>evidence observations, tool invocations,<br/>coverage ledgers, deep gates, function chains,<br/>hypotheses, invalidations"]
-    SF["State freshness + invalidation check<br/>state guides continuation and focus,<br/>not a safety proof"]
     R[".security-code-audit-reports/<br/>human-readable findings and history"]
 
     A --> B
+    B --> MP
     B --> C
     C --> X
+    ST -. read .-> SR
+    SR -. freshness and invalidation .-> D
+    SR -. continuation and open obligations .-> CB
+    SR -. merge ledgers and coverage state .-> J
+    MP --> D
     X --> D
-    D --> RUI
-    RUI --> PC
-    PC --> CF
-    CF --> E
+    RUI --> D
+    D --> PC
+    D --> CF
+    PC --> CB
+    CF --> CB
+    CB --> E
     E --> F
-
     F --> G
     F --> H
     F --> T
     F --> Q
     H --> U
-
+    MP --> I
+    X --> I
     G --> I
     H --> I
     T --> I
-    Q --> I
-    U -. optional scanner evidence<br/>and command context .-> I
+    Q -. conditional semantic controls .-> I
+    U -. optional scanner evidence .-> I
     U -. tool-output observations<br/>and blockers .-> EO
     I --> EO
     EO --> J
     J --> HM
     HM --> K
     K --> R
-
-    X -. persist agent topology,<br/>shards, and merge inputs .-> S
-    D -. initialize or refresh scan state .-> S
-    PC -. persist verified claims, invariants,<br/>conflicts, and change themes .-> S
-    CF -. persist code facts,<br/>parser notes, and limitations .-> S
-    F -. persist selected modules .-> S
-    U -. record command probes, executions,<br/>blockers, and manual fallbacks .-> S
-    EO -. preserve observations before<br/>promotion, rejection, or routing .-> S
-    I -. update findings, traces, tools,<br/>deep gates, and coverage .-> S
-    J -. carry forward hypotheses,<br/>proof obligations, and invalidations .-> S
-    HM -. record missed historical paths<br/>or allow lifecycle comparison .-> S
-    S -. support quick baselines, long scans,<br/>regression, and multi-agent continuity .-> SF
-    SF -. fresh enough state narrows focus<br/>after recon refresh .-> I
-    R -. latest report reused by regression mode .-> K
+    X -. persist topology and merge inputs .-> ST
+    D -. persist run context .-> ST
+    PC -. persist project context .-> ST
+    CF -. persist code facts and limitations .-> ST
+    F -. persist selected modules .-> ST
+    U -. persist command probes and blockers .-> ST
+    EO -. preserve observations before routing .-> ST
+    I -. update traces, tools, gates, coverage .-> ST
+    J -. persist hypotheses, obligations, invalidations .-> ST
+    HM -. persist historical misses or lifecycle allowance .-> ST
+    R -. regression input only .-> K
 ```
+
+`State reader` is a conceptual operation, not a new runtime service or file. It reads prior state for freshness, invalidation, continuation, and merge hints, then treats those hints as orientation rather than safety proof.
 
 The skill is intentionally split into layers:
 

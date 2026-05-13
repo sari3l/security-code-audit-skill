@@ -8,9 +8,10 @@ Fast high-risk pass for immediate security signal.
 
 Prioritize Critical and High severity issues only. Do not attempt full category closure.
 
-Quick mode is an `incremental-first` discovery pass, not a remediation-retest mode.
+Quick mode is an `incremental-first` high-risk validation pass, not a history-first scan and not a remediation-retest mode.
 Use current diffs plus audit state to reduce scope when that comparison is reliable, but do not let prior reports suppress current findings.
 Audit state may provide advisory code facts and prior inventories for orientation; missing facts never prove a surface safe.
+Project context such as business assets, invariants, and trust-boundary claims may focus changed or invalidated high-risk surfaces, but quick mode does not build a full business model or full trust-boundary map.
 
 `incremental-first` means:
 - use change detection to decide which files and shared surfaces enter quick scope
@@ -97,6 +98,8 @@ Ask the user whether to expand to full quick scope when any of these is true:
 - no reliable baseline exists
 - non-git diffing cannot produce a trustworthy audit-relevant delta
 - a critical shared surface changed
+
+Do not silently upgrade quick mode to `standard`. Recommend `standard` only when the user asks for full discovery or when the change blast radius is effectively repo-wide and a quick result would be misleading.
 
 If the user declines expansion, continue in `strict incremental` mode and say explicitly that the result covers only change-impacted quick scope rather than a full quick audit of the current repo.
 Carry unresolved high-signal observations as `evidence_observations` and route them before reporting, even when strict incremental mode keeps the report compact.

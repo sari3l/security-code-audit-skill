@@ -21,10 +21,37 @@ Audit state exists to:
 Audit state does **not** exist to:
 - prove unchanged code is safe
 - prove that code or behavior missing from `code_fact_snapshot` is absent
+- prove that prior history findings are fixed or no longer reachable
 - reject an observation because it does not fit a known vulnerability class, source/sink family, or schema shape
 - skip fresh recon
 - replace full reports in `.security-code-audit-reports/`
 - permanently store conclusions that should be revalidated
+
+---
+
+## State Reading Semantics
+
+State reading is a runtime interpretation step, not a separate component, file, schema, service, or platform subsystem. Do not create a `state-reader` module just because diagrams name this operation.
+
+When prior state exists, read and summarize it into three hint groups:
+
+1. `freshness_and_invalidation`
+   - whether the prior snapshot is comparable to current git/tree/fs state
+   - which shared helpers, trust boundaries, dependencies, configs, contracts, or artifact surfaces were invalidated
+   - whether `quick` may safely use incremental-first scope selection or must ask about expanding to full quick scope
+
+2. `continuation_and_open_obligations`
+   - unresolved proof obligations
+   - partial or blocked deep gates
+   - material working hypotheses or evidence observations that still need routing
+
+3. `coverage_and_merge_ledgers`
+   - counted coverage status
+   - function-chain records
+   - worker deltas and agent logs in beta `multi`
+   - merge blockers, schema gaps, and coverage debt candidates
+
+These hint groups may guide recon, audit context, and consolidation. They never replace current-code reading, current evidence, required coverage, or the historical-miss gate.
 
 ---
 

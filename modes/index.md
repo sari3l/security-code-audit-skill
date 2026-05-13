@@ -18,18 +18,29 @@ Common rules remain in:
 `help`, `-h`, and `--help` are not modes. They are handled as an early-exit help path in `SKILL.md`.
 
 - `quick`
-  Fast high-risk scan with incremental-first scope selection. Use `quick.md`.
+  Incremental-first high-risk validation using current diffs, reliable audit-state freshness, and global cheap checks. Use `quick.md`.
 
 - `standard`
-  Default full audit. Use `standard.md`.
+  Default full current-code discovery with structured coverage and practical business/trust-boundary review. Use `standard.md`.
 
 - `deep`
-  High-assurance exhaustive audit. Use `deep.md`.
+  Semantic-assurance audit with stronger closure for invariants, trust boundaries, data lifecycle, attack chains, and proof obligations. Use `deep.md`.
 
 - `regression`
-  Latest-report remediation retest. Use `regression.md`.
+  Latest-report remediation retest with early exit when no usable report exists. Use `regression.md`.
 
 If no argument is provided, use `standard`.
+
+Mode controls scope, depth, and stop conditions only:
+
+| Mode | Primary purpose | Business / trust-boundary use |
+|------|-----------------|-------------------------------|
+| `quick` | Incremental high-risk validation | Use assets, invariants, and trust-boundary claims only to focus changed or invalidated high-risk surfaces. |
+| `standard` | Full current-code discovery | Include business assets, invariants, and trust boundaries as practical discovery inputs. |
+| `deep` | Semantic assurance | Close or explicitly debt-track material invariants, trust boundaries, data lifecycle, attack chains, and proof obligations. |
+| `regression` | Latest-report retest | Reopen reported paths and their surrounding current-code surfaces only. |
+
+Target profile still controls semantics after recon, knowledge domain still controls the primary reference spine, and execution mode still controls agent topology.
 
 ---
 

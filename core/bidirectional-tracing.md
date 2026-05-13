@@ -11,6 +11,7 @@ This is a quality-control module, not a domain-knowledge file. It defines how tr
 Use bidirectional tracing to:
 - avoid traditional one-way graph flooding from every apparent source
 - converge on real attack paths by searching from both source and sink sides
+- run hypothesis-driven analysis by generating, validating, falsifying, and bounding concrete attack paths
 - preserve compact trace checkpoints in audit state without turning `searched` into `safe`
 - link trace checkpoints to evidence observations when a path is still a candidate, blocked, negatively evidenced, or schema-conflicting
 - emit bounded per-function chain records that later attack-chain review can reuse
@@ -21,6 +22,7 @@ Do not use bidirectional tracing to:
 - prove unchanged code is safe because a similar path was searched before
 - expand every high-fanout helper or shared adapter by default
 - replace concrete sink enumeration or profile-driven recon
+- replace mandatory coverage, repeated-pattern enumeration, dependency/config review, function-chain records, or the historical-miss gate
 
 ---
 
@@ -39,6 +41,20 @@ Instead:
 4. expand only along edges that make the hypothesis more or less credible
 
 Prefer meet-in-the-middle reasoning over exhaustive graph expansion.
+
+---
+
+## Hypothesis Loop
+
+Use hypotheses to make tracing concrete, but keep them inside the selected mode's required coverage.
+
+For each material hypothesis:
+1. **Generate** it from observed sources, sinks, state transitions, business invariants, trust boundaries, dependency/config facts, or evidence observations.
+2. **Validate** it by reading current code/config and using safe tool evidence when useful.
+3. **Falsify** it when current evidence shows a guard, invariant, allowlist, deployment constraint, or parser behavior breaks the path.
+4. **Bound** it when further expansion is low value, blocked, or dependent on an explicit assumption.
+
+Do not let an interesting hypothesis pull the scan away from required coverage. If a required category, surface, function chain, or high-risk gate remains incomplete, route the gap to coverage debt instead of treating a bounded hypothesis as whole-surface coverage.
 
 ---
 

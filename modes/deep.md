@@ -6,10 +6,12 @@ High-assurance exhaustive audit mode.
 
 ## Scope
 
-Run the primary-domain audit with maximum practical depth, then extend into attack chains, workflow abuse, data-flow tracing, and concurrency analysis.
+Run semantic-assurance discovery for the primary domain with maximum practical depth, then extend into attack chains, workflow abuse, data-flow tracing, data-lifecycle review, and concurrency analysis.
 
 Deep mode is an independent high-assurance discovery audit, not a remediation-retest mode.
 Do not inspect prior report details until the current deep-mode findings, coverage reconciliation, and audit-state writes are complete.
+
+Deep mode is not the only mode that considers business assets, invariants, and trust boundaries. Its difference is closure: material business invariants, trust boundaries, data-lifecycle paths, attack chains, and proof obligations must be covered, falsified, or explicitly carried as coverage debt / working hypotheses.
 
 Use when:
 - the target is high value
@@ -34,6 +36,7 @@ Use when:
 Deep mode includes standard recon plus:
 - trust-boundary mapping
 - data-lifecycle mapping from input to storage to output to deletion
+- material business invariant and asset-flow mapping
 - stronger review of version drift, legacy paths, and alternate transports
 
 ---
@@ -55,8 +58,9 @@ If the active profile is `artifact-centric`, make instruction integrity, trust-b
 
 After category coverage, perform:
 - full attack-chain analysis
-- exhaustive business-logic review
+- semantic business-invariant and trust-boundary closure
 - deeper data-flow tracing
+- data-lifecycle review from input to storage to output to deletion
 - full race-condition review
 - API-specific depth checks
 - deep semantic gate reconciliation: every applicable high-risk gate is `covered` or has explicit coverage debt, and every open proof obligation is routed to a finding, candidate signal, working hypothesis, integration assumption, or coverage debt

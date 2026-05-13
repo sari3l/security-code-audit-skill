@@ -6,10 +6,12 @@ Default full audit mode.
 
 ## Scope
 
-Run the primary-domain audit with practical depth, then perform basic compound analysis and coverage verification.
+Run full current-code discovery for the primary domain with practical depth, then perform basic compound analysis and coverage verification.
 
 Standard mode is an independent fresh discovery audit, not a remediation-retest mode.
 Do not inspect prior report details until the current standard-mode findings, coverage reconciliation, and audit-state writes are complete.
+
+Business assets, business invariants, trust-boundary claims, deployment assumptions, and context conflicts are discovery inputs in standard mode. Use them for practical business-logic and trust-boundary review, but do not require deep semantic gate closure unless the surface is unusually complex or prior coverage debt requires it.
 
 Use when:
 - no specific mode is requested
@@ -44,7 +46,7 @@ In addition to the shared base recon in `SKILL.md`, standard mode requires:
 - API version enumeration
 - sensitive-area mapping
 - security config review
-- business-logic surface mapping
+- practical business-logic and trust-boundary surface mapping
 
 ---
 
@@ -62,7 +64,7 @@ If the active profile is `artifact-centric`, center prompt, rendering, trust-bou
 
 After category coverage, perform:
 - basic compound finding analysis
-- basic business-logic review
+- practical business-logic and trust-boundary review
 - basic race-condition review
 - counted coverage reconciliation and bounded function-chain inventory review
 - deferred history replay only after current findings and coverage are stable

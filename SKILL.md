@@ -1,6 +1,6 @@
 ---
 name: security-code-audit
-version: 1.0.8
+version: 1.0.9
 description: |
   Help: `/security-code-audit help` or `/security-code-audit --help`.
   Code security scanning capability for web/API and smart-contract repositories, provided by the RockBund Capital Security Team.
@@ -11,7 +11,9 @@ description: |
 
 A systematic, language-agnostic security audit framework with tiered scanning depth and one standardized report output.
 
-Current skill version: `1.0.8`.
+Current skill version: `1.0.9`.
+
+The delivered runtime surface is `SKILL.md` plus subdirectories. Root-level README, architecture, AI-maintainer, and versioning documents are internal maintainer files only; do not depend on them at audit runtime.
 
 ## Help Path
 
@@ -21,15 +23,38 @@ Before parsing scan mode, check for help arguments:
 - `--help`
 
 If help is requested:
-- load the user-facing README that best matches the conversation language
-  - use `README.md` for English
-  - use `README-CN.md` for Chinese
-- print only a concise usage summary from the README `Usage` section
-- include command forms, parameters, execution options, and representative examples
-- do not print the README `Features` or `Architecture` sections
+- print the concise usage summary embedded in this `Help Path` section
+- do not load root-level README, architecture, AI-maintainer, or versioning files
 - do not initialize the scan progress plan
 - do not load mode files, history, or reference modules beyond what is needed to answer help
 - stop immediately after printing help
+
+Concise usage summary:
+- `/security-code-audit`
+  Default full current-code discovery. Equivalent to `standard single`.
+- `/security-code-audit quick`
+  Incremental-first high-risk validation using current diff and reliable audit-state freshness, with global cheap secret and dependency checks.
+- `/security-code-audit standard`
+  Full current-code discovery with structured coverage and practical business/trust-boundary review.
+- `/security-code-audit deep`
+  Semantic-assurance audit with stronger closure for invariants, trust boundaries, data lifecycle, attack chains, and proof obligations.
+- `/security-code-audit regression`
+  Retest the latest usable report and verify whether fixes actually hold; early exit if no usable report exists.
+- `/security-code-audit help`
+  Show command forms, parameters, execution options, and examples.
+
+Parameters:
+- audit mode: `quick` | `standard` | `deep` | `regression`
+- execution mode: `single` | `multi`
+- `multi` is beta and falls back to `single` if delegation is unavailable
+
+Examples:
+- `/security-code-audit quick`
+- `/security-code-audit standard`
+- `/security-code-audit deep`
+- `/security-code-audit regression`
+- `/security-code-audit deep multi`
+- `/security-code-audit deep --agents=multi`
 
 ## Mode Selection
 
@@ -37,10 +62,12 @@ Parse the first argument to determine scan mode:
 
 | Argument | Mode | Scope | Output |
 |----------|------|-------|--------|
-| `quick` | Quick | Incremental-first high-risk scan on changed surfaces plus global cheap checks | Terminal summary + brief history file |
-| *(none)* / `standard` | Standard | Primary-domain audit + basic attack chains | Terminal summary + full history file |
-| `deep` | Deep | Primary-domain deep audit + exhaustive attack chains + business logic + race conditions | Terminal summary + full history file + attack chain appendix |
-| `regression` | Regression | Retest the latest report and verify whether fixes actually hold | Terminal summary + regression history file or early exit |
+| `quick` | Quick | Incremental-first high-risk validation using current diffs, reliable audit-state freshness, and global cheap checks | Terminal summary + brief history file |
+| *(none)* / `standard` | Standard | Full current-code discovery with structured coverage and practical business/trust-boundary review | Terminal summary + full history file |
+| `deep` | Deep | Semantic-assurance audit with stronger closure for invariants, trust boundaries, data lifecycle, attack chains, and proof obligations | Terminal summary + full history file + attack chain appendix |
+| `regression` | Regression | Latest-report remediation retest; early exit when no usable report exists | Terminal summary + regression history file or early exit |
+
+Mode controls scope, depth, and stop conditions only. Target profile controls audit semantics, knowledge domain controls the primary reference spine, and execution mode controls agent topology.
 
 After parsing the first argument, determine scan depth and then parse execution mode from the remaining arguments:
 - default: `single`
@@ -236,6 +263,7 @@ This state is not the final report. It exists to preserve working precision, com
 - state is mandatory for every run, not only for large or multi-agent scans
 - use state to prioritize and restore context, not to prove safety
 - for `quick`, state may be used to derive `incremental-first` scope from current git/tree/fs diffs plus prior audit-relevant inventories, but never to auto-mark unchanged surfaces as safe
+- when reading prior state, summarize it into freshness / invalidation, continuation / open-obligation, and coverage / merge-ledger hints before using it; these hints do not replace current-code evidence
 - keep the run context compact and structured; do not turn it into a second report
 - keep `code_fact_snapshot` advisory: it orients AI around observed entrypoints, routes, sources, sinks, state transitions, artifact surfaces, and limitations, but it is not proof that missing dynamic, generated, reflected, framework-magic, or artifact-mediated behavior is absent
 - keep `evidence_observations` as a flexible evidence envelope: preserve raw observations, tool output summaries, blockers, negative evidence, and unknown-shaped signals before routing them to candidate signals, confirmed findings, coverage debt, working hypotheses, integration assumptions, or schema-gap suggestions
@@ -283,7 +311,7 @@ Mode-specific reconnaissance depth lives in `modes/*.md`:
 ```
 [RECON]
 Project: {name}
-Skill Version: {security-code-audit 1.0.8}
+Skill Version: {security-code-audit 1.0.9}
 Deployment Context: {auth owner, network reachability, reverse-proxy or host-app mount constraints when material}
 Audit Profile: {application|smart-contract|artifact-centric}
 Knowledge Domain: {application|smart-contract}
@@ -317,7 +345,7 @@ Example preferred rendering:
 ```markdown
 **[RECON]**
 - `Project`: vuln-bank
-- `Skill Version`: `security-code-audit 1.0.8`
+- `Skill Version`: `security-code-audit 1.0.9`
 - `Deployment Context`: Superset-served admin blueprint behind FAB auth, MCP bound to internal network only
 - `Audit Profile`: `application`
 - `Knowledge Domain`: `application`
@@ -344,13 +372,19 @@ Quick mode may leave some recon fields partial if they are not needed for the fa
 
 Mode-specific execution scope lives in `modes/*.md`:
 - `modes/quick.md` defines the fast high-risk path and early exit conditions
-- `modes/standard.md` defines the full category audit plus basic post-category analysis
-- `modes/deep.md` defines the full category audit plus exhaustive post-category analysis
+- `modes/standard.md` defines full current-code discovery plus practical post-category analysis
+- `modes/deep.md` defines semantic-assurance discovery with stricter closure requirements
 - `modes/regression.md` defines the latest-report remediation retest path and early exit conditions
 
 Regression mode does not perform the shared full C1-C12 sweep. It retests the latest report's findings only.
 
 Split this long phase into progress stages `[3/6]` and `[4/6]` so the user sees forward movement during the scan.
+
+Run Phase 2 as hypothesis-driven work within the required coverage for the selected mode:
+- generate concrete attack hypotheses from observed sources, sinks, state transitions, business invariants, trust boundaries, dependency/config facts, and evidence observations
+- validate or falsify each material hypothesis against current code, config, and safe tool evidence
+- bound low-value paths with explicit negative evidence, blockers, or coverage debt instead of leaving them as vague memory
+- do not let hypothesis pursuit replace required category/domain coverage, repeated-pattern enumeration, dependency/config review, function-chain records, or the historical-miss gate
 
 Profile-aware routing rules:
 - `application` uses the shared C1-C12 categories below as the primary audit structure
@@ -527,8 +561,8 @@ Start with `references/application/vulnerabilities/infrastructure.md` and `refer
 - **Dockerfile issues**: `chmod 777`, running as root, exposing unnecessary ports
 
 Mode-specific post-category work lives in:
-- `modes/standard.md` for basic compound analysis, business-logic review, race-condition review, and coverage verification
-- `modes/deep.md` for exhaustive attack chains, business-logic review, race-condition review, and strict coverage requirements
+- `modes/standard.md` for practical compound analysis, business-logic and trust-boundary review, race-condition review, and coverage verification
+- `modes/deep.md` for semantic closure over attack chains, business invariants, trust boundaries, data-flow / data-lifecycle paths, proof obligations, and strict coverage requirements
 
 Use progress stage `[5/6]` for this post-category work, history comparison, and any coverage verification required by the active mode.
 
@@ -573,7 +607,7 @@ Print directly in the conversation:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.8]
+**Skill Version:** [1.0.9]
 **Mode:** [quick|standard|deep|regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -655,7 +689,7 @@ Regression mode uses this summary shape instead:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.8]
+**Skill Version:** [1.0.9]
 **Mode:** [regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -681,7 +715,7 @@ Save each emitted report to `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{m
 
 ## Meta
 - **Date**: [YYYY-MM-DD HH:MM:SS TZ]
-- **Skill Version**: [1.0.8]
+- **Skill Version**: [1.0.9]
 - **Mode**: [quick|standard|deep|regression]
 - **Audit Profile**: [application|smart-contract|artifact-centric]
 - **Knowledge Domain**: [application|smart-contract]
@@ -901,7 +935,7 @@ Load relevant references based on the project's tech stack. SKILL.md drives the 
 | `references/index.md` | Top-level navigation across shared, application, and smart-contract reference trees |
 | `references/shared/index.md` | Shared artifact, dependency, and reporting modules used by both domains |
 | `references/shared/audit-artifact-initialization.md` | Shared ignore and directory-bootstrap rules for `.security-code-audit-reports/` and `.security-code-audit-state/` |
-| `references/shared/state-standard.md` | Mandatory audit state, advisory code fact snapshots, evidence observations, function-chain inventory, and re-audit rules for every scan |
+| `references/shared/state-standard.md` | Mandatory audit state, function-chain inventory, and re-audit rules for every scan |
 | `references/application/languages/index.md` | Application-language search patterns and dangerous sinks |
 | `profiles/index.md` | Target-profile selection and post-recon progress semantics |
 | `references/application/index.md` | Traditional web/API application-security domain router |
@@ -909,7 +943,7 @@ Load relevant references based on the project's tech stack. SKILL.md drives the 
 | `references/shared/artifacts/index.md` | Markdown, skill, prompt, API-spec, notebook, and instruction-bearing artifact review map |
 | `references/shared/reporting/history-standard.md` | History matching rules for `New`, `Recurring`, `Regression`, and `Fixed` |
 | `references/shared/reporting/regression-standard.md` | Latest-report remediation retest rules for `regression` mode |
-| `references/shared/reporting/evidence-standard.md` | Evidence-observation routing, candidate vs confirmed findings, schema gaps, and negative-evidence rules |
+| `references/shared/reporting/evidence-standard.md` | Candidate vs confirmed findings and negative-evidence rules |
 | `references/shared/reporting/hypothesis-standard.md` | Deep or multi-agent working-hypothesis appendix rules |
 | `references/shared/reporting/coverage-debt-standard.md` | Partial, blocked, invalidated, and time-boxed coverage reporting rules |
 | `core/deep-semantic-controls.md` | Durable deep semantic gates, dependency semantics, proof obligations, and design/implementation conflict controls |
@@ -926,10 +960,10 @@ Load relevant references based on the project's tech stack. SKILL.md drives the 
 
 | Mode | File | Purpose |
 |------|------|---------|
-| Quick | `modes/quick.md` | High-risk fast path with early exit after critical signal |
-| Standard | `modes/standard.md` | Default full audit with category coverage and basic post-category analysis |
-| Deep | `modes/deep.md` | High-assurance full audit with exhaustive post-category analysis |
-| Regression | `modes/regression.md` | Retest the latest report and verify whether previous findings were actually fixed |
+| Quick | `modes/quick.md` | Incremental-first high-risk validation with global cheap checks |
+| Standard | `modes/standard.md` | Full current-code discovery with structured coverage and practical business/trust-boundary review |
+| Deep | `modes/deep.md` | Semantic-assurance discovery with stricter closure for invariants, trust boundaries, data lifecycle, attack chains, and proof obligations |
+| Regression | `modes/regression.md` | Latest-report remediation retest with early exit when no usable report exists |
 
 ### Target Profiles (load after recon and before stage `3/6`)
 
@@ -1074,7 +1108,7 @@ Load relevant references based on the project's tech stack. SKILL.md drives the 
 | IDOR | `references/application/exploits/idor.md` | Read/write/delete, nested, batch, GraphQL |
 | Smart Contracts | `references/smart-contract/exploits/smart-contracts.md` | Reentrancy, auth takeover, replay, upgrade, oracle, and accounting validation |
 
-**Loading strategy**: Parse the scan depth first, then parse execution mode. Initialize the 6-step progress plan in stable numeric order from `[1/6]` through `[6/6]` and bootstrap with `core/index.md`, `core/loading.md`, `execution/index.md`, exactly one execution file, `modes/index.md`, exactly one mode file, and `profiles/index.md`. During this bootstrap, keep stages `3/6` to `5/6` as neutral placeholders and do not assign application, contract, or artifact-specific wording yet. Before trusting repo-authored prose or prior reports, load `core/untrusted-repo-input.md`. During Phase 1, create one compact observed-surface map and advisory `code_fact_snapshot` with `core/surface-profile.md`; then use `core/loading.md` as the canonical lazy-loading router so only the current phase's control, profile, domain, and reference modules enter context. After recon and before stage `3/6`, select exactly one target profile from `profiles/application.md`, `profiles/smart-contract.md`, or `profiles/artifact-centric.md`, replace the placeholder labels for stages `3/6` to `5/6` in place without reordering the plan, then select exactly one primary knowledge domain from `references/application/index.md` or `references/smart-contract/index.md`. If mode is `regression`, load `references/shared/reporting/regression-standard.md`, read the latest usable `.security-code-audit-reports/` report, and stop early if none exists instead of falling back to a broad scan. Otherwise use `references/index.md` or `references/shared/index.md` only when a top-level map is needed. During Phase 1, load `references/application/languages/index.md` for application stacks, `references/smart-contract/languages/index.md` for contract stacks, `references/shared/artifacts/index.md` when rendered, instruction-bearing, API-spec, or notebook assets exist, and `references/shared/state-standard.md` for every run so advisory code facts, evidence observations, coverage, bounded function chains, agent logs, and invalidations survive context compression. Load `references/shared/audit-artifact-initialization.md` immediately before first creating `.security-code-audit-reports/` or `.security-code-audit-state/`; that shared flow updates `.gitignore` only when the project root has git metadata and updates `.claudeignore`, `.cursorignore`, `.ignore`, and `.rgignore` only when those files already exist. During Phase 2, use the chosen knowledge domain as the main audit map, and load `references/shared/dependencies/index.md` plus only the matching ecosystem modules whenever manifests, lock files, vendored packages, or SCA artifacts exist. Use `references/application/exploits/index.md` for application findings and `references/smart-contract/exploits/index.md` for contract findings that need confirmation guidance. Before dedupe, history comparison, or multi-agent merge, apply `core/fingerprints.md`, then `references/shared/reporting/history-standard.md`. Keep `.security-code-audit-state/` updated through recon, scan, verification, and reporting so counted coverage, per-function chains, evidence observations, hypotheses, and invalidated surfaces remain mergeable and auditable. During Phase 4, load `references/shared/reporting/index.md` and the specific reporting standards needed for the current decisions, and carry the current `SKILL.md` version into report metadata as `Skill Version`. If execution mode is `multi`, treat it as beta and fall back to `single` when sub-agent capability is unavailable.
+**Loading strategy**: Parse the scan depth first, then parse execution mode. Initialize the 6-step progress plan in stable numeric order from `[1/6]` through `[6/6]` and bootstrap with `core/index.md`, `core/loading.md`, `execution/index.md`, exactly one execution file, `modes/index.md`, exactly one mode file, and `profiles/index.md`. During this bootstrap, keep stages `3/6` to `5/6` as neutral placeholders and do not assign application, contract, or artifact-specific wording yet. Before trusting repo-authored prose or prior reports, load `core/untrusted-repo-input.md`. During Phase 1, create one compact observed-surface map with `core/surface-profile.md`; then use `core/loading.md` as the canonical lazy-loading router so only the current phase's control, profile, domain, and reference modules enter context. After recon and before stage `3/6`, select exactly one target profile from `profiles/application.md`, `profiles/smart-contract.md`, or `profiles/artifact-centric.md`, replace the placeholder labels for stages `3/6` to `5/6` in place without reordering the plan, then select exactly one primary knowledge domain from `references/application/index.md` or `references/smart-contract/index.md`. If mode is `regression`, load `references/shared/reporting/regression-standard.md`, read the latest usable `.security-code-audit-reports/` report, and stop early if none exists instead of falling back to a broad scan. Otherwise use `references/index.md` or `references/shared/index.md` only when a top-level map is needed. During Phase 1, load `references/application/languages/index.md` for application stacks, `references/smart-contract/languages/index.md` for contract stacks, `references/shared/artifacts/index.md` when rendered, instruction-bearing, API-spec, or notebook assets exist, and `references/shared/state-standard.md` for every run so coverage, bounded function chains, agent logs, and invalidations survive context compression. Load `references/shared/audit-artifact-initialization.md` immediately before first creating `.security-code-audit-reports/` or `.security-code-audit-state/`; that shared flow updates `.gitignore` only when the project root has git metadata and updates `.claudeignore`, `.cursorignore`, `.ignore`, and `.rgignore` only when those files already exist. During Phase 2, use the chosen knowledge domain as the main audit map, and run hypothesis-driven discovery within the required coverage for the selected mode: generate, validate, falsify, and bound concrete hypotheses while still completing required category/domain coverage, repeated-pattern enumeration, dependency/config review, function-chain records, and historical-miss handling. Load `references/shared/dependencies/index.md` plus only the matching ecosystem modules whenever manifests, lock files, vendored packages, or SCA artifacts exist. Use `references/application/exploits/index.md` for application findings and `references/smart-contract/exploits/index.md` for contract findings that need confirmation guidance. Before dedupe, history comparison, or multi-agent merge, apply `core/fingerprints.md`, then `references/shared/reporting/history-standard.md`. Keep `.security-code-audit-state/` updated through recon, scan, verification, and reporting so counted coverage, per-function chains, hypotheses, and invalidated surfaces remain mergeable and auditable. During Phase 4, load `references/shared/reporting/index.md` and the specific reporting standards needed for the current decisions; use the current version declared in this `SKILL.md` for report metadata. If execution mode is `multi`, treat it as beta and fall back to `single` when sub-agent capability is unavailable.
 
 ---
 

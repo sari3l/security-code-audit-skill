@@ -1,6 +1,6 @@
 # security-code-audit
 
-当前版本：`v1.0.8`
+当前版本：`v1.0.9`
 
 面向 Web/API、后端、全栈、智能合约，以及 artifact-centric 仓库的代码安全审计 skill。
 
@@ -56,80 +56,90 @@ English documentation: [README.md](README.md)
 
 ## 3. 架构
 
-运行时架构：分阶段扫描、按目标画像路由、advisory code facts、evidence observation routing、按需加载，并通过 bounded tracing 和持久化 state 保持一致性。
+运行时架构：分阶段扫描、mode policy、执行拓扑、state freshness 检查、按目标画像路由、advisory code facts、evidence observation routing、按需加载，并通过 bounded tracing 和持久化 state 保持一致性。
 
 ```mermaid
 flowchart TD
     A["用户命令<br/>/security-code-audit [mode] [execution]"]
     B["SKILL.md<br/>入口路由 + 共享工作流"]
+    MP["Mode policy<br/>quick | standard | deep | regression<br/>scope、depth、stop conditions"]
+    C["启动控制面<br/>解析 mode 和 execution<br/>加载 core、execution、mode rules"]
+    X["执行拓扑<br/>single | multi<br/>ownership、sharding、worker contract、merge"]
 
-    C["启动控制面<br/>解析 mode<br/>加载 core 控制与模式规则"]
-    X["执行拓扑<br/>execution/index.md<br/>single-agent | multi-agent<br/>worker-contract、sharding 与 merge"]
-    D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts、<br/>项目声明和风险面"]
-    RUI["core/untrusted-repo-input.md<br/>把仓库文档、注释、旧报告和声明<br/>视为 repo-authored untrusted input"]
-    PC["core/project-context.md<br/>验证仓库文档声明、业务不变量、<br/>部署假设和近期变更主题"]
-    CF["core/surface-profile.md<br/>surface profile + advisory code_fact_snapshot<br/>entrypoints、routes、sinks、state transitions、<br/>artifact surfaces 与 limitations"]
+    ST[".security-code-audit-state<br/>机器可读 continuity state"]
+    SR["State reader<br/>freshness、invalidation、<br/>continuation、merge hints<br/>不是安全证明"]
+
+    D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts、<br/>claims、risk areas 和 state freshness"]
+    RUI["core/untrusted-repo-input.md<br/>repo docs、comments、old reports<br/>和 claims 只作为 hints"]
+    PC["core/project-context.md<br/>verified claims、business invariants、<br/>trust-boundary assumptions、<br/>deployment assumptions、change themes"]
+    CF["core/surface-profile.md<br/>surface profile + code_fact_snapshot<br/>entrypoints、routes、sinks、<br/>state transitions、artifacts、limitations"]
+    CB["Audit context bundle<br/>observed surfaces、business assets、<br/>invariants、trust boundaries、<br/>code facts、limitations、invalidations"]
+
     E["目标画像选择<br/>application | smart-contract | artifact-centric"]
-
     F["core/loading.md<br/>懒加载 + 按需路由"]
-    G["主知识域<br/>application 或 smart-contract"]
+    G["主知识域<br/>application | smart-contract"]
     H["共享模块<br/>artifacts、dependencies、tooling、<br/>reporting、state 标准"]
-    T["核心质量控制<br/>integrity、coverage、severity<br/>以及 bidirectional tracing"]
-    Q["core/deep-semantic-controls.md<br/>deep gates、dependency semantics、<br/>proof obligations 和 conflicts"]
+    T["核心质量控制<br/>integrity、coverage、findings、<br/>severity、fingerprints、tracing"]
+    Q["core/deep-semantic-controls.md<br/>deep、multi 或复杂高风险 surface"]
     U["可选辅助工具链<br/>references/shared/tooling/command-resolution.md<br/>解析仓库命令与 scanner 证据，<br/>不是审计主干"]
 
-    I["定向审计阶段<br/>按当前目标面加载并执行对应审计方法"]
+    I["Hypothesis-driven 审计阶段<br/>generate、validate、falsify、bound<br/>当前代码发现深度由 mode 控制"]
     EO["Evidence observation envelope<br/>raw observations、tool output、blockers、<br/>negative evidence、schema gaps、custom signals"]
     J["证据收敛与整理<br/>路由 observations、验证 findings、去重，<br/>收敛 gates、tools 与 coverage debt"]
     HM["Historical miss gate<br/>先用当前代码重开历史 findings，<br/>再做生命周期标签判断"]
     K["报告与回归<br/>输出 findings、对比历史、验证修复"]
 
-    S[".security-code-audit-state/<br/>run context、project context、code facts、<br/>evidence observations、tool invocations、<br/>coverage ledgers、deep gates、function chains、<br/>hypotheses、invalidations"]
-    SF["State freshness + invalidation check<br/>state 只帮助续跑与聚焦，<br/>不能替代 fresh recon 或安全证明"]
     R[".security-code-audit-reports/<br/>人类可读 findings 和历史报告"]
 
     A --> B
+    B --> MP
     B --> C
     C --> X
+    ST -. read .-> SR
+    SR -. freshness 与 invalidation .-> D
+    SR -. continuation 与 open obligations .-> CB
+    SR -. merge ledgers 与 coverage state .-> J
+    MP --> D
     X --> D
-    D --> RUI
-    RUI --> PC
-    PC --> CF
-    CF --> E
+    RUI --> D
+    D --> PC
+    D --> CF
+    PC --> CB
+    CF --> CB
+    CB --> E
     E --> F
-
     F --> G
     F --> H
     F --> T
     F --> Q
     H --> U
-
+    MP --> I
+    X --> I
     G --> I
     H --> I
     T --> I
-    Q --> I
-    U -. 可选 scanner 证据<br/>与命令上下文 .-> I
+    Q -. conditional semantic controls .-> I
+    U -. 可选 scanner 证据 .-> I
     U -. tool-output observations<br/>与 blockers .-> EO
     I --> EO
     EO --> J
     J --> HM
     HM --> K
     K --> R
-
-    X -. 持久化 agent 拓扑、<br/>分片与 merge 输入 .-> S
-    D -. 初始化或刷新扫描 state .-> S
-    PC -. 持久化已验证声明、业务不变量、<br/>冲突与变更主题 .-> S
-    CF -. 持久化 code facts、<br/>parser notes 与 limitations .-> S
-    F -. 持久化已选模块 .-> S
-    U -. 记录命令探测、执行、<br/>blocker 与 manual fallback .-> S
-    EO -. 在 promotion、rejection<br/>或 routing 前保留 observations .-> S
-    I -. 更新 findings、traces、tools、<br/>deep gates 与 coverage .-> S
-    J -. 延续假设、proof obligations<br/>与失效记录 .-> S
-    HM -. 记录漏掉的历史路径<br/>或允许生命周期对比 .-> S
-    S -. 支撑 quick 基线、长扫描、<br/>回归与多 agent 连续性 .-> SF
-    SF -. state 足够新时在 recon 刷新后<br/>辅助聚焦 .-> I
-    R -. regression 模式复用最新报告 .-> K
+    X -. persist topology 与 merge inputs .-> ST
+    D -. persist run context .-> ST
+    PC -. persist project context .-> ST
+    CF -. persist code facts 与 limitations .-> ST
+    F -. persist selected modules .-> ST
+    U -. persist command probes 与 blockers .-> ST
+    EO -. preserve observations before routing .-> ST
+    I -. update traces、tools、gates、coverage .-> ST
+    J -. persist hypotheses、obligations、invalidations .-> ST
+    HM -. persist historical misses 或 lifecycle allowance .-> ST
+    R -. regression input only .-> K
 ```
+
+`State reader` 是概念性操作，不是新的运行时服务或文件。它读取 prior state，总结 freshness、invalidation、continuation 和 merge hints；这些 hints 只用于定向，不作为安全证明。
 
 这套 skill 按层拆分：
 
