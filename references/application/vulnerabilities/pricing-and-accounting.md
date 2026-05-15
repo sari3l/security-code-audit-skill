@@ -23,6 +23,19 @@ Use this file when money, credits, balances, fees, exchange rates, quotas with m
 
 ---
 
+## Shape Hint: Client Amount Becomes Settlement Truth
+
+```javascript
+// Pseudo-shape only, not a signature.
+const total = req.body.total;
+await charge(user.card, total);
+await createOrder({ userId: user.id, total, items: req.body.items });
+```
+
+Do not report by matching this shape alone. Confirm the attacker can influence money, credit, quota, rate, discount, or unit fields; identify the server-side source of truth that should govern settlement; trace the final ledger, payment, refund, or provider callback path; and show a concrete overcharge, undercharge, credit, refund, or reconciliation impact.
+
+---
+
 ## Deep Semantic Gate
 
 In `deep` mode, create a `pricing_accounting` gate for each money, credit, balance, refund, discount, exchange-rate, quota-with-monetary-value, or settlement flow.

@@ -1,5 +1,7 @@
 # Race Condition Vulnerabilities
 
+The examples in this file are shape hints, not signatures. Do not report a race by matching a read/check/write code shape alone. Confirm the shared state, the attacker-controlled concurrency or replay window, the missing atomicity/idempotency/lock boundary, the interleaving that violates the invariant, and the concrete duplicate spend, state transition, quota, privilege, or availability impact.
+
 ## Read-Modify-Write Without Atomicity
 
 The classic pattern: read a value, compute a new value, write it back. If two threads interleave, one write is lost.

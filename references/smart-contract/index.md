@@ -2,7 +2,7 @@
 
 Use this domain when the repo is primarily Solidity or contract-heavy on-chain logic.
 
-This domain exists because contract auditing is not a thin variant of web Top 10 review. It must center trust boundaries, privileged roles, external calls, token behavior, accounting, signatures, upgradeability, oracle assumptions, and attacker profit paths.
+This domain exists because contract auditing is not a thin variant of web Top 10 review. It must center trust boundaries, privileged roles, external calls, token behavior, accounting, signatures, upgradeability, oracle assumptions, signer/frontend/supply chain trust, and attacker profit paths.
 
 ---
 
@@ -48,6 +48,7 @@ These remain relevant when the surface matches, but they are supporting lenses r
 - reconstruct invariants before chasing isolated patterns
 - model attacker profit paths, not just code smell
 - treat token semantics and market assumptions as part of the system
+- treat signer UX, frontend transaction builders, deployment scripts, relayers, and supply chain inputs as in-scope only when they can directly affect on-chain assets, authority, signatures, or upgrades
 - separate code exploitability from economic feasibility, but capture both when relevant
 - do not force contract review into an application-style category cadence
 

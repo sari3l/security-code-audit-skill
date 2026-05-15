@@ -58,6 +58,20 @@ Typical impact includes:
 
 ---
 
+## Shape Hint: Validated File Becomes A Different Object
+
+```python
+# Pseudo-shape only, not a signature.
+file = request.files["upload"]
+validate_extension(file.filename)
+path = f"{tenant_id}/{file.filename}"
+storage.put(path, file.read())
+```
+
+Do not report by matching this shape alone. Confirm attacker influence over filename, object key, archive entry, content type, size, replacement target, or signed URL; trace the file from ingress through validation, storage, processing, publication, and download; identify where ownership, namespace, path, content, or quota assumptions drift; and show overwrite, unauthorized access, stored content execution, parser abuse, or DoS impact.
+
+---
+
 ## Safe Patterns
 
 - generate server-side random storage names or immutable object keys

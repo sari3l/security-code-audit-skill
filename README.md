@@ -1,6 +1,6 @@
 # security-code-audit
 
-Current release: `v1.0.10`
+Current release: `v1.1.0`
 
 Code security audit skill for web/API, backend, full-stack, smart-contract, and artifact-centric repositories.
 
@@ -49,6 +49,10 @@ Examples:
   Partial, blocked, or invalidated review areas are carried forward as coverage debt instead of being reported as fully covered.
 - Evidence-gated findings
   Main findings stay limited to confirmed issues, while unresolved high-signal cases remain visible as candidate signals or working hypotheses instead of being silently dropped.
+- Shape hints with evidence gates
+  Reference modules now include concise risk-shape examples for common application and smart-contract failures. These examples are prompts for investigation, not signatures; every finding still requires attacker influence, a reachable failed boundary or invariant, missing effective controls, and concrete impact.
+- 2025 incident-pattern coverage
+  Smart-contract guidance now covers DeFi/DEX/lending/bridge, upgradeable, signer, frontend transaction-builder, relayer, admin, and supply-chain paths when they can affect on-chain assets, authority, signatures, or upgrades.
 - History and regression support
   Findings are compared against `.security-code-audit-reports/`, and `regression` mode can retest the latest report directly after a fresh current-state pass or report-baseline selection.
 - Optional multi-agent execution

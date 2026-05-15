@@ -74,6 +74,19 @@ The root cause is subject-resource-action resolution drift.
 
 ---
 
+## Shape Hint: Policy Checks A Different Object
+
+```python
+# Pseudo-shape only, not a signature.
+invoice = Invoice.objects.get(id=request.json["invoice_id"])
+authorize(current_user, tenant_slug=request.params["tenant"])
+invoice.update(status="paid")
+```
+
+Do not report by matching this shape alone. Confirm attacker control over an ID, slug, body field, route, batch item, or alternate transport; show that the policy checks a different canonical subject, resource, action, or tenant than the final read/write/export/delete path; then identify the concrete data or state the attacker can access or change.
+
+---
+
 ## Dangerous Patterns
 
 ```python

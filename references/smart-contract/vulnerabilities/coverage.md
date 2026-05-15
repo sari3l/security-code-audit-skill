@@ -17,7 +17,7 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 | Oracle / Market Abuse | Price source, freshness, manipulation resistance, liquidation math, and same-tx reserve dependence reviewed? Economic exploit path considered? | | |
 | Upgradeability And Deployment | Proxy type identified? Upgrade auth and init reachability reviewed? Storage-layout risk considered? Deployment and environment assumptions checked? | | |
 | Token Integration Semantics | ERC20/777/721/1155 behavior assumptions reviewed? Non-standard return values, hooks, and transfer semantics handled safely? | | |
-| Supporting Shared Surfaces | Dependency/tooling, infrastructure, config, logging/monitoring, and off-chain trust reviewed where present? Command resolution applied before optional tools such as Foundry/Hardhat scripts, Slither, Mythril, dependency scanners, or IaC/container scanners? | | |
+| Supporting Shared Surfaces | Dependency/tooling, infrastructure, config, logging/monitoring, signer/frontend/supply chain trust reviewed where present? Command resolution applied before optional tools such as Foundry/Hardhat scripts, Slither, Mythril, dependency scanners, or IaC/container scanners? | | |
 
 ---
 
@@ -27,7 +27,7 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 - **Mandatory when applicable**: Oracle / Market Abuse for any price-sensitive or liquidity-sensitive protocol
 - **Mandatory when applicable**: Upgradeability And Deployment for any proxy, factory, clone, beacon, or staged deployment system
 - **Mandatory when applicable**: Token Integration Semantics when integrating external tokens or token standards beyond trivial fixed-behavior assumptions
-- **Mandatory**: Supporting shared surfaces whenever manifests, CI/deployment config, signer env, or operational infrastructure exist
+- **Mandatory**: Supporting shared surfaces whenever manifests, CI/deployment config, signer env, frontend transaction builders, Safe/multisig apps, relayers, keepers, RPC config, or operational infrastructure can affect contract assets, authority, signatures, or upgrades
 - **Mandatory**: Security-relevant contract functions and privileged state transitions must have bounded function-chain records or explicit coverage debt
 
 ---
@@ -40,6 +40,7 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 - external-call and callback paths triaged
 - obvious accounting or signature red flags checked
 - high-risk exploit path documented when present
+- signer, frontend, supply chain, or ProxyAdmin trust triaged when it can directly affect assets or upgrades
 
 ### Standard Audit
 
@@ -47,6 +48,7 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 - any omitted optional surface has explicit written justification
 - at least one invariant-oriented accounting review completed
 - exploitability described in code and economic terms where relevant
+- signer/frontend/supply chain assumptions documented for any Safe/multisig, upgradeable, relayer, bridge, or admin-heavy protocol
 - counted coverage totals reconciled and bounded function-chain records captured for in-scope contract functions
 
 ### Deep Audit
@@ -56,5 +58,6 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 - accounting model reconstructed end to end
 - attacker profit path analyzed for market-sensitive findings
 - deployment, upgrade, signer, and off-chain trust assumptions reviewed in detail
+- frontend-assisted signing, supply chain to signature, and ProxyAdmin blast-radius controls reviewed when present
 - compound exploit paths documented where they materially change impact
 - every in-scope privileged, accounting, signature, call, or upgrade function has a bounded function-chain record or explicit coverage debt

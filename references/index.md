@@ -4,6 +4,19 @@ This directory is the skill's reference library. Use it as the top-level navigat
 
 Execution strategy files live in `../modes/` and quality-control files live in `../core/`. They are intentionally not stored under `references/` because they control workflow quality and depth rather than provide audit knowledge.
 
+## Shape Hints And Evidence Gates
+
+Some vulnerability modules include short `Shape Hint` examples. Treat them as risk-shape prompts, not signatures, payload lists, or exhaustive checks.
+
+When a shape hint looks similar to target code, do not promote it to a finding until the audit records:
+- attacker control or reachable untrusted influence
+- the trust boundary, invariant, parser, policy, state machine, or authority path that fails
+- the exact runtime path from source to sink, decision, state change, or on-chain action
+- missing or ineffective compensating controls on that real path
+- concrete impact on data, authority, funds, execution, integrity, or availability
+
+When target code does not resemble the example, do not mark the surface safe. Reconstruct the underlying invariant or trust boundary and record negative evidence if the path is actually closed.
+
 ## Sections
 
 - `references/shared/index.md`

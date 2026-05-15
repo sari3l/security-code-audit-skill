@@ -87,6 +87,18 @@ Keep using this overview plus the language/framework modules until a deeper spec
 
 ---
 
+## Shape Hint: Data Changes Interpreter Structure
+
+```javascript
+// Pseudo-shape only, not a signature.
+const sort = req.query.sort;
+db.query(`SELECT * FROM orders ORDER BY ${sort}`);
+```
+
+Do not report by matching this shape alone. Confirm untrusted input reaches an interpreter-like sink after decoding, normalization, templating, or wrapper helpers; identify which grammar boundary changes; verify why parameterization, allowlists, escaping, or typed APIs do not apply on the real path; and show the resulting data, command, query, template, or object-materialization impact.
+
+---
+
 ## What To Enumerate First
 
 1. every route, job, CLI, webhook, consumer, or scheduled task receiving external input

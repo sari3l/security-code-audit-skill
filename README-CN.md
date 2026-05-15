@@ -1,6 +1,6 @@
 # security-code-audit
 
-当前版本：`v1.0.10`
+当前版本：`v1.1.0`
 
 面向 Web/API、后端、全栈、智能合约，以及 artifact-centric 仓库的代码安全审计 skill。
 
@@ -49,6 +49,10 @@ English documentation: [README.md](README.md)
   对于 partial、blocked、invalidated 的审计面，会显式记录成 coverage debt，而不是假装已经扫完。
 - 证据分层
   主 findings 只保留已确认问题，高信号但未证实的内容会进入 candidate signals 或 working hypotheses，而不是被静默丢掉。
+- Shape hint 与 evidence gate
+  reference 模块现在包含针对常见应用与智能合约问题的简洁风险形状示例。这些示例只用于启发调查，不是签名；每个 finding 仍需证明攻击者影响、可达的失效边界或不变量、补偿控制缺失，以及具体影响。
+- 2025 incident pattern 覆盖
+  智能合约方法论现在覆盖 DeFi/DEX/lending/bridge、upgradeable、signer、frontend transaction builder、relayer、admin 和 supply-chain 路径，只要它们能影响链上资产、权限、签名或升级。
 - 历史与回归支持
   `.security-code-audit-reports/` 保存人类可读报告，`regression` 可基于最近报告做回归验证，并配合当前扫描结果做历史比对。
 - 可选多 agent

@@ -1,6 +1,6 @@
 ---
 name: security-code-audit
-version: 1.0.10
+version: 1.1.0
 description: |
   Help: `/security-code-audit help` or `/security-code-audit --help`.
   Code security scanning capability for web/API and smart-contract repositories, provided by the RockBund Capital Security Team.
@@ -11,7 +11,7 @@ description: |
 
 A systematic, language-agnostic security audit framework with tiered scanning depth and one standardized report output.
 
-Current skill version: `1.0.10`.
+Current skill version: `1.1.0`.
 
 The delivered runtime surface is `SKILL.md` plus subdirectories. Root-level README, architecture, AI-maintainer, and versioning documents are internal maintainer files only; do not depend on them at audit runtime.
 
@@ -324,7 +324,7 @@ Mode-specific reconnaissance depth lives in `modes/*.md`:
 ```
 [RECON]
 Project: {name}
-Skill Version: {security-code-audit 1.0.10}
+Skill Version: {security-code-audit 1.1.0}
 Deployment Context: {auth owner, network reachability, reverse-proxy or host-app mount constraints when material}
 Audit Profile: {application|smart-contract|artifact-centric}
 Knowledge Domain: {application|smart-contract}
@@ -359,7 +359,7 @@ Example preferred rendering:
 ```markdown
 **[RECON]**
 - `Project`: vuln-bank
-- `Skill Version`: `security-code-audit 1.0.10`
+- `Skill Version`: `security-code-audit 1.1.0`
 - `Deployment Context`: Superset-served admin blueprint behind FAB auth, MCP bound to internal network only
 - `Audit Profile`: `application`
 - `Knowledge Domain`: `application`
@@ -627,7 +627,7 @@ Print directly in the conversation:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.10]
+**Skill Version:** [1.1.0]
 **Mode:** [quick|standard|deep|regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -711,7 +711,7 @@ Regression mode uses this summary shape instead:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.0.10]
+**Skill Version:** [1.1.0]
 **Mode:** [regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -737,7 +737,7 @@ Save each emitted report to `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{m
 
 ## Meta
 - **Date**: [YYYY-MM-DD HH:MM:SS TZ]
-- **Skill Version**: [1.0.10]
+- **Skill Version**: [1.1.0]
 - **Mode**: [quick|standard|deep|regression]
 - **Audit Profile**: [application|smart-contract|artifact-centric]
 - **Knowledge Domain**: [application|smart-contract]

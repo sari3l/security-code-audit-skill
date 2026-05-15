@@ -67,6 +67,19 @@ The root cause is interpretation drift, not the literal string itself.
 
 ---
 
+## Shape Hint: Checked Path Differs From Opened Path
+
+```python
+# Pseudo-shape only, not a signature.
+name = request.args["file"]
+if ".." not in name:
+    return send_file(os.path.join(BASE_DIR, unquote(name)))
+```
+
+Do not report by matching this shape alone. Confirm attacker influence over path, filename, object key, archive entry, or proxy path; identify each decode, normalize, join, resolve, symlink, or object-store interpretation step; verify the final location crosses the intended base, prefix, or extraction boundary; and show read, write, overwrite, disclosure, or chained execution impact.
+
+---
+
 ## Safe Patterns
 
 - generate server-side storage names or map user identifiers to fixed paths

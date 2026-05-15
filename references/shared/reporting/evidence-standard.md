@@ -75,6 +75,7 @@ Promote an `evidence_observation` only after it has been routed through the same
 
 Do not promote based on:
 - pattern match alone
+- matching a `Shape Hint`, vulnerable/fixed example, public PoC, or sample payload alone
 - generic sink presence alone
 - suspicious command text alone in instruction-bearing artifacts
 - title similarity to a previous finding

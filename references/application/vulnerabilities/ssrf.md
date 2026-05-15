@@ -61,6 +61,19 @@ The root cause is destination-resolution drift.
 
 ---
 
+## Shape Hint: Validated URL Is Not Final Destination
+
+```python
+# Pseudo-shape only, not a signature.
+url = request.json["webhook_url"]
+if url.startswith("https://trusted.example/"):
+    requests.get(url, allow_redirects=True)
+```
+
+Do not report by matching this shape alone. Confirm attacker influence over URL, redirect, DNS, host, scheme, headers, renderer input, or queued fetch data; reconcile the validated destination with the final client, proxy, DNS, and redirect destination; then show internal reachability, credential exposure, metadata access, file read, or other trust-context impact.
+
+---
+
 ## Safe Patterns
 
 - strict allowlists by resolved IP or tightly-scoped domains

@@ -4,6 +4,8 @@ Use this index as the main methodology map for Solidity and contract-heavy audit
 
 The files in this directory are ordered to match how contract review should usually progress: trust first, then call boundaries, then accounting, signatures, oracle assumptions, upgradeability, and final coverage.
 
+For DeFi, DEX, lending, bridge, cross-chain, upgradeable, Safe/multisig, frontend-assisted signing, relayer, or admin-heavy systems, prioritize the 2025 incident patterns now embedded in the modules: business-logic breaks, access-control failures, algorithm/math defects, supply chain to signature paths, frontend-to-admin-action paths, and private-key/signer compromise blast radius.
+
 ---
 
 ## Module Map
@@ -38,5 +40,6 @@ The files in this directory are ordered to match how contract review should usua
 
 1. Start with `smart-contracts.md`.
 2. Load the deep dives that match the observed surface.
-3. Load `coverage.md` near stage `5/6` and final report generation.
-4. Use `../standards/index.md` only as a standards overlay after the technical review path is already clear.
+3. For DeFi, DEX, lending, bridge, cross-chain, upgradeable, Safe/multisig, frontend-assisted signing, or relayer-heavy repos, make sure the matching accounting, oracle, trust, signature, upgrade, and supporting shared-surface checks are not skipped as "operational."
+4. Load `coverage.md` near stage `5/6` and final report generation.
+5. Use `../standards/index.md` only as a standards overlay after the technical review path is already clear.

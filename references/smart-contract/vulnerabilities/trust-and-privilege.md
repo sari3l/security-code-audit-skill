@@ -8,6 +8,7 @@ Start here when ownership, admin rights, signer authority, rescue flows, initial
 
 - all privileged roles: owner, admin, operator, upgrader, pauser, guardian, rescuer, keeper, signer
 - how each role is granted, revoked, and rotated
+- which multisig, Safe app, hardware wallet, frontend, relayer, or runbook constructs the transaction each role signs
 - whether proxy admin and implementation auth are separated correctly
 - whether constructor assumptions were moved into `initialize`
 - whether emergency or recovery paths bypass ordinary accounting
@@ -28,6 +29,9 @@ Start here when ownership, admin rights, signer authority, rescue flows, initial
 - recovery or sweep helpers that can touch transient user funds before settlement fully closes
 - signer rotation or admin change flows with no delay, no quorum, or weak caller checks
 - proxy admin and app admin sharing one overly-powerful actor without controls
+- Safe or multisig workflows where signers approve opaque calldata, blind signing, delegatecall modules, or frontend-rendered semantics that do not match the transaction
+- private-key or signer compromise with no timelock, withdrawal cap, pause, revocation, or on-chain circuit breaker limiting blast radius
+- ProxyAdmin, owner, guardian, or keeper authority that can be captured through frontend tampering, signer-device prompts, CI secrets, relayer config, or deployment runbooks
 
 ---
 
@@ -42,6 +46,8 @@ Start here when ownership, admin rights, signer authority, rescue flows, initial
 - Do pause, unpause, rescue, recovery, or ownership-transfer actions emit events that monitoring and governance tooling can rely on?
 - Did a remediation add a new privileged helper or fallback path that silently reopens the original trust boundary?
 - Are governance, timelock, multisig, or operator assumptions enforced on-chain, or just documented off-chain?
+- Can a valid quorum sign a malicious upgrade, transfer, approval, or config change because the UI, transaction builder, or hardware wallet prompt hides the true target or calldata?
+- If a signer or private key is compromised, which on-chain controls limit loss before humans notice?
 - Can deployment or upgrade sequencing leave a temporary takeover window?
 
 ---
@@ -53,4 +59,6 @@ Start here when ownership, admin rights, signer authority, rescue flows, initial
 - compare intended role model with actual modifiers and storage fields
 - treat custom pause implementations as first-class review surfaces; compare eventing, public observability, and gating consistency with standard `Pausable` expectations
 - trace privilege through proxies, factories, registries, and signers
+- trace privilege through the transaction-construction path: Safe app, frontend bundle, relayer, keeper, script, RPC endpoint, hardware-wallet prompt, and final calldata
+- distinguish "multisig exists" from "signers can verify what they are authorizing"; quorum does not prove semantic safety
 - document any privileged path that can drain, freeze, or rewrite user state

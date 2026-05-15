@@ -10,6 +10,8 @@ This directory contains principle- and methodology-focused vulnerability referen
 Exploit reproduction and payload-heavy confirmation flows live in `references/application/exploits/`.
 Treat public POCs and sample payloads as examples only. The real audit target is the parser, normalizer, serializer, router, policy, or state logic that makes those probes work.
 
+When a module includes `Shape Hint` code or pseudo-flow, use it only to recognize a risk shape. A confirmed finding still needs the evidence gate from `references/index.md`: attacker control, failed trust boundary or invariant, reachable path, missing compensating control, and concrete impact.
+
 ---
 
 ## Core Modules
