@@ -2,7 +2,7 @@
 
 Use this file to keep finding boundaries, grouping, dedupe, and lifecycle handling consistent.
 
-Finding controls consume the flexible evidence envelope from audit state. An `evidence_observation` is preserved signal, not a confirmed finding.
+Finding controls consume the flexible evidence envelope from audit state. An `evidence-observations.jsonl` record is preserved signal, not a confirmed finding.
 
 ## Granularity Rules
 
@@ -36,7 +36,7 @@ Finding controls consume the flexible evidence envelope from audit state. An `ev
 ## Maturity Rules
 
 - Distinguish finding maturity from historical status.
-- Treat `evidence_observations` as pre-promotion evidence. Route each material observation to a confirmed finding, candidate signal, negative evidence, coverage debt, working hypothesis, integration assumption, supplemental note, or skill optimization suggestion.
+- Treat `evidence-observations.jsonl` records as pre-promotion evidence. Route each material observation to a confirmed finding, candidate signal, negative evidence, coverage debt, working hypothesis, integration assumption, supplemental note, or skill optimization suggestion.
 - Use `Confirmed` for issues with enough code, exploitability, and impact evidence to enter the main findings list.
 - Use `Candidate` for high-signal suspicious cases that still lack sufficient proof.
 - Do not let `Candidate` entries appear in the main findings list.

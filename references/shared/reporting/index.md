@@ -40,6 +40,8 @@ Use these files to keep reports consistent, auditable, and actionable:
 - Load `poc-standard.md` whenever a finding is Critical, High, or otherwise needs reproduction evidence.
 - Apply `core/severity.md` first when assigning severity, then use `severity-guide.md` for example mappings and report phrasing.
 - Load `overview-standard.md` and `statistics-standard.md` when generating the final report summary.
-- Reconcile counted coverage totals, function-chain totals, code fact limitations, and material evidence-observation routing against audit state before finalizing the report.
+- Reconcile counted coverage totals, function-chain totals, inventory limitations, material evidence-observation routing, merge queue status, and quality gates against audit state before finalizing the report.
+- Evaluate audit state quality gates before emitting complete coverage claims. Optional external validators may assist maintainers, but the report cannot depend on a Python runtime. If any gate fails, mark the run partial/blocked/invalidated as appropriate and create coverage debt for the failed gates.
+- Report-visible findings, candidates, coverage debt, working hypotheses, and attack chains should link to current-run state record ids when material. Historical knowledge alone is not enough evidence.
 - Use the current version declared in root `SKILL.md` when writing report metadata so the output records the skill revision used; do not load root-level internal maintainer docs at audit runtime.
 - Keep the report concise, but never drop exploitability, evidence, minimal-fix guidance, candidate signals, coverage debt, or historical context.

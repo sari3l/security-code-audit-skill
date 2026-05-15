@@ -36,7 +36,7 @@ Use this file when prices, reserves, liquidity, liquidation thresholds, or time-
 
 ## Deep Semantic Gate
 
-In `deep` mode, create an `oracle_market_abuse` entry in `deep_gate_ledger` for every price-sensitive or liquidity-sensitive trust boundary.
+In `deep` mode, create an `oracle_market_abuse` entry in audit state `deep-gates.jsonl` for every price-sensitive or liquidity-sensitive trust boundary.
 
 The gate is not `covered` until the audit records:
 - every trusted price source, adapter, fallback, reserve read, TWAP, off-chain signer, and keeper-fed value that can influence mint, borrow, redeem, liquidation, settlement, or reward math

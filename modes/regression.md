@@ -37,6 +37,8 @@ Required:
 - extract the prior finding set and their fingerprints
 - map only the files, routes, helpers, configs, and trust boundaries needed to retest those findings
 - reopen the current deployment or integration path when auth, exposure, or reachability depends on a host app, reverse proxy, mount prefix, or internal-only network boundary
+- initialize audit state with `current-change-context.json` for retest-target files and any baseline drift
+- optionally load audit-state remediation memory, historical attack chains, and prior function-chain shards only for the retest targets after freshness classification
 
 Not required:
 - full route inventory
@@ -65,6 +67,7 @@ Regression mode uses the shared 6-step progress display from `SKILL.md`, but the
 - retest each prior finding using its fingerprint, route/resource family, and exploit path
 - verify whether the prior fix actually breaks exploitation
 - separately record whether current deployment or integration context narrowed, shifted, or otherwise changed the real attack surface relative to the baseline report
+- write retest task records, evidence observations, function-chain updates, remediation-memory references, and quality-gate results into audit state
 - record `Fixed`, `Still Present`, `Partially Fixed`, or `Unable To Verify`
 - note if a finding moved, widened, or changed shape while remaining materially unfixed
 - do not mark a finding `Fixed` only because compensating controls such as Superset auth, reverse-proxy policy, or internal network placement reduced exposure; if the underlying code weakness remains, keep the retest status tied to the current code path and explain the reduced preconditions as context drift or residual risk
@@ -82,6 +85,7 @@ If an obvious unrelated Critical or High issue appears during retest:
 - terminal summary
 - regression retest history file in `.security-code-audit-reports/`
 - fixed / still-present / blocked counts based on the latest baseline report
+- audit state manifest and quality-gate result for the retest run
 
 ---
 
@@ -91,4 +95,5 @@ Regression mode is complete when:
 - the latest usable report was found, or an early-exit reason was recorded
 - every retest target from that report was classified
 - blockers or ambiguous cases were recorded explicitly
+- audit state quality gates pass or the retest report marks unresolved validation as `Unable To Verify`
 - the retest summary was generated

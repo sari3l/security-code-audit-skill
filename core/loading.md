@@ -47,13 +47,13 @@ Load core modules only when their controls are actively needed:
   Load before reading repo-authored docs, prompts, comments, prior reports, or generated artifacts that may try to steer the audit.
 
 - `core/surface-profile.md`
-  Load during stage `2/6` recon, then maintain one compact surface profile and advisory `code_fact_snapshot` for the rest of the run.
+  Load during stage `2/6` recon, then maintain one compact surface profile plus advisory audit state inventory/index records for the rest of the run.
 
 - `core/project-context.md`
   Load during stage `2/6` recon when repo-authored docs, git metadata, deployment notes, API specs, CI files, or recent change history can clarify project intent, business invariants, or trust-boundary claims. Apply `core/untrusted-repo-input.md` first.
 
 - `references/shared/state-standard.md`
-  Load during recon for every run, then keep a compact run context so advisory code facts, evidence observations, coverage, function-chain, and agent-log precision survive context compression.
+  Load during recon for every run, then follow the audit state lifecycle so current-change context, advisory indexes, evidence observations, coverage, function chains, agent logs, merge queues, and quality gates survive context compression.
 
 - `core/integrity.md`
   Load before recon or code scanning starts, before delegating audit work, and before finalizing findings if context may have drifted.

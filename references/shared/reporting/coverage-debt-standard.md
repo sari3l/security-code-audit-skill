@@ -29,7 +29,8 @@ Create a coverage-debt item when a surface is:
 - missing bounded function-chain output for a security-relevant function still in scope
 - missing required deep semantic gate output for a high-risk `deep` surface
 - carrying unresolved proof obligations that affect coverage, exploitability, remediation, or severity
-- carrying material `code_fact_snapshot.limitations` or unrouted `evidence_observations` that affect security-relevant coverage
+- carrying material audit state inventory/index limitations or unrouted `evidence-observations.jsonl` records that affect security-relevant coverage
+- failing an audit state quality gate such as missing `current-change-context.json`, unresolved final-blocking merge queue item, invalidated record used as coverage, or unreconciled function-chain counts
 
 Typical examples:
 - auth middleware reviewed on core routes but not all legacy routes

@@ -47,6 +47,7 @@ In addition to the shared base recon in `SKILL.md`, standard mode requires:
 - sensitive-area mapping
 - security config review
 - practical business-logic and trust-boundary surface mapping
+- audit state current-change-context creation before any prior-state shard is loaded
 
 ---
 
@@ -57,6 +58,8 @@ In addition to the shared base recon in `SKILL.md`, standard mode requires:
 - group multiple downstream exploit paths into one finding only when the failed control, trust boundary, and minimal fix are materially shared
 - surface operator-significant exploit paths clearly in the title, `Attack Vector`, `Impact`, `Related Findings`, or `Attack Chains` instead of splitting findings by default
 - resolve native, external, or repo-configured dependency audit commands with `references/shared/tooling/command-resolution.md` when lock files/manifests exist, then run the confirmed command or document the blocker/manual fallback instead of skipping C8
+- checkpoint audit state after recon, after major surface coverage, after meaningful trace/function-chain progress, and before report generation
+- use prior state indexes and knowledge only after freshness classification; invalidated prior records create tasks or coverage debt, not coverage proof
 
 If the active profile is `smart-contract`, treat `references/smart-contract/index.md` as the primary audit spine and use only the shared categories that genuinely map to the contract trust model.
 
@@ -67,6 +70,7 @@ After category coverage, perform:
 - practical business-logic and trust-boundary review
 - basic race-condition review
 - counted coverage reconciliation and bounded function-chain inventory review
+- audit state quality gate review: current-change-context exists, coverage counts reconcile, high-signal observations are routed, and function-chain debt is explicit
 - deferred history replay only after current findings and coverage are stable
 - historical-miss gate first: reopen prior findings that touch the same current helper, sink, route family, or trust boundary and check whether any still-live path was missed by the current scan
 - if any historical miss exists, record it, emit `Skill Optimization Suggestions`, and withhold lifecycle finalization
@@ -98,6 +102,7 @@ Standard mode is complete when:
 - template files and API versions are fully covered when the active domain is application
 - critical and high findings have reproduction evidence
 - audit state includes counted coverage totals and bounded function-chain records for all security-relevant functions in scope, or explicit coverage debt where that was not possible
+- audit state quality gates pass, or every failed gate is represented as partial/blocked coverage
 
 ---
 
@@ -107,5 +112,6 @@ Standard mode is complete when:
 - full history file in `.security-code-audit-reports/`
 - category or domain coverage
 - counted coverage summary and function-chain section derived from audit state
+- audit state quality-gate summary when gate failures or invalidations affect confidence
 - historical context
 - prioritized action items

@@ -8,7 +8,7 @@ Use this standard to decide whether a suspicious pattern becomes a confirmed fin
 
 Evidence handling exists to reduce false positives without suppressing useful audit intuition.
 
-Audit state may contain `evidence_observations`, a flexible evidence envelope for raw AI observations, tool output, blockers, negative evidence, and unknown-shaped signals. These observations are inputs to evidence review, not findings by themselves.
+Audit state may contain `evidence-observations.jsonl`, a flexible evidence envelope for raw AI observations, tool output, blockers, negative evidence, and unknown-shaped signals. These observations are inputs to evidence review, not findings by themselves.
 
 This standard separates:
 - `Confirmed Findings`

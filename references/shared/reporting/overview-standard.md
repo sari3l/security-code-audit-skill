@@ -10,6 +10,8 @@ The report overview should help a decision-maker understand risk quickly without
 - executive summary: 2 to 3 sentences on overall posture and dominant risks
 - risk overview by severity
 - category coverage or domain coverage with counted states, plus notable blind spots
+- audit state quality-gate status, including failed gates when they affect confidence
+- current-change-context summary when incremental scope, invalidation, or selective prior-state loading materially affects the run
 - deep semantic gate summary for `deep` mode or beta `multi` when high-risk gates were used, including covered, partial, blocked, invalidated, and open proof-obligation counts
 - top findings: only confirmed highest-signal items
 - candidate signals: only unresolved high-signal cases worth explicit follow-up
@@ -40,6 +42,8 @@ The report overview should help a decision-maker understand risk quickly without
 - for artifact-centric audits of skill, agent, or instruction-bearing repos, summarize confirmed dangerous instructions early when material, while keeping benign examples in candidate or negative-evidence language instead of inventing a second verdict system
 - if coverage debt is material, surface it near the top instead of burying it
 - if a high-risk deep gate is incomplete, surface it as coverage debt near the top instead of burying it in raw state
+- if audit state quality gates fail, surface the failed gate near the top and do not claim complete coverage
+- if prior knowledge or old state was reused, summarize the freshness result and any invalidated records instead of implying the prior result still proves safety
 - if historical misses exist, surface them near the top because they indicate active false-negative risk in the audit process
 - keep supplemental sections clearly outside the severity table and confirmed finding count
 - keep working hypotheses in an appendix so they remain visible without crowding the confirmed finding list

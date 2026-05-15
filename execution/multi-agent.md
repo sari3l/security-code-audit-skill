@@ -35,11 +35,12 @@ Optional specialized roles:
 ## Hard Rules
 
 - only the `supervisor` may emit final findings, final severity, and final report text
+- only the `supervisor` may write shared audit state ledgers, `manifest.json`, `quality-gates.json`, and `latest.json`
 - worker agents may suggest candidates, evidence, and validation results only
 - worker agents may suggest hypotheses, but only the `supervisor` may keep the shared hypothesis ledger or emit a final `Working Hypotheses` appendix
 - all worker-to-supervisor communication should follow `execution/worker-contract.md`
-- workers must not write shared audit state directly; they hand off deltas and requests to the `supervisor`
-- every worker must maintain a mergeable local state delta covering coverage counts, bounded function chains, and agent logs for its owned scope
+- workers must not write shared audit state directly; they write only `agent-deltas/{agent_id}.jsonl` and/or structured `merge-queue.jsonl` entries for the `supervisor`
+- every worker must maintain a mergeable local state delta covering task status, coverage counts, bounded function chains, traces, evidence observations, and agent logs for its owned scope
 - every worker must preserve mergeable code fact deltas and evidence observation deltas for its owned scope, including unfamiliar observations that require `custom:*`, `schema_gap`, or `unstructured_hypothesis` labels
 - when `deep` mode or a high-risk semantic surface is in scope, every worker must also emit mergeable deep gate deltas covering gate status, dependency semantics, design/implementation conflicts, proof obligations, semantic assumptions, evidence refs, negative evidence, and any required coverage debt
 - all worker output must be normalized through `core/findings.md` and `core/severity.md`
@@ -50,8 +51,12 @@ Optional specialized roles:
 - use disjoint ownership when possible: by service, subsystem, or audit surface
 - do not discard a low- or medium-severity worker finding merely because it looks small in isolation when it may bridge a material attack chain
 - do not let workers privately invent cross-shard conclusions; route them back through the `supervisor` as chain candidates or handoff requests
-- the `supervisor` must merge worker code facts, evidence observations, coverage totals, function-chain deltas, and agent logs into shared audit state before final reporting
+- the `supervisor` must complete audit state minimal probe, fresh recon, current-change-context, invalidation fan-out, and worker task assignment before worker kickoff
+- workers receive only capsule/context plus assigned scope shards; do not send whole prior state to every worker
+- the `supervisor` must merge worker inventory, evidence observations, coverage totals, traces, function-chain deltas, attack-chain candidates, and agent logs into shared state before final reporting
 - the `supervisor` alone may finalize deep gate status in shared audit state; worker claims that a gate is covered remain proposals until merged and reconciled with cross-shard evidence
+- final reporting is blocked while any `merge-queue.jsonl` item with `final_blocking: true` remains unmerged, unrejected, or unrouted
+- every merged worker record must keep `owner`, `lease_id` or worker id, `sequence` when available, scope, evidence refs, and freshness status
 
 Use:
 - `execution/sharding.md` to assign ownership

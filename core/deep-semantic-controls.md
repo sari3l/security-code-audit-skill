@@ -37,7 +37,7 @@ For `quick` and `standard`, use this control only when a surface is unusually co
 
 ## Durable Typed Blackboard
 
-Deep semantic state is a durable typed blackboard stored in `.security-code-audit-state/`.
+Deep semantic state is a durable typed blackboard stored in audit state ledgers under `.security-code-audit-state/runs/{run_id}/`.
 
 It must be persisted incrementally, not reconstructed only at report time. In large projects, a gate that exists only in the agent's working memory should be treated as not yet durable.
 
@@ -49,6 +49,7 @@ Record compact facts and references:
 - unresolved proof obligations
 - negative evidence and blockers
 - evidence observation refs for raw observations, tool output, blockers, schema gaps, or unfamiliar signals that should survive merge
+- freshness status for any prior gate, knowledge record, or old trace reused during the current run
 
 Do not store:
 - full source files
@@ -79,7 +80,7 @@ Rules:
 
 ## Required Gate Shape
 
-Each entry in `deep_gate_ledger` should be compact and mergeable:
+Each entry in `deep-gates.jsonl` should be compact and mergeable:
 
 ```json
 {
@@ -99,6 +100,7 @@ Each entry in `deep_gate_ledger` should be compact and mergeable:
   "proof_obligation_refs": [],
   "evidence_observation_refs": [],
   "coverage_debt_refs": [],
+  "freshness_status": "fresh_current",
   "last_checkpoint": "YYYY-MM-DD HH:MM:SS TZ"
 }
 ```
@@ -159,7 +161,8 @@ Each proof obligation should have an owner, related gate, next validation step, 
 
 In beta `multi`:
 - workers submit deep semantic deltas; they do not mark shared gates final
-- the supervisor owns `deep_gate_ledger`, conflict normalization, final gate status, and coverage debt creation
+- the supervisor owns `deep-gates.jsonl`, conflict normalization, final gate status, and coverage debt creation
+- workers write deep gate deltas only to `agent-deltas/{agent_id}.jsonl` or `merge-queue.jsonl`; the supervisor merges them into `deep-gates.jsonl`
 - validators should receive precise proof obligations, not broad rescan prompts
 - shared helpers, dependency semantics, deployment assumptions, and design conflicts should be represented once and referenced by gate IDs
 
@@ -169,7 +172,7 @@ If worker deltas disagree, code/config evidence beats summaries. Split the gate 
 
 ## Recovery After Context Compression
 
-After a context transition or long-running scan, reload audit state and reconstruct:
+After a context transition or long-running scan, reload audit state in this order: latest manifest, summary capsule, current-change-context, task ledger, quality gates, then only the ledgers needed for the next action. Reconstruct:
 - active gates and statuses
 - unresolved proof obligations
 - design/dependency/implementation conflicts
@@ -178,3 +181,4 @@ After a context transition or long-running scan, reload audit state and reconstr
 - worker deltas awaiting supervisor merge
 
 Do not rely on memory that a high-risk gate was "done" unless the persisted state has enough evidence refs to justify that status.
+Do not rely on a prior gate unless its freshness status is current or it has been rechecked against current code.

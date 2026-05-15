@@ -17,8 +17,12 @@ Statistics should support triage and coverage, not just make the report look com
 - skill optimization suggestion count when historical misses exist
 - applicable categories or domain surfaces by state: reviewed, partial, blocked, invalidated, time-boxed, not applicable
 - security-relevant functions in scope vs function chains recorded
+- explicit function-chain debt count, reconciled so `function_entries_total == function_chains_recorded + explicit_function_chain_debt`
 - deep semantic gates by state when `deep` mode or beta `multi` used them: covered, partial, blocked, invalidated, not started
 - open proof obligations by destination: finding, candidate signal, coverage debt, working hypothesis, integration assumption, none
+- audit state quality gate status: pass, fail, or blocked
+- current-change-context counts: changed files, changed shared surfaces, invalidated prior records, selective prior-state loads
+- merge queue counts in beta `multi`: merged, rejected, routed, unresolved final-blocking
 - number of API versions reviewed
 - number of template/view files reviewed
 - number of config and deployment files reviewed when present
@@ -48,6 +52,9 @@ Statistics should support triage and coverage, not just make the report look com
 - if a category is shallow or partial, reflect that in coverage notes rather than inflating counts
 - keep function-chain counts aligned with coverage debt so missing chains are visible, not hidden
 - keep deep-gate counts aligned with coverage debt so incomplete semantic review is visible, not hidden behind a covered category row
+- keep report counts aligned with audit state ledgers; if ledger counts and report counts disagree, fix the state or report the mismatch as coverage debt
+- do not count invalidated state records as reviewed, fixed, covered, or complete
+- do not use historical knowledge as a substitute for current-run evidence refs
 - if historical misses exist, say lifecycle counts were withheld and do not zero-fill `Fixed since last scan`
 - do not mix candidate signals into confirmed severity counts
 - do not mix evidence observations or schema gaps into confirmed severity counts

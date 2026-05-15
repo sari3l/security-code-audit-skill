@@ -1,6 +1,6 @@
 # security-code-audit
 
-当前版本：`v1.0.9`
+当前版本：`v1.0.10`
 
 面向 Web/API、后端、全栈、智能合约，以及 artifact-centric 仓库的代码安全审计 skill。
 
@@ -72,7 +72,7 @@ flowchart TD
     D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts、<br/>claims、risk areas 和 state freshness"]
     RUI["core/untrusted-repo-input.md<br/>repo docs、comments、old reports<br/>和 claims 只作为 hints"]
     PC["core/project-context.md<br/>verified claims、business invariants、<br/>trust-boundary assumptions、<br/>deployment assumptions、change themes"]
-    CF["core/surface-profile.md<br/>surface profile + code_fact_snapshot<br/>entrypoints、routes、sinks、<br/>state transitions、artifacts、limitations"]
+    CF["core/surface-profile.md<br/>surface profile + state indexes<br/>entrypoints、routes、sinks、<br/>state transitions、artifacts、limitations"]
     CB["Audit context bundle<br/>observed surfaces、business assets、<br/>invariants、trust boundaries、<br/>code facts、limitations、invalidations"]
 
     E["目标画像选择<br/>application | smart-contract | artifact-centric"]
@@ -81,15 +81,15 @@ flowchart TD
     H["共享模块<br/>artifacts、dependencies、tooling、<br/>reporting、state 标准"]
     T["核心质量控制<br/>integrity、coverage、findings、<br/>severity、fingerprints、tracing"]
     Q["core/deep-semantic-controls.md<br/>deep、multi 或复杂高风险 surface"]
-    U["可选辅助工具链<br/>references/shared/tooling/command-resolution.md<br/>解析仓库命令与 scanner 证据，<br/>不是审计主干"]
+    U["可选辅助工具链<br/>command-resolution.md<br/>scanner evidence 与 command context，<br/>不是审计主干"]
 
     I["Hypothesis-driven 审计阶段<br/>generate、validate、falsify、bound<br/>当前代码发现深度由 mode 控制"]
-    EO["Evidence observation envelope<br/>raw observations、tool output、blockers、<br/>negative evidence、schema gaps、custom signals"]
-    J["证据收敛与整理<br/>路由 observations、验证 findings、去重，<br/>收敛 gates、tools 与 coverage debt"]
+    EO["Evidence observation envelope<br/>raw observations、tool output、<br/>blockers、negative evidence、<br/>schema gaps、custom signals"]
+    J["证据收敛与整理<br/>路由 observations、验证 findings、去重，<br/>收敛 coverage、tools、gates、obligations"]
     HM["Historical miss gate<br/>先用当前代码重开历史 findings，<br/>再做生命周期标签判断"]
     K["报告与回归<br/>输出 findings、对比历史、验证修复"]
 
-    R[".security-code-audit-reports/<br/>人类可读 findings 和历史报告"]
+    R[".security-code-audit-reports<br/>人类可读 findings 和历史报告"]
 
     A --> B
     B --> MP
@@ -120,7 +120,7 @@ flowchart TD
     T --> I
     Q -. conditional semantic controls .-> I
     U -. 可选 scanner 证据 .-> I
-    U -. tool-output observations<br/>与 blockers .-> EO
+    U -. tool-output observations 与 blockers .-> EO
     I --> EO
     EO --> J
     J --> HM
@@ -139,7 +139,7 @@ flowchart TD
     R -. regression input only .-> K
 ```
 
-`State reader` 是概念性操作，不是新的运行时服务或文件。它读取 prior state，总结 freshness、invalidation、continuation 和 merge hints；这些 hints 只用于定向，不作为安全证明。
+`State reader` 是概念性操作：读取 prior state，总结 freshness / invalidation、continuation / open obligations 和 coverage / merge hints，然后在不把这些 hints 当作安全证明的前提下使用它们。它不是新的运行时文件、schema、服务或平台组件。
 
 这套 skill 按层拆分：
 

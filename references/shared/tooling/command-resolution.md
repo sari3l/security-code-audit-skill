@@ -41,7 +41,7 @@ Basic read-only enumeration commands such as `rg`, `git status`, `git diff`, `gi
    - project docs or CI usage for that exact installed tool
 6. Build the final command from observed help and repo context.
 7. Record the invocation, result, and limitations in audit state.
-8. When tool output is security-relevant, store a compact `evidence_observations` entry before promoting, rejecting, or merging it.
+8. When tool output is security-relevant, store a compact `evidence-observations.jsonl` entry before promoting, rejecting, or merging it.
 
 Never invent adjacent command names such as `phpaudit` when only `php-audit`, `composer audit`, or another documented candidate is known.
 
@@ -115,7 +115,7 @@ Recommended `status` values:
 
 Do not store large raw scanner output in audit state. Store normalized findings in the report and keep only compact command evidence in state.
 
-When a tool emits candidate findings, blockers, or contradictions with AI review, create `evidence_observations` with:
+When a tool emits candidate findings, blockers, or contradictions with AI review, create `evidence-observations.jsonl` records with:
 - `kind: tool_output` for result summaries
 - `kind: blocker` for execution or coverage blockers
 - `kind: negative_evidence` when the tool helps reject a candidate

@@ -8,6 +8,7 @@ Make worker-to-supervisor communication structured, reviewable, and safe against
 
 Workers do not communicate by improvising prose summaries alone.
 They hand off normalized deltas that the `supervisor` can merge, reject, or route for follow-up.
+In audit state, worker handoffs are state deltas. Workers write only to `agent-deltas/{agent_id}.jsonl` or `merge-queue.jsonl`; they do not mutate shared ledgers.
 
 ---
 
@@ -20,6 +21,18 @@ Only the `supervisor` may:
 
 Workers may only submit structured handoffs.
 
+Every handoff record must carry:
+- `id`
+- `run_id`
+- `owner`
+- `agent_id`
+- `lease_id` when available
+- `sequence`
+- `owned_scope`
+- `freshness_status`
+- `evidence_refs`
+- `final_blocking` when supervisor action is required before report finalization
+
 ---
 
 ## Required Handoff Fields
@@ -29,6 +42,8 @@ Every worker handoff should include:
   - `worker_role`
   - `owned_scope`
   - `loaded_modules`
+  - `loaded_state_refs`
+  - `state_reader_budget` (`worker_shard` by default)
 - `project_context_delta`
   - verified claims, rejected claims, relevant invariants, git-change themes, and context conflicts discovered inside the owned scope
 - `code_fact_delta`
@@ -39,6 +54,7 @@ Every worker handoff should include:
   - command-resolution probes, executed scanner commands, skipped unsafe scripts, blockers, and manual fallbacks inside the owned scope
 - `coverage_delta`
   - counted review state for what was reviewed, partial, blocked, invalidated, time-boxed, or still pending inside the owned scope
+  - integer `function_entries_total`, `function_chains_recorded`, `explicit_function_chain_debt`, and `debt_total`
 - `deep_gate_delta`
   - semantic gate status, evidence refs, negative evidence, dependency semantics, design/implementation conflicts, proof obligations, semantic assumptions, and coverage debt refs inside the owned scope
 - `candidate_signals`
@@ -129,21 +145,26 @@ That decision belongs to the `supervisor` after merge.
 ### Function Chain Delta
 
 ```markdown
+- **Record ID**: [chain-*]
 - **Function**: [module::function]
 - **Why In Scope**: [sink / state transition / shared helper]
 - **Entry Paths**: [routes, jobs, parent functions]
 - **Join Checkpoints**: [helpers, parsers, guards]
 - **Sink / Transition**: [dangerous sink or mutation]
 - **Status**: bounded / open / blocked / invalidated
+- **Freshness Status**: fresh_current / comparable / stale_needs_recheck / invalidated / not_applicable
+- **Evidence Refs**: [ev-*]
 - **Truncation Or Blocker**: [one sentence]
 ```
 
 ### Agent Log Delta
 
 ```markdown
+- **Record ID**: [agent-*]
 - **Stage**: [recon / scan / validation / report]
 - **Summary**: [key decision or blocker]
 - **Evidence Refs**: [files, routes, findings, or chain ids]
+- **Sequence**: [monotonic worker-local integer]
 ```
 
 ### Project Context Delta
@@ -180,12 +201,15 @@ That decision belongs to the `supervisor` after merge.
 - **Design / Implementation Conflicts**: [claim vs code/config mismatch, or none]
 - **Proof Obligations**: [specific remaining proof steps]
 - **Coverage Debt Needed**: yes / no, with reason
+- **Freshness Status**: fresh_current / comparable / stale_needs_recheck / invalidated / not_applicable
 ```
 
 ### Handoff Request
 
 ```markdown
+- **Record ID**: [merge-*]
 - **Type**: cross_shard_helper / followup_validation / ownership_conflict / compound_chain_review / severity_review
 - **Reason**: [one sentence]
 - **Related Surfaces**: [files, routes, helpers, services]
+- **Final Blocking**: true / false
 ```

@@ -48,8 +48,9 @@ For skill, agent, and instruction-bearing repositories, also verify:
 - **API versions**: Did you check ALL /v1/, /v2/, /v3/ variants? Legacy versions often lack newer security controls and may permit downgrade paths.
 - **Coverage debt**: If a category is partial, blocked, invalidated, or time-boxed, record it using `references/shared/reporting/coverage-debt-standard.md` instead of marking it clean.
 - **Function chains**: Every security-relevant function or state-changing transition in scope must end with a bounded function-chain record or explicit coverage debt.
-- **Code fact limitations**: Material `code_fact_snapshot.limitations` that affect dynamic, generated, reflected, framework-magic, or artifact-mediated behavior must be resolved or carried as coverage debt.
-- **Evidence observations**: High-signal `evidence_observations` must be routed to confirmed findings, candidate signals, negative evidence, coverage debt, working hypotheses, or schema-gap suggestions before coverage is called complete.
+- **Inventory limitations**: Material audit state inventory/index limitations that affect dynamic, generated, reflected, framework-magic, or artifact-mediated behavior must be resolved or carried as coverage debt.
+- **Evidence observations**: High-signal `evidence-observations.jsonl` records must be routed to confirmed findings, candidate signals, negative evidence, coverage debt, working hypotheses, or schema-gap suggestions before coverage is called complete.
+- **Audit state quality gates**: Coverage cannot be called complete if `current-change-context.json` is missing, prior records lack freshness status, function-chain counts do not reconcile, or failed quality gates remain unreported.
 
 ## Audit Strategy by Category
 

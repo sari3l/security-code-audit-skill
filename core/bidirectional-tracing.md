@@ -12,7 +12,7 @@ Use bidirectional tracing to:
 - avoid traditional one-way graph flooding from every apparent source
 - converge on real attack paths by searching from both source and sink sides
 - run hypothesis-driven analysis by generating, validating, falsifying, and bounding concrete attack paths
-- preserve compact trace checkpoints in audit state without turning `searched` into `safe`
+- preserve compact trace checkpoints in audit state `trace-ledger.jsonl` and bounded function records in `function-chains.jsonl` without turning `searched` into `safe`
 - link trace checkpoints to evidence observations when a path is still a candidate, blocked, negatively evidenced, or schema-conflicting
 - emit bounded per-function chain records that later attack-chain review can reuse
 - stop expanding when the current path is bounded, not merely unexplored
@@ -160,15 +160,16 @@ For each checkpoint, answer:
 
 ## State Semantics
 
-When audit state is active, record compact trace checkpoints and hypotheses.
+When audit state is active, record compact trace checkpoints and hypotheses in audit state ledgers.
 
 Hard rules:
 - `searched` means "reviewed in the context of this hypothesis and snapshot"
 - `searched` does not mean "safe"
 - `bounded` means "current evidence says more expansion is low value unless assumptions change"
 - `invalidated` means an upstream assumption, helper, parser, policy, or shared boundary changed enough that the old checkpoint can no longer be trusted
+- every reused prior trace needs `freshness_status`; invalidated traces can guide re-audit but cannot support current coverage
 - partial or version-specific mitigations should narrow confidence, not erase the checkpoint
-- trace gaps, parser surprises, or unfamiliar source/sink shapes should become `evidence_observations` rather than being lost because the model does not fit an expected category
+- trace gaps, parser surprises, or unfamiliar source/sink shapes should become `evidence-observations.jsonl` records rather than being lost because the model does not fit an expected category
 
 State should speed up re-orientation, not suppress fresh review.
 
@@ -176,7 +177,7 @@ State should speed up re-orientation, not suppress fresh review.
 
 ## Function-Chain Outputs
 
-For every security-relevant function or state-changing transition in scope, emit a bounded function-chain record into audit state.
+For every security-relevant function or state-changing transition in scope, emit a bounded function-chain record into audit state `function-chains.jsonl`.
 
 Hard rules:
 - record the chain at function granularity, not only at category granularity
@@ -194,6 +195,8 @@ Each function-chain record should stay compact:
 - `status`
 - `truncation_or_blocker`
 - `owner`
+- `freshness_status`
+- `evidence_refs`
 
 In beta `multi`, workers emit local chain deltas and the `supervisor` merges them into shared state.
 
@@ -206,4 +209,4 @@ In beta `multi`, workers emit local chain deltas and the `supervisor` merges the
 - `references/application/*` and `references/smart-contract/*`
   Own source families, sink families, exploit patterns, and domain-specific review prompts.
 - `references/shared/state-standard.md`
-  Owns storage shape, invalidation fields, and run-context persistence for trace checkpoints and hypotheses.
+  Owns audit state storage shape, invalidation fields, freshness semantics, read budgets, and run-context persistence for trace checkpoints and hypotheses.

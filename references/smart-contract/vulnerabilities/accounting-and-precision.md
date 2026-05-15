@@ -60,7 +60,7 @@ Track:
 
 ## Deep Semantic Gate
 
-In `deep` mode, create an `accounting_precision` entry in `deep_gate_ledger` for every asset/share/debt/collateral/reward invariant in scope.
+In `deep` mode, create an `accounting_precision` entry in audit state `deep-gates.jsonl` for every asset/share/debt/collateral/reward invariant in scope.
 
 The gate is not `covered` until the audit records:
 - the source of truth for every accounting unit: assets, shares, collateral, debt, rewards, fees, indexes, cached totals, virtual offsets, and external balances

@@ -2,9 +2,9 @@
 
 Create one compact surface profile during recon. Reuse it to drive loading, delegation, and coverage.
 
-Also create a compact advisory `code_fact_snapshot` for audit state. The snapshot gives AI a stable code map, but it must not limit AI exploration or prove that unlisted behavior is absent.
+Also create compact advisory inventory/index records in audit state. These records give AI a stable code map, but they must not limit exploration or prove that unlisted behavior is absent.
 
-`code_fact_snapshot` is advisory, compact, and non-authoritative. It is not a closed intermediate representation, a mandatory schema that every finding must fit, or a full static-analysis database.
+The state inventory/index layer is advisory, compact, and non-authoritative. It is not a closed intermediate representation, a mandatory schema that every finding must fit, or a full static-analysis database.
 
 ## Purpose
 
@@ -16,7 +16,7 @@ Use it to:
 - give workers compact context in multi-agent mode
 - explain why a module was or was not loaded
 
-Use `code_fact_snapshot` to:
+Use state inventory/index records to:
 - preserve observed entrypoints, routes, candidate sources, candidate sinks, state transitions, artifact surfaces, and parser notes
 - make quick incremental comparisons and multi-agent handoffs more precise
 - record limitations when dynamic, generated, reflected, framework-magic, or artifact-mediated behavior cannot be fully mapped
@@ -59,28 +59,26 @@ Logging: app-logger, auth-events
 Tenancy/Roles: single-tenant, admin/user
 ```
 
-## Advisory Code Fact Snapshot
+## Advisory Inventory And Index Records
 
-Store the snapshot in audit state, not in the user-facing surface profile.
+Store advisory facts in audit state inventories and indexes, not in the user-facing surface profile.
 
 Prefer:
-- `file_inventory`
-- `entrypoints`
-- `routes`
-- `security_relevant_functions`
-- `source_candidates`
-- `sink_candidates`
-- `state_transition_candidates`
-- `dependency_manifests`
-- `artifact_surfaces`
-- `parser_notes`
-- `limitations`
+- `indexes/file-index.jsonl`
+- `indexes/route-index.jsonl`
+- `indexes/symbol-index.jsonl`
+- `indexes/source-sink-index.jsonl`
+- `indexes/dependency-index.jsonl`
+- `indexes/trust-boundary-index.jsonl`
+- `runs/{run_id}/architecture-map.json`
+- `runs/{run_id}/current-change-context.json`
+- `runs/{run_id}/evidence-observations.jsonl` for limitations or unfamiliar signals
 
 Hard rules:
 - keep it compact and evidence-referenced
 - do not require whole-program call graphs or IDE-grade symbol resolution
 - missing facts are limitations, not safety proof
-- if a security-relevant fact does not fit the fields, preserve it with `extensions` or an `evidence_observations` entry using a `schema_gap`, `unstructured_hypothesis`, or `custom:*` label
+- if a security-relevant fact does not fit the fields, preserve it with `extensions` or an `evidence-observations.jsonl` entry using a `schema_gap`, `unstructured_hypothesis`, or `custom:*` label
 - never discard a finding candidate, trace clue, or unfamiliar security signal merely because it does not fit the preferred snapshot fields
 
 ## Update Rules
@@ -89,7 +87,7 @@ Hard rules:
 - Update it only when a materially new surface appears.
 - Do not let it grow into a route inventory or finding list.
 - Share this profile, not the whole recon dump, with worker agents.
-- Update the advisory `code_fact_snapshot` as materially new facts or limitations appear, but do not let it become a second report or a mandatory exhaustive static-analysis database.
+- Update advisory state inventory/index records as materially new facts or limitations appear, but do not let them become a second report or a mandatory exhaustive static-analysis database.
 
 ## Routing Hints
 

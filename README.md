@@ -1,6 +1,6 @@
 # security-code-audit
 
-Current release: `v1.0.9`
+Current release: `v1.0.10`
 
 Code security audit skill for web/API, backend, full-stack, smart-contract, and artifact-centric repositories.
 
@@ -72,7 +72,7 @@ flowchart TD
     D["Recon phase<br/>map repo surface, stack, artifacts,<br/>claims, risk areas, and state freshness"]
     RUI["core/untrusted-repo-input.md<br/>repo docs, comments, old reports,<br/>and claims are hints only"]
     PC["core/project-context.md<br/>verified claims, business invariants,<br/>trust-boundary assumptions,<br/>deployment assumptions, change themes"]
-    CF["core/surface-profile.md<br/>surface profile + code_fact_snapshot<br/>entrypoints, routes, sinks,<br/>state transitions, artifacts, limitations"]
+    CF["core/surface-profile.md<br/>surface profile + state indexes<br/>entrypoints, routes, sinks,<br/>state transitions, artifacts, limitations"]
     CB["Audit context bundle<br/>observed surfaces, business assets,<br/>invariants, trust boundaries,<br/>code facts, limitations, invalidations"]
 
     E["Profile selection<br/>application | smart-contract | artifact-centric"]
@@ -81,15 +81,15 @@ flowchart TD
     H["Shared modules<br/>artifacts, dependencies, tooling,<br/>reporting, and state standards"]
     T["Core quality controls<br/>integrity, coverage, findings,<br/>severity, fingerprints, tracing"]
     Q["core/deep-semantic-controls.md<br/>deep, multi, or complex high-risk surfaces"]
-    U["Optional advisory tooling<br/>references/shared/tooling/command-resolution.md<br/>repo command resolution and scanner evidence,<br/>not the audit backbone"]
+    U["Optional advisory tooling<br/>command-resolution.md<br/>scanner evidence and command context,<br/>not the audit backbone"]
 
     I["Hypothesis-driven audit pass<br/>generate, validate, falsify, bound<br/>current-code discovery depth controlled by mode"]
-    EO["Evidence observation envelope<br/>raw observations, tool output, blockers,<br/>negative evidence, schema gaps, custom signals"]
-    J["Evidence and consolidation<br/>route observations, validate findings,<br/>dedupe repeats, reconcile gates, tools,<br/>and coverage debt"]
+    EO["Evidence observation envelope<br/>raw observations, tool output,<br/>blockers, negative evidence,<br/>schema gaps, custom signals"]
+    J["Evidence and consolidation<br/>route observations, validate findings,<br/>dedupe repeats, reconcile coverage,<br/>tools, gates, obligations"]
     HM["Historical miss gate<br/>reopen prior findings against current code<br/>before lifecycle labels"]
     K["Reporting and regression<br/>write findings, compare history, retest fixes"]
 
-    R[".security-code-audit-reports/<br/>human-readable findings and history"]
+    R[".security-code-audit-reports<br/>human-readable findings and history"]
 
     A --> B
     B --> MP
@@ -120,7 +120,7 @@ flowchart TD
     T --> I
     Q -. conditional semantic controls .-> I
     U -. optional scanner evidence .-> I
-    U -. tool-output observations<br/>and blockers .-> EO
+    U -. tool-output observations and blockers .-> EO
     I --> EO
     EO --> J
     J --> HM
@@ -139,7 +139,7 @@ flowchart TD
     R -. regression input only .-> K
 ```
 
-`State reader` is a conceptual operation, not a new runtime service or file. It reads prior state for freshness, invalidation, continuation, and merge hints, then treats those hints as orientation rather than safety proof.
+`State reader` is a conceptual operation: read prior state, summarize freshness / invalidation, continuation / open obligations, and coverage / merge hints, then use those hints without treating them as proof. It is not a new runtime file, schema, service, or platform component.
 
 The skill is intentionally split into layers:
 
