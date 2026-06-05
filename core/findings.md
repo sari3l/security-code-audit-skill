@@ -52,6 +52,8 @@ Finding controls consume the flexible evidence envelope from audit state. An `ev
 - Do not drop an observation because its source family, sink family, vulnerability class, or schema shape is unfamiliar.
 - Use open labels such as `custom:*` when existing labels are too narrow.
 - If the observation cannot be normalized safely, keep it as `schema_gap` or `unstructured_hypothesis` and route it to coverage debt, working hypotheses, or `Skill Optimization Suggestions` as appropriate.
+- Optional Python assurance records such as `raw-observations.jsonl`, `unmapped-signals.jsonl`, capability-map rows, and checker diagnostics are pre-promotion evidence. They can support a finding, candidate, negative evidence, or coverage debt, but they cannot suppress a finding that current evidence otherwise supports.
+- A finding is not required to fit the capability-map schema. If the schema is too narrow, record the mismatch as `schema_gap` or `custom:*` and apply the normal evidence standard.
 - Promotion still requires current-code evidence and the reporting evidence standard; observation volume alone does not make a finding.
 - Rejection should keep the concrete negative evidence rather than deleting the observation.
 

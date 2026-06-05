@@ -15,6 +15,7 @@ Apply command resolution for commands whose availability, name, subcommands, or 
 - smart-contract tools such as `forge`, `hardhat`, `slither`, or `mythril`
 - language security tools such as `semgrep`, `bandit`, `brakeman`, `gosec`, or ESLint security plugins
 - project scripts such as `make audit`, `npm run security`, `composer audit`, CI jobs, or internal scanner wrappers
+- bundled `security-code-audit/tools/*.py` assurance helpers when they are used during an audit
 
 Basic read-only enumeration commands such as `rg`, `git status`, `git diff`, `git log`, `find`, and `ls` do not need full command resolution. If they are unavailable, use a normal fallback and record only material limitations.
 
@@ -59,6 +60,15 @@ Ecosystem and domain files may list:
 They must not imply that a stale exact command is always valid.
 
 Use current tool help, repo scripts, and local availability to decide the final command.
+
+## Bundled Python Assurance Tools
+
+When invoking the optional Python assurance helpers shipped with this skill:
+- resolve them from the delivered skill directory, not from the audited repository
+- prefer `python tools/<name>.py --help` as the probe
+- record unavailable Python or helper failures as `external_validator_unavailable`, `blocked`, or `manual_fallback`
+- treat their JSON output as advisory evidence observations or quality-gate diagnostics, not as confirmed findings
+- never let "no candidates emitted" suppress current-code evidence, LLM observations, or coverage debt
 
 ---
 

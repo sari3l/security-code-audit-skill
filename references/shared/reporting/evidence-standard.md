@@ -89,6 +89,8 @@ When in doubt:
 
 If the concern is unfamiliar rather than weak, preserve it as `schema_gap`, `unstructured_hypothesis`, or `custom:*` in audit state and route it to a candidate signal, working hypothesis, coverage debt, or `Skill Optimization Suggestions` instead of dropping it.
 
+Optional Python assurance output is advisory. Raw observations, unmapped signals, capability candidates, and checker diagnostics must be routed through the same evidence bar as AI/human observations. A missing normalized capability record, missing candidate, or checker failure must never be used as negative evidence by itself.
+
 ## Instruction-Bearing Artifact Notes
 
 For skill, agent, prompt, and setup repositories:
@@ -96,6 +98,7 @@ For skill, agent, prompt, and setup repositories:
 - plain mentions of `token`, `password`, `curl`, `sudo`, or `eval` in defensive prose are not confirmed findings by themselves
 - a fenced or educational example remains `Candidate` unless surrounding context turns it into a real operator-directed execution path
 - operator-risk findings should explain the instruction source, the execution or trust boundary, the affected asset or control surface, and the expected impact on the operator environment
+- when a capability map is available, use it to summarize source, sink, gate, and effect; when it is unavailable or too narrow, preserve the raw observation and explain why the risk remains outside the map
 
 ---
 
@@ -135,3 +138,4 @@ Every candidate should record:
 - Do not inflate candidate counts into confirmed severity totals.
 - Do not inflate evidence-observation counts into confirmed severity totals.
 - When schema gaps reveal that the skill vocabulary failed to preserve or route a meaningful signal cleanly, include a concise `Skill Optimization Suggestions` note.
+- Reports may cite optional Python assurance diagnostics as quality-gate support, but confirmed findings still require current evidence and exploit-path reasoning.

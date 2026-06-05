@@ -51,6 +51,7 @@ state from fresh recon.
       trace-ledger.jsonl
       function-chains.jsonl
       attack-chains.jsonl
+      findings.jsonl
       evidence-observations.jsonl
       hypotheses.jsonl
       proof-obligations.jsonl
@@ -116,6 +117,13 @@ Layer responsibilities:
   and every gate used to decide whether the run can claim complete, partial,
   blocked, or invalid. This file is mandatory even when no external validator
   tool exists.
+
+`findings.jsonl`
+: Required before final report generation when confirmed findings exist. It is
+  the canonical `finding.v1` source for confirmed finding identity, content, and
+  deterministic Markdown display IDs. Reports render confirmed findings from
+  this file when `tools/report_render.py` is available; if not, the hand-written
+  Markdown must preserve the same fields and pass the report gate.
 
 `write-ahead-events.jsonl`
 : Append-only event stream for crash recovery. Record run creation, manifest
@@ -278,6 +286,13 @@ Invalidated records must not support `covered`, `fixed`, `complete`, or
   Every high-signal item must be routed, rejected, or carried as coverage debt /
   working hypothesis / skill optimization before final reporting.
 
+Optional Python assurance outputs such as `raw-observations.jsonl`,
+`unmapped-signals.jsonl`, `capabilities.jsonl`, `capability-paths.jsonl`,
+and `capability-claims.jsonl` may be stored in the run directory or summarized
+into `evidence-observations.jsonl`. They are advisory, open-world records. Do
+not treat missing normalized records as proof of absence, and do not discard
+LLM or human observations because a checker cannot normalize them.
+
 `proof-obligations.jsonl`
 : Specific unanswered proof steps. Open or in-progress obligations that affect
   coverage, severity, exploitability, remediation, or history must block
@@ -383,6 +398,11 @@ External tooling may additionally validate these checks, but the skill must not
 depend on a Python environment or any repository-local test harness. Missing
 external validation is recorded as `external_validator_unavailable` and does not
 block the scan when the skill-native gates were evaluated.
+
+Bundled Python assurance tools may validate these gates when available. Their
+failures block only the claim they validate, such as complete coverage or report
+maturity; they do not dismiss confirmed evidence, candidates, raw observations,
+or schema gaps.
 
 ---
 

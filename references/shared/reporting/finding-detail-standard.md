@@ -6,20 +6,36 @@ Each finding entry should be specific enough that another engineer can reproduce
 
 ## Required Fields
 
-- `Severity`
-- `Maturity`
-- `Category / Surface`
-- `Fingerprint`
-- `Location`
-- `Status`
-- `Description`
-- `Attack Vector`
-- `Impact`
-- `PoC`
-- `Evidence`
-- `Minimal Fix`
-- `Hardening`
-- `Related Findings`
+Confirmed findings are schema-first. Before writing Markdown, create one
+canonical `finding.v1` JSONL record in
+`.security-code-audit-state/runs/{run_id}/findings.jsonl` for each confirmed
+finding.
+
+Required `finding.v1` fields:
+
+- `schema_version`
+- `fingerprint`
+- `severity`
+- `maturity`
+- `category_surface`
+- `locations`
+- `status`
+- `title`
+- `description`
+- `attack_vector`
+- `impact`
+- `poc`
+- `evidence`
+- `minimal_fix`
+- `hardening`
+- `related_findings`
+- `evidence_refs`
+
+Markdown field names are rendered from those canonical fields as:
+`Severity`, `Maturity`, `Category / Surface`, `Fingerprint`, `Location`,
+`Status`, `Evidence Observation Refs`, `Description`, `Attack Vector`,
+`Impact`, `PoC`, `Evidence`, `Minimal Fix`, `Hardening`, and
+`Related Findings`.
 
 ## Optional Context Fields
 
@@ -32,6 +48,16 @@ Each finding entry should be specific enough that another engineer can reproduce
 
 ## Writing Rules
 
+- Treat `findings.jsonl` as the source of truth for confirmed findings.
+- Prefer `tools/report_render.py` to render `Confirmed Findings` from
+  `findings.jsonl`; if the tool is unavailable, hand-render the same fields and
+  record `external_validator_unavailable`.
+- Run or apply the equivalent of `tools/report_gate_check.py` before finalizing
+  the report. Reports with missing canonical fields or unstable display IDs are
+  not final.
+- Display IDs such as `[HIGH]-001` are generated from sorted canonical records:
+  severity rank, then `category_surface`, then `fingerprint`, numbering within
+  each severity. Do not number findings by discovery order.
 - Keep the description factual and exploit-centered.
 - Use real file paths and line numbers from inspected code.
 - List all affected locations when the same pattern repeats.
@@ -59,6 +85,7 @@ Each finding entry should be specific enough that another engineer can reproduce
 - **Fingerprint**: [stable finding fingerprint]
 - **Location**: `file/path.ext:line`
 - **Status**: New / Recurring / Regression / Pending historical validation
+- **Evidence Observation Refs**: [current-run evidence ids]
 - **Description**: [What is wrong in the actual code path]
 - **Attack Vector**: [Shortest credible exploit path]
 - **Impact**: [What the attacker gains]

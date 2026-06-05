@@ -35,6 +35,8 @@ For skill, agent, and instruction-bearing repositories, also verify:
 - secret access and exfiltration paths reviewed across docs, wrappers, and setup flows
 - environment mutation reviewed, including global installs, force reinstall flows, startup persistence, and host profile modification
 - benign defensive prose and fenced educational examples explicitly separated from confirmed findings, or carried as candidate / negative evidence
+- capability-map review completed or explicitly marked unavailable/manual, with raw observations and unmapped signals routed instead of dropped
+- optional Python assurance diagnostics, if run, reconciled as advisory observations or quality-gate blockers rather than treated as confirmed findings
 
 ## Coverage Standards
 
@@ -44,6 +46,7 @@ For skill, agent, and instruction-bearing repositories, also verify:
 - **Conditional**: C12 only if IaC files (Dockerfile, docker-compose.yml, k8s manifests, terraform) are present
 - **Conditional**: C8 only if lock files (package-lock.json, go.sum, requirements.txt, pom.xml) are present
 - **Artifact overlay**: For skill, agent, or instruction-bearing repos, complete the artifact overlay checks above or record explicit coverage debt.
+- **Capability map**: For skill, agent, or instruction-bearing repos with operator/tool effects, capability coverage is complete only when dangerous capabilities, raw observations, and unmapped signals are routed to confirmed findings, candidates, negative evidence, hypotheses, or coverage debt.
 - **Template check**: Did you scan ALL template/view files? This is mandatory regardless of scope.
 - **API versions**: Did you check ALL /v1/, /v2/, /v3/ variants? Legacy versions often lack newer security controls and may permit downgrade paths.
 - **Coverage debt**: If a category is partial, blocked, invalidated, or time-boxed, record it using `references/shared/reporting/coverage-debt-standard.md` instead of marking it clean.

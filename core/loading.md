@@ -123,7 +123,10 @@ Route references by detected need:
   Load only when manifests, lock files, vendored packages, images, or SCA artifacts exist.
 
 - `references/shared/tooling/command-resolution.md`
-  Load before invoking optional external audit tools, repo-configured scanner scripts, ecosystem audit commands, secret scanners, IaC scanners, smart-contract tools, SBOM tools, or CI scanner wrappers.
+  Load before invoking optional external audit tools, repo-configured scanner scripts, ecosystem audit commands, secret scanners, IaC scanners, smart-contract tools, SBOM tools, CI scanner wrappers, or bundled Python assurance helpers.
+
+- `references/shared/tooling/python-assurance.md`
+  Load when the optional bundled Python assurance tools are available or when interpreting their output. These tools are signal-preserving validators and seeders; absence of output never proves safety and unknown signals must remain routable observations.
 
 - dependency ecosystem modules
   Load only for ecosystems actually present in the repo.
@@ -155,7 +158,7 @@ After recon, route modules from the surface profile instead of generic intuition
 - manifests, lock files, SCA output -> `references/shared/dependencies/index.md` plus only matching ecosystem files
 - optional external scanner or repo-defined audit command -> `references/shared/tooling/command-resolution.md` before execution
 - markdown renderers, wikis, docs previews, rich comments -> `references/shared/artifacts/index.md`, `references/shared/artifacts/markdown.md`, and `references/application/vulnerabilities/xss.md`
-- `SKILL.md`, `AGENTS.md`, prompt templates, tool manifests, repo-authored instruction files, or skill-oriented setup flows -> `references/shared/artifacts/index.md`, `references/shared/artifacts/skill-files.md`, and `references/application/vulnerabilities/prompt-injection.md`
+- `SKILL.md`, `AGENTS.md`, prompt templates, tool manifests, repo-authored instruction files, or skill-oriented setup flows -> `references/shared/artifacts/index.md`, `references/shared/artifacts/skill-files.md`, `references/shared/artifacts/capability-map.md`, and `references/application/vulnerabilities/prompt-injection.md`
 - OpenAPI, Swagger, Postman, Insomnia, GraphQL schema, AsyncAPI, or environment collections -> `references/shared/artifacts/index.md`, `references/shared/artifacts/api-specs.md`, and the matching API/authz/data-exposure modules
 - `.ipynb` notebooks, saved outputs, notebook shell escapes, or analyst runbooks -> `references/shared/artifacts/index.md`, `references/shared/artifacts/notebooks.md`, `references/application/vulnerabilities/sensitive-hardcoding.md`, and `references/application/vulnerabilities/data-exposure.md`
 - `.sol`, Foundry, Hardhat, proxy, oracle, permit, or on-chain accounting surfaces -> `references/smart-contract/index.md`, `references/smart-contract/languages/index.md`, `references/smart-contract/languages/solidity.md`, the matching `references/smart-contract/vulnerabilities/*.md` deep-dive files, and `references/smart-contract/exploits/index.md` when validation is needed

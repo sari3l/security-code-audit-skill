@@ -1,6 +1,6 @@
 # security-code-audit
 
-Current release: `v1.1.0`
+Current release: `v1.1.1`
 
 Code security audit skill for web/API, backend, full-stack, smart-contract, and artifact-centric repositories.
 

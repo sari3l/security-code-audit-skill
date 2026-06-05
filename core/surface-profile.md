@@ -34,6 +34,7 @@ Capture only observed surfaces:
 - storage or file surface: upload, download, export, object storage, archives
 - outbound fetch surface: webhooks, URL fetchers, callbacks, HTTP clients
 - AI surface: LLM prompts, tool calls, retrieval, agent orchestration
+- capability surface: advisory map of skill/agent actions, triggers, gates, effects, sources, sinks, raw observations, and unmapped signals when instruction-bearing artifacts can cause operator or tool behavior
 - config and deployment surface: `.env`, Docker, compose, k8s, Helm, Terraform, CI
 - logging and audit surface
 - tenancy or role model if visible
@@ -54,6 +55,7 @@ Views: nextjs
 File Surface: upload, presigned-download
 Outbound Fetch: webhook, url-fetch
 AI Surface: none
+Capability Surface: none
 Config/IaC: .env, dockerfile, github-actions, k8s
 Logging: app-logger, auth-events
 Tenancy/Roles: single-tenant, admin/user
@@ -80,6 +82,7 @@ Hard rules:
 - missing facts are limitations, not safety proof
 - if a security-relevant fact does not fit the fields, preserve it with `extensions` or an `evidence-observations.jsonl` entry using a `schema_gap`, `unstructured_hypothesis`, or `custom:*` label
 - never discard a finding candidate, trace clue, or unfamiliar security signal merely because it does not fit the preferred snapshot fields
+- optional capability-map records are advisory inventory, not a closed IR; missing normalized capabilities are limitations, not proof that an instruction-bearing artifact is safe
 
 ## Update Rules
 
@@ -102,3 +105,4 @@ Use the profile to decide what to load:
 - logging surface -> `references/application/vulnerabilities/logging-monitoring.md`
 - Docker, k8s, Helm, Terraform, compose, cloud manifests -> `references/application/vulnerabilities/infrastructure.md` and `references/application/vulnerabilities/configuration-files.md`
 - AI surface -> `references/application/vulnerabilities/injection.md` plus the exact sink-family modules involved
+- skill/agent capability surface -> `references/shared/artifacts/capability-map.md`, `references/shared/artifacts/skill-files.md`, and `references/shared/tooling/python-assurance.md` when optional validators are used

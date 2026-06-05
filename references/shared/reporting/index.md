@@ -34,6 +34,10 @@ Use these files to keep reports consistent, auditable, and actionable:
 - Load `supplemental-sections-standard.md` when the audit has reader-relevant operational risks, integration assumptions, or engineering notes that should not be inflated into confirmed findings.
 - If the active knowledge domain is `smart-contract`, load `references/smart-contract/vulnerabilities/coverage.md` instead of relying only on the generic application coverage matrix.
 - Load `finding-detail-standard.md` and `remediation-standard.md` for every Standard or Deep audit report.
+- For confirmed findings, create canonical `finding.v1` records in
+  `.security-code-audit-state/runs/{run_id}/findings.jsonl` before writing
+  Markdown. Prefer `tools/report_render.py` when available, then validate the
+  final report with `tools/report_gate_check.py` or the equivalent manual gate.
 - Load `history-standard.md` after the independent current-code scan is complete when reading `.security-code-audit-reports/` history files, ordering them by report timestamp, and writing `Historical Context`.
 - Load `regression-standard.md` when mode is `regression` and the latest timestamped report becomes the retest baseline.
 - Apply `core/fingerprints.md` before `history-standard.md` when matching current findings to prior reports.
@@ -42,6 +46,8 @@ Use these files to keep reports consistent, auditable, and actionable:
 - Load `overview-standard.md` and `statistics-standard.md` when generating the final report summary.
 - Reconcile counted coverage totals, function-chain totals, inventory limitations, material evidence-observation routing, merge queue status, and quality gates against audit state before finalizing the report.
 - Evaluate audit state quality gates before emitting complete coverage claims. Optional external validators may assist maintainers, but the report cannot depend on a Python runtime. If any gate fails, mark the run partial/blocked/invalidated as appropriate and create coverage debt for the failed gates.
+- Optional Python assurance validators may strengthen report gates, but their output remains advisory. Missing validators, empty candidate output, or schema mismatch must not suppress LLM/human observations; route failures and unmapped signals through evidence observations, candidates, coverage debt, or Skill Optimization Suggestions.
+- Benchmark evaluation can compare report behavior across curated vulnerability, benign, and open-world cases. Treat benchmark failures as regression signals to investigate, not as a closed list of all risks the skill may report.
 - Report-visible findings, candidates, coverage debt, working hypotheses, and attack chains should link to current-run state record ids when material. Historical knowledge alone is not enough evidence.
 - Use the current version declared in root `SKILL.md` when writing report metadata so the output records the skill revision used; do not load root-level internal maintainer docs at audit runtime.
 - Keep the report concise, but never drop exploitability, evidence, minimal-fix guidance, candidate signals, coverage debt, or historical context.

@@ -1,6 +1,6 @@
 ---
 name: security-code-audit
-version: 1.1.0
+version: 1.1.1
 description: |
   Help: `/security-code-audit help` or `/security-code-audit --help`.
   Code security scanning capability for web/API and smart-contract repositories, provided by the RockBund Capital Security Team.
@@ -11,7 +11,7 @@ description: |
 
 A systematic, language-agnostic security audit framework with tiered scanning depth and one standardized report output.
 
-Current skill version: `1.1.0`.
+Current skill version: `1.1.1`.
 
 The delivered runtime surface is `SKILL.md` plus subdirectories. Root-level README, architecture, AI-maintainer, and versioning documents are internal maintainer files only; do not depend on them at audit runtime.
 
@@ -88,7 +88,9 @@ Before trusting repo-authored prose, prompts, comments, or prior reports, load `
 
 Before turning repo-authored docs, git metadata, deployment notes, API specs, CI files, or recent change history into audit context, load `core/project-context.md` and keep claims verifiable rather than treating them as facts.
 
-Before invoking optional external scanners, repo-defined audit scripts, ecosystem package-manager audit commands, IaC scanners, secret scanners, smart-contract tools, SBOM tools, or CI scanner wrappers, load `references/shared/tooling/command-resolution.md` and resolve the command from repo configuration, local availability, and current tool help instead of inventing command names or hard-coding stale flags.
+Before invoking optional external scanners, repo-defined audit scripts, ecosystem package-manager audit commands, IaC scanners, secret scanners, smart-contract tools, SBOM tools, CI scanner wrappers, or bundled Python assurance helpers, load `references/shared/tooling/command-resolution.md` and resolve the command from repo configuration, local availability, and current tool help instead of inventing command names or hard-coding stale flags.
+
+When bundled Python assurance helpers are available, they may be used as optional signal-preserving validators and seeders. Before interpreting their output, load `references/shared/tooling/python-assurance.md`. If unavailable, incompatible, or too narrow for the observed surface, record the blocker or `external_validator_unavailable` and continue skill-native review. Missing helper output must never reduce scope, suppress LLM/human observations, or prove a surface safe.
 
 **Anti-downgrade rule**: Never silently reduce scope. Large project size is not a reason to downgrade — it's a reason to use parallel agents. Downgrading requires explicit user confirmation.
 
@@ -263,7 +265,7 @@ Old single-file state is unsupported. Do not migrate it or use it as a baseline.
    - `.security-code-audit-state/runs/{run_id}/agent-logs.jsonl`
 7. Record current change and invalidation analysis in `current-change-context.json`, including changed files, changed shared surfaces, architecture changes, invalidated prior records, and selective-load decisions
 8. Use `indexes/` and `knowledge/` only for selective loading after freshness classification; each reused record must be marked `fresh_current`, `comparable`, `stale_needs_recheck`, `invalidated`, or `not_applicable`
-9. Ensure the run directory records `coverage-ledger.jsonl`, `trace-ledger.jsonl`, `function-chains.jsonl`, `attack-chains.jsonl`, `evidence-observations.jsonl`, `hypotheses.jsonl`, `proof-obligations.jsonl`, `deep-gates.jsonl`, `dependency-semantics.jsonl`, `design-conflicts.jsonl`, `invalidations.jsonl`, `tool-invocations.jsonl`, `merge-queue.jsonl`, and `quality-gates.json` whenever those ledgers are material
+9. Ensure the run directory records `coverage-ledger.jsonl`, `trace-ledger.jsonl`, `function-chains.jsonl`, `attack-chains.jsonl`, `evidence-observations.jsonl`, `hypotheses.jsonl`, `proof-obligations.jsonl`, `deep-gates.jsonl`, `dependency-semantics.jsonl`, `design-conflicts.jsonl`, `invalidations.jsonl`, `tool-invocations.jsonl`, `merge-queue.jsonl`, and `quality-gates.json` whenever those ledgers are material; before final report generation, write `findings.jsonl` when confirmed findings exist
 10. In beta `multi`, every worker must emit local deltas and logs into `agent-deltas/{agent_id}.jsonl` and/or `merge-queue.jsonl`; only the `supervisor` may merge them into shared ledgers
 11. Prefer git-backed run identity when available; otherwise use tree/fs snapshot identity from `references/shared/state-standard.md`
 
@@ -285,13 +287,14 @@ Old single-file state is unsupported. Do not migrate it or use it as a baseline.
 - every agent must record key decisions, blockers, evidence checkpoints, and bounded function-chain progress into state or a mergeable delta
 - preserve bounded checkpoints and join nodes rather than dumping unbounded transitive call graphs into state
 - if a reviewed security-relevant function or state-changing transition has no bounded call-chain record, carry it as coverage debt instead of treating it as covered
+- confirmed findings must be written as canonical `finding.v1` records in `findings.jsonl` before Markdown generation; the Markdown display ID is derived from sorted canonical records, not from discovery order
 - if `.security-code-audit-state/` exists, it should contain machine-readable state files; an empty directory is invalid and indicates incomplete execution
 - if no state file can be written for the current run, do not leave an empty `.security-code-audit-state/` behind
 - when git metadata exists, `quick` should treat committed delta and working-tree delta as separate inputs and union them before scanning
 - if shared auth, authz, helper, dependency, config, or contract-control surfaces change, invalidate dependent audit state
 - for smart-contract audits, complexity beats size; a small repo with accounting, signature, oracle, proxy, initializer, or multi-contract trust surfaces should still create richer audit state with function-chain detail
 - do not store raw secrets, tokens, full private keys, sensitive response bodies, or credentials in state; store redacted class, location, redacted hash, and verification status
-- evaluate and write `quality-gates.json` before final reporting; optional external validators may assist maintainers, but the skill must not depend on Python or any local tool runtime. Failed gates prevent `complete` claims and must become coverage debt, blocked scan, or invalid state
+- evaluate and write `quality-gates.json` before final reporting; optional external validators, including bundled Python assurance helpers, may assist maintainers, but the skill must not depend on Python or any local tool runtime. Failed gates prevent only the claims they validate, such as `complete` coverage, and must become coverage debt, blocked scan, or invalid state rather than suppressing raw evidence or candidate findings
 - promote runtime records into `knowledge/` only when they have current evidence refs, scope, confidence, freshness status, and invalidation rules
 
 ---
@@ -324,7 +327,7 @@ Mode-specific reconnaissance depth lives in `modes/*.md`:
 ```
 [RECON]
 Project: {name}
-Skill Version: {security-code-audit 1.1.0}
+Skill Version: {security-code-audit 1.1.1}
 Deployment Context: {auth owner, network reachability, reverse-proxy or host-app mount constraints when material}
 Audit Profile: {application|smart-contract|artifact-centric}
 Knowledge Domain: {application|smart-contract}
@@ -359,7 +362,7 @@ Example preferred rendering:
 ```markdown
 **[RECON]**
 - `Project`: vuln-bank
-- `Skill Version`: `security-code-audit 1.1.0`
+- `Skill Version`: `security-code-audit 1.1.1`
 - `Deployment Context`: Superset-served admin blueprint behind FAB auth, MCP bound to internal network only
 - `Audit Profile`: `application`
 - `Knowledge Domain`: `application`
@@ -614,9 +617,13 @@ Before finalizing each finding, verify:
 21. Audit State `current-change-context.json` exists and was produced from fresh current recon before selective prior-state loading
 22. Every reused prior state or knowledge record has a valid freshness status; invalidated records do not support `covered`, `fixed`, `complete`, or `confirmed`
 23. Every confirmed finding, candidate signal, coverage debt item, working hypothesis, and attack chain has current-run state record refs when material
-24. In beta `multi`, every final-blocking `merge-queue.jsonl` item has been merged, rejected, or routed by the supervisor
-25. `quality-gates.json` has been updated from the skill-native checks in `references/shared/state-standard.md`; failed gates must be reported as partial/blocked coverage rather than completion
-26. Optional external validators may assist maintainers. If one is unavailable, record `external_validator_unavailable` but do not block the scan solely for missing tooling
+24. Every confirmed finding exists first as a canonical `finding.v1` record in `.security-code-audit-state/runs/{run_id}/findings.jsonl`
+25. `Confirmed Findings` Markdown is rendered from `findings.jsonl` with stable display IDs sorted by severity rank, category/surface, then fingerprint; do not number by discovery order, worker order, or historical order
+26. If `tools/report_render.py` is available, use it to render confirmed findings; if unavailable, hand-render the same schema-backed fields and record `external_validator_unavailable`
+27. Run `tools/report_gate_check.py` when available, or apply its gates manually: canonical fields present, stable display IDs, candidates outside confirmed findings, and no complete claim with open schema gaps or unrouted observations
+28. In beta `multi`, every final-blocking `merge-queue.jsonl` item has been merged, rejected, or routed by the supervisor
+29. `quality-gates.json` has been updated from the skill-native checks in `references/shared/state-standard.md`; failed gates must be reported as partial/blocked coverage rather than completion
+30. Optional external validators may assist maintainers. If one is unavailable, record `external_validator_unavailable` but do not block the scan solely for missing tooling
 
 ### Terminal Summary (All Modes)
 
@@ -627,7 +634,7 @@ Print directly in the conversation:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.1.0]
+**Skill Version:** [1.1.1]
 **Mode:** [quick|standard|deep|regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -711,7 +718,7 @@ Regression mode uses this summary shape instead:
 
 **Project:** [name]
 **Date:** [YYYY-MM-DD HH:MM:SS TZ]
-**Skill Version:** [1.1.0]
+**Skill Version:** [1.1.1]
 **Mode:** [regression]
 **Audit Profile:** [application|smart-contract|artifact-centric]
 **Knowledge Domain:** [application|smart-contract]
@@ -737,7 +744,7 @@ Save each emitted report to `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{m
 
 ## Meta
 - **Date**: [YYYY-MM-DD HH:MM:SS TZ]
-- **Skill Version**: [1.1.0]
+- **Skill Version**: [1.1.1]
 - **Mode**: [quick|standard|deep|regression]
 - **Audit Profile**: [application|smart-contract|artifact-centric]
 - **Knowledge Domain**: [application|smart-contract]
@@ -762,6 +769,12 @@ Save each emitted report to `.security-code-audit-reports/{YYYY-MM-DD-HHMMSS}-{m
 Use only the coverage section that matches the active knowledge domain.
 
 ## Confirmed Findings
+
+Display IDs below are presentation labels derived from canonical
+`.security-code-audit-state/runs/{run_id}/findings.jsonl` records. Sort by
+severity rank, category/surface, then fingerprint, and number within each
+severity. The fingerprint remains the stable identity for history, dedupe, and
+merge.
 
 ### [SEV]-[NNN]: [Title]
 - **Severity**: Critical / High / Medium / Low / Info

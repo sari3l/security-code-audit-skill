@@ -1,6 +1,6 @@
 # security-code-audit
 
-当前版本：`v1.1.0`
+当前版本：`v1.1.1`
 
 面向 Web/API、后端、全栈、智能合约，以及 artifact-centric 仓库的代码安全审计 skill。
 

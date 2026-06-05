@@ -2,6 +2,10 @@
 
 Use stable finding fingerprints for history matching, dedupe, and multi-agent merge.
 
+Fingerprints are the canonical finding identity. Markdown display IDs such as
+`[HIGH]-001` are presentation labels derived later from sorted canonical
+findings; they are not identities and must not be used for history matching.
+
 ## Canonical Fields
 
 Derive a fingerprint from:
@@ -41,6 +45,12 @@ One fingerprint may cover multiple locations only when:
 ## Usage
 
 - Compute a fingerprint before assigning `New`, `Recurring`, or `Regression`.
+- Write each confirmed finding to `findings.jsonl` with its fingerprint before
+  generating Markdown.
+- Derive Markdown display IDs by sorting canonical findings by severity rank,
+  category/surface, then fingerprint, and numbering within each severity.
+- Do not derive display IDs from discovery order, worker return order, report
+  history order, or human-edited report order.
 - Use it to merge worker output in multi-agent mode.
 - Use it to avoid double counting native dependency audit results and external SCA results.
 - If the fingerprint is uncertain, keep the finding separate until evidence is stronger.

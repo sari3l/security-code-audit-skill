@@ -17,6 +17,7 @@ Use these modules when the target repo contains:
 |------|-------|
 | `references/shared/artifacts/markdown.md` | markdown renderers, raw HTML, dangerous links, embeds, image fetches, and markdown-to-HTML trust boundaries |
 | `references/shared/artifacts/skill-files.md` | `SKILL.md`, `AGENTS.md`, prompt templates, tool wrappers, instruction-precedence review, and operator-risk review for skill/agent repos |
+| `references/shared/artifacts/capability-map.md` | advisory capability mapping for skill/agent/operator instructions, gates, effects, source-sink paths, raw observations, and unmapped signals |
 | `references/shared/artifacts/api-specs.md` | OpenAPI, Swagger, Postman, GraphQL schema, hidden routes, auth drift, and leaked examples |
 | `references/shared/artifacts/notebooks.md` | `.ipynb` notebooks, saved outputs, secrets, shell escapes, and operational leakage |
 
@@ -26,6 +27,7 @@ Use these modules when the target repo contains:
 
 - Load `markdown.md` when the repo renders markdown in web UIs, tickets, comments, wikis, docs previews, or email-like content.
 - Load `skill-files.md` when the repo itself is a skill, agent, prompt, or LLM-integration target, when prompt templates and instruction files are first-class assets, or when setup flows and operator-facing commands are part of the artifact surface.
+- Pair `skill-files.md` with `capability-map.md` when the artifact can cause tool calls, command execution, network access, file/environment access, browser-profile access, dependency mutation, persistence, or agent-mediated actions. The capability map is advisory and open-world; do not drop findings or observations that do not fit it.
 - Load `api-specs.md` when the repo ships OpenAPI, Swagger, Postman, Insomnia, AsyncAPI, or GraphQL schema artifacts.
 - Load `notebooks.md` when `.ipynb` or similar mixed source/output notebook assets exist.
 - Pair artifact review with `references/application/vulnerabilities/xss.md` when markdown or rich text reaches browsers.
