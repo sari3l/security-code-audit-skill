@@ -1,6 +1,8 @@
-# Reporting Standards
+# 报告标准
 
 This directory contains reusable standards for Phase 4 report generation.
+
+User-facing terminal summaries and Markdown reports are Chinese by default. Keep technical identifiers, file paths, vulnerability class names, code snippets, and tool names unchanged when translation would reduce precision.
 
 Operational quality controls such as false-positive prevention, coverage discipline, finding consistency, and severity normalization now live in `core/`.
 
@@ -35,10 +37,10 @@ Use these files to keep reports consistent, auditable, and actionable:
 - If the active knowledge domain is `smart-contract`, load `references/smart-contract/vulnerabilities/coverage.md` instead of relying only on the generic application coverage matrix.
 - Load `finding-detail-standard.md` and `remediation-standard.md` for every Standard or Deep audit report.
 - For confirmed findings, create canonical `finding.v1` records in
-  `.security-code-audit-state/runs/{run_id}/findings.jsonl` before writing
+  `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-findings.jsonl` before writing
   Markdown. Prefer `tools/report_render.py` when available, then validate the
   final report with `tools/report_gate_check.py` or the equivalent manual gate.
-- Load `history-standard.md` after the independent current-code scan is complete when reading `.security-code-audit-reports/` history files, ordering them by report timestamp, and writing `Historical Context`.
+- Load `history-standard.md` after the independent current-code scan is complete when reading security audit report history from `output/`, ordering reports by timestamp, and writing `Historical Context`.
 - Load `regression-standard.md` when mode is `regression` and the latest timestamped report becomes the retest baseline.
 - Apply `core/fingerprints.md` before `history-standard.md` when matching current findings to prior reports.
 - Load `poc-standard.md` whenever a finding is Critical, High, or otherwise needs reproduction evidence.

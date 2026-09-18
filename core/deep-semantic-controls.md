@@ -37,7 +37,7 @@ For `quick` and `standard`, use this control only when a surface is unusually co
 
 ## Durable Typed Blackboard
 
-Deep semantic state is a durable typed blackboard stored in audit state ledgers under `.security-code-audit-state/runs/{run_id}/`.
+Deep semantic state is a durable typed blackboard stored in audit state ledgers under `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/`.
 
 It must be persisted incrementally, not reconstructed only at report time. In large projects, a gate that exists only in the agent's working memory should be treated as not yet durable.
 

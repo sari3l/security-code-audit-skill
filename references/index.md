@@ -50,7 +50,7 @@ When target code does not resemble the example, do not mark the surface safe. Re
   Shared command-resolution standard for optional external scanners, repo-defined audit scripts, ecosystem audit commands, IaC scanners, secret scanners, smart-contract tools, SBOM tools, and CI scanner wrappers.
 
 - `references/shared/audit-artifact-initialization.md`
-  Shared ignore maintenance and directory-bootstrap rules for `.security-code-audit-reports/` and `.security-code-audit-state/`.
+  Shared ignore maintenance and directory-bootstrap rules for `output/` reports, canonical findings JSONL, and standardized state bundles.
 
 - `references/shared/state-standard.md`
   Mandatory audit-state storage, advisory code fact snapshots, flexible evidence observations, trace-checkpoint persistence, function-chain inventory, and change-aware re-audit guidance for every scan.
@@ -74,7 +74,7 @@ When target code does not resemble the example, do not mark the surface safe. Re
   - `application` audits should load `references/application/languages/index.md` and only the detected `references/application/frameworks/*.md` files
   - `smart-contract` audits should load `references/smart-contract/languages/index.md`
 - Artifact surfaces: load `references/shared/artifacts/index.md` when the repo contains rendered markdown, `SKILL.md`, `AGENTS.md`, prompt templates, API specs, notebooks, or other instruction-bearing files.
-- Audit artifact bootstrap: load `references/shared/audit-artifact-initialization.md` immediately before first creating `.security-code-audit-reports/` or `.security-code-audit-state/`.
+- Audit artifact bootstrap: load `references/shared/audit-artifact-initialization.md` immediately before first creating the running directory's `output/` artifact root, report, canonical findings JSONL, or standardized state bundle.
 - Scan-state continuity: load `references/shared/state-standard.md` for every run, then keep richer detail when the repo is large, long-running, beta `multi`, or state-worthy smart-contract. Preserve advisory code facts and high-signal evidence observations even in compact runs.
 - Phase 2: use the chosen domain as the main audit map, then pull the relevant shared artifact, dependency, and exploit modules.
 - C8 and supply-chain review: load `references/shared/dependencies/index.md`, then the ecosystem files matching detected manifests and lock files. If external SCA output exists, also load `references/shared/dependencies/sca-integration.md`.

@@ -28,22 +28,25 @@ SKIP_DIRS = {
     "target",
     "coverage",
     ".security-code-audit-state",
-    ".security-code-audit-reports",
+    "output",
 }
 
 TEXT_EXTENSIONS = {
     ".bash",
     ".cfg",
+    ".cjs",
     ".conf",
     ".env",
     ".ini",
     ".json",
     ".js",
     ".jsx",
+    ".ksh",
     ".md",
     ".mjs",
     ".ps1",
     ".py",
+    ".service",
     ".sh",
     ".toml",
     ".ts",
@@ -51,6 +54,7 @@ TEXT_EXTENSIONS = {
     ".txt",
     ".yaml",
     ".yml",
+    ".zsh",
 }
 
 DEFAULT_MAX_BYTES = 1_000_000
@@ -138,13 +142,6 @@ def iter_text_files(root: Path, *, max_bytes: int = DEFAULT_MAX_BYTES) -> Iterab
 def _is_candidate_text_file(path: Path, *, max_bytes: int) -> bool:
     if path.name in {".DS_Store"}:
         return False
-    if path.suffix.lower() not in TEXT_EXTENSIONS and path.name not in {
-        "Dockerfile",
-        "Makefile",
-        "AGENTS.md",
-        "SKILL.md",
-    }:
-        return False
     try:
         stat = path.stat()
     except OSError:
@@ -155,7 +152,12 @@ def _is_candidate_text_file(path: Path, *, max_bytes: int) -> bool:
         sample = path.read_bytes()[:4096]
     except OSError:
         return False
-    return b"\x00" not in sample
+    if b"\x00" in sample:
+        return False
+    known_name = path.name in {"Dockerfile", "Makefile", "Procfile", "AGENTS.md", "SKILL.md"}
+    known_prefix = path.name.startswith(("Dockerfile.", "Makefile.", "Procfile."))
+    has_shebang = sample.startswith(b"#!")
+    return path.suffix.lower() in TEXT_EXTENSIONS or known_name or known_prefix or has_shebang
 
 
 def stable_id(prefix: str, *parts: Any) -> str:

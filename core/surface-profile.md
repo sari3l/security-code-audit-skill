@@ -72,9 +72,9 @@ Prefer:
 - `indexes/source-sink-index.jsonl`
 - `indexes/dependency-index.jsonl`
 - `indexes/trust-boundary-index.jsonl`
-- `runs/{run_id}/architecture-map.json`
-- `runs/{run_id}/current-change-context.json`
-- `runs/{run_id}/evidence-observations.jsonl` for limitations or unfamiliar signals
+- `architecture-map.json`
+- `current-change-context.json`
+- `evidence-observations.jsonl` for limitations or unfamiliar signals
 
 Hard rules:
 - keep it compact and evidence-referenced

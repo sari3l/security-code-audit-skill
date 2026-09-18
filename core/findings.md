@@ -9,11 +9,13 @@ Finding controls consume the flexible evidence envelope from audit state. An `ev
 - Each distinct vulnerability type should be its own finding.
 - Same vulnerability across multiple endpoints may be grouped only if all affected locations are listed explicitly.
 - Different vulnerability types in the same function or route are separate findings.
+- Do not merge signing-key identity/session forgery with unrelated credential disclosure. The failed control, exploit path, consumers, and minimal fix are different even when one secret scan found both.
 - Do not merge unrelated endpoints into one finding just because the sink type is the same.
 
 ## Dedupe Rules
 
 - Deduplicate only when exploit path, root cause, and fix are materially the same.
+- A generic hardcoded-secret finding cannot absorb a session/token forgery chain unless the same remediation fully removes the key, rotates it, invalidates artifacts, and fixes the identity consumer semantics.
 - Do not deduplicate across different owners, resources, or route families if remediation would differ.
 - Do not double count the same dependency advisory from native audit and external SCA results.
 - Apply `core/fingerprints.md` before merging history matches, worker output, or repeated locations.

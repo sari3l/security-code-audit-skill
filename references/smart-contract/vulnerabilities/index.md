@@ -16,6 +16,9 @@ For DeFi, DEX, lending, bridge, cross-chain, upgradeable, Safe/multisig, fronten
 - `references/smart-contract/vulnerabilities/trust-and-privilege.md`
   Owners, roles, initialization, rescue flows, governance, and privileged trust boundaries.
 
+- `references/smart-contract/vulnerabilities/authorization-and-integration.md`
+  Capability-to-asset-flow, execution-context binding, allowance/spender and recipient binding, lifecycle revocation, state-keyed limits, and cross-contract settlement semantics.
+
 - `references/smart-contract/vulnerabilities/external-calls-and-reentrancy.md`
   External calls, callbacks, delegation, flash-loan-assisted flows, and execution ordering.
 
@@ -41,5 +44,6 @@ For DeFi, DEX, lending, bridge, cross-chain, upgradeable, Safe/multisig, fronten
 1. Start with `smart-contracts.md`.
 2. Load the deep dives that match the observed surface.
 3. For DeFi, DEX, lending, bridge, cross-chain, upgradeable, Safe/multisig, frontend-assisted signing, or relayer-heavy repos, make sure the matching accounting, oracle, trust, signature, upgrade, and supporting shared-surface checks are not skipped as "operational."
-4. Load `coverage.md` near stage `5/6` and final report generation.
-5. Use `../standards/index.md` only as a standards overlay after the technical review path is already clear.
+4. When a role, operator, strategy, adapter, solver, registry/CPI, delegatecall, or settlement interface can select an asset destination or amount, load `authorization-and-integration.md` and enumerate equivalent helpers, stale-authority paths, and target-binding assumptions before pruning the issue.
+5. Load `coverage.md` near stage `5/6` and final report generation.
+6. Use `../standards/index.md` only as a standards overlay after the technical review path is already clear.

@@ -1,6 +1,6 @@
 # History Comparison Standard
 
-Use this standard when reading previous reports from `.security-code-audit-reports/` and deciding whether historical lifecycle can be finalized as `New`, `Recurring`, `Regression`, or `Fixed`, or must stay `Pending historical validation`.
+Use this standard when reading previous reports from the running directory's `output/` subdirectory and deciding whether historical lifecycle can be finalized as `New`, `Recurring`, `Regression`, or `Fixed`, or must stay `Pending historical validation`.
 
 ---
 
@@ -21,7 +21,7 @@ The goal is trend clarity after an independent current-code audit, not forced ma
 Use:
 - the current draft finding list
 - the current coverage state and function-chain records
-- up to 3 most recent standardized reports from `.security-code-audit-reports/`, ordered by parsed filename timestamp first
+- up to 3 most recent standardized reports from `output/`, ordered by parsed filename timestamp first
 - the current code locations and exploit paths
 - stable finding fingerprints from `core/fingerprints.md`
 
@@ -36,8 +36,8 @@ For `quick`, `standard`, and `deep`:
 If there is no usable history, state that clearly and mark current findings as `New`.
 
 Preferred recency order:
-- parse the leading filename timestamp in the format `YYYY-MM-DD-HHMMSS`
-- only treat files matching the current standard filename shape `{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md` as usable history input
+- parse the timestamp immediately after the `security-code-audit-` filename prefix in the format `YYYY-MM-DD-HHMMSS`
+- only treat files matching the current standard filename shape `security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md` in `output/` as usable history input
 - ignore older alternate filename shapes instead of trying to normalize them into the new flow
 - if multiple reports share the same timestamp, prefer the newest file mtime
 - treat example values as invalid if they were not generated from the real wall-clock time for that report
@@ -106,7 +106,7 @@ If the latest report says a finding was fixed but the current code still shows t
 
 1. Finish the current-code scan, coverage reconciliation, and audit-state writes first.
 2. Build the current draft findings from current-code evidence first.
-3. Read up to 3 latest standardized reports from `.security-code-audit-reports/`, ordered by parsed filename timestamp first.
+3. Read up to 3 latest standardized reports from `output/`, ordered by parsed filename timestamp first.
 4. Extract prior findings with category, fingerprint, title, location, attack vector, impact, and related notes.
 5. Normalize paths mentally for refactors: line movement alone does not make a finding new.
 6. Reopen prior findings against current code before lifecycle matching to detect `Historical Misses`.

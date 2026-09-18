@@ -9,7 +9,7 @@ These files are not a third audit domain. They are supporting layers that can be
 ## Shared Areas
 
 - `references/shared/audit-artifact-initialization.md`
-  Shared ignore and directory-bootstrap rules for `.security-code-audit-reports/` and `.security-code-audit-state/`.
+  Shared ignore and directory-bootstrap rules for `output/` reports, canonical findings JSONL, and standardized state bundles.
 
 - `references/shared/artifacts/index.md`
   Rendered, instruction-bearing, or analyst-authored assets such as markdown, prompt files, API specs, and notebooks.
@@ -37,7 +37,7 @@ These files are not a third audit domain. They are supporting layers that can be
 - load `dependencies/` when manifests, lock files, vendored packages, images, SBOMs, or SCA output exist
 - load `tooling/command-resolution.md` before invoking optional external scanners, repo-configured audit scripts, ecosystem audit commands, IaC scanners, secret scanners, smart-contract tools, SBOM tools, CI scanner wrappers, or bundled Python assurance tools
 - load `tooling/python-assurance.md` when using the bundled optional Python validators or when a validator result must be interpreted without suppressing unmodeled LLM/human evidence
-- load `audit-artifact-initialization.md` immediately before first creating `.security-code-audit-reports/` or `.security-code-audit-state/`
+- load `audit-artifact-initialization.md` immediately before first creating the running directory's `output/` artifact root, report, canonical findings JSONL, or standardized state bundle
 - load `state-standard.md` for every run; large, long-running, beta `multi`, or state-worthy smart-contract scans should preserve richer detail, but even compact runs should preserve advisory code facts and high-signal evidence observations
 - load `reporting/` near coverage verification, history comparison, severity calibration, and final report generation
 

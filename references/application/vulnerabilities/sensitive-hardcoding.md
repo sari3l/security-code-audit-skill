@@ -44,6 +44,16 @@ Not every literal is equally severe, but all of these deserve review because the
 - SMTP, SMS, payment, analytics, monitoring, and queue credentials
 - Kubernetes service account tokens, kubeconfigs, Docker registry auth, `.npmrc` auth tokens
 
+### Route By Security Use
+
+A secret-scanner hit is only the start of review. Route key material to every security control it empowers:
+
+- Flask/JWT/session/HMAC signing material -> authentication, token/session forgery, every signed-state consumer, and authorization decisions
+- encryption keys -> data confidentiality, decryption reach, rotation, and cryptography review
+- database/cloud/third-party credentials -> direct access, lateral movement, scope, and revocation review
+
+Do not merge a signing-key identity-forgery chain into a generic credential bundle when the exploit path and minimal fix differ. A fixed Flask `SECRET_KEY` plus client-signed identity state requires an independent C2 finding or report-visible candidate, even when other credentials exist in the same file.
+
 ### Usernames, Passwords, And Connection Metadata
 
 - hardcoded admin or service usernames and passwords
@@ -124,6 +134,7 @@ JWT_SECRET=dev-secret-still-used
 - Is the same secret reused across dev, staging, and production?
 - Does the value also exist in git history, container layers, build logs, or generated assets?
 - If rotated, was every downstream consumer updated and old access revoked?
+- Does exposed signing material let an attacker mint a session, token, CSRF artifact, webhook, or other authority-bearing object, and where is that object trusted?
 
 ---
 
@@ -146,4 +157,5 @@ grep -rnE '\\b10\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\b|\\b192\\.168\\.[0-9]{
 
 - `references/application/vulnerabilities/data-exposure.md`
 - `references/application/vulnerabilities/configuration-files.md`
+- `references/application/vulnerabilities/authentication.md`
 - `references/application/languages/index.md`

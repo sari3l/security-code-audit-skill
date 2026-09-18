@@ -18,6 +18,7 @@ Project context such as business assets, invariants, and trust-boundary claims m
 - use change detection to decide which files and shared surfaces enter quick scope
 - once a file or surface enters scope, review that file or surface as a normal quick-pass target rather than only reading the changed hunks
 - always keep the cheapest global high-risk checks for secrets, hardcoded credentials, and manifest / lockfile dependency exposure
+- always run the cheap dangerous-capability sentinel census across the whole repository; do not confine `eval`/`exec`/`compile`, shell `source`/`.`, signing material, or signed-state consumer discovery to changed files
 
 Do not inspect prior report details until the current quick-pass findings, coverage notes, and audit-state updates are complete.
 
@@ -30,6 +31,8 @@ Use when:
 
 ## Required Load
 
+- `core/dangerous-capability-census.md`
+- `core/exploration-and-evidence.md`
 - `references/application/languages/index.md`
 - the active knowledge domain router after recon:
   - `references/application/index.md`
@@ -39,7 +42,7 @@ Use when:
 - `references/application/vulnerabilities/file-upload-download.md` when upload, download, export, archive, or object-storage surface exists
 - `references/application/vulnerabilities/sensitive-hardcoding.md` when secrets or hardcoded sensitive values are plausible
 - `references/shared/reporting/index.md`
-- `references/shared/reporting/history-standard.md` if `.security-code-audit-reports/` history exists, but defer it until after the current-code quick pass is complete
+- `references/shared/reporting/history-standard.md` if security audit report history exists in `output/`, but defer it until after the current-code quick pass is complete
 
 ---
 
@@ -123,6 +126,7 @@ State writes required in quick:
 - `current-change-context.json` with changed files, changed shared surfaces, invalidations, and selective-load decisions
 - `task-ledger.jsonl` for selected quick-scope work and expansion decisions
 - `coverage-ledger.jsonl` with counted quick-scope coverage, even when not exhaustive
+- `dangerous-capability-census.json` and `dangerous-capabilities.jsonl`, with whole-repository sentinel totals and zero unreviewed occurrences before completion
 - `evidence-observations.jsonl` for high-signal observations, blockers, scanner gaps, and schema gaps
 - `function-chains.jsonl` or explicit coverage debt for security-relevant functions in quick scope
 - `quality-gates.json` before reporting
@@ -137,6 +141,7 @@ State writes required in quick:
 At minimum, scan for:
 - secrets and hardcoded sensitive values
 - critical injection sinks or equivalent high-risk native surfaces for the active domain
+- dynamic evaluators, shell code loading/interpreted config, hardcoded signing material, and signed-state consumers
 - hardcoded credentials
 - obvious dependency CVE exposure, including a native dependency audit command when the ecosystem tool is available
 - debug mode, exposed diagnostics, and other clear RCE paths in application-style repos
@@ -146,7 +151,7 @@ Use `references/smart-contract/index.md` as the main router in that case.
 
 If the active profile is `artifact-centric`, triage prompt, rendering, trust-boundary, secret, and environment risk first.
 
-If one high-risk pattern is found, search for all materially affected occurrences across the current quick scope before reporting. If the root cause is a changed shared helper or sink family, widen locally enough to cover the affected scope before reporting.
+If one high-risk pattern is found, search for all materially affected occurrences across the current quick scope before reporting. If the root cause is a changed shared helper or sink family, widen locally enough to cover the affected scope before reporting. For contract patterns, fan out to equivalent helpers and integration boundaries in quick scope and record unresolved branches as candidate, hypothesis, or coverage debt.
 
 After the current-code quick pass is complete, perform a deferred history replay:
 - read up to 3 recent reports
@@ -169,7 +174,7 @@ After the current-code quick pass is complete, perform a deferred history replay
 ## Output
 
 - terminal summary
-- brief history file in `.security-code-audit-reports/`
+- brief history report in `output/`
 
 Quick mode may keep the report compact, but it must still preserve exploitability, evidence, remediation, coverage debt, and historical comparison when material.
 It must also preserve material evidence observations, tool-output blockers, negative evidence, and schema gaps when they affect current quick-scope confidence.
@@ -186,7 +191,9 @@ Quick mode is complete when:
 - dependency audit tooling was run for detected ecosystems when feasible, or a limitation was recorded
 - obvious Critical/High findings are documented
 - repeated high-risk instances have been enumerated
+- mandatory dangerous-capability families were searched globally, totals reconcile, and every hit is routed to a finding, high-risk alert, candidate, negative closure, or coverage debt
 - any `strict incremental` limitation or expansion refusal is recorded when applicable
 - material evidence observations are routed to confirmed findings, candidate signals, negative evidence, coverage debt, working hypotheses, or schema-gap suggestions
+- material exploration branches are routed in `exploration-ledger.jsonl` or carried as explicit debt
 - audit state quality gates pass or the report explicitly states partial/blocked quick coverage
 - report output is generated

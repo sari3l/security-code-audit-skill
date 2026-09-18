@@ -30,6 +30,10 @@ Then use `core/loading.md` to lazy-load only the specific control modules needed
   Prevent hallucination, evidence drift, and false positives.
 - `coverage.md`
   Prevent shallow scans, skipped surfaces, and false negatives.
+- `dangerous-capability-census.md`
+  Put dynamic evaluation, shell command/code loading, signing material, and authority-bearing consumers into a counted disposition ledger before exploitability pruning.
+- `exploration-and-evidence.md`
+  Preserve LLM-led hypothesis expansion and require every material observation to close through a bidirectional evidence chain.
 - `findings.md`
   Keep finding boundaries, grouping, dedupe, status handling, and evidence-observation promotion consistent.
 - `fingerprints.md`

@@ -61,6 +61,8 @@ These are deeper topical references that complement the core set.
 |------|---------|
 | `references/application/vulnerabilities/sql-injection.md` | deep SQLi coverage: value, identifier, clause, ORM, second-order cases |
 | `references/application/vulnerabilities/command-injection.md` | shell, argument, option, and wrapper-based command execution abuse |
+| `references/application/vulnerabilities/dynamic-code-evaluation.md` | dynamic evaluators, expression engines, callable selection, namespaces, and API-reachable execution alerts |
+| `references/application/vulnerabilities/shell-code-loading.md` | shell `source`/`.` semantics, interpreted env/config, provenance, permissions, and conditional execution |
 | `references/application/vulnerabilities/deserialization.md` | unsafe object materialization, gadget paths, signed-state misuse |
 | `references/application/vulnerabilities/api-security.md` | API-specific object, property, flow, and cross-version security issues |
 | `references/application/vulnerabilities/business-logic.md` | router for stateful workflow flaws and invariant-driven review |
@@ -83,7 +85,7 @@ These are deeper topical references that complement the core set.
 
 - Load the relevant core modules for every standard or deep audit.
 - Pull in specialist modules when the project surface matches them.
-- For C1, start with `references/application/vulnerabilities/injection.md` and then load the specific sink-family modules that match the codebase.
+- For C1, start with `references/application/vulnerabilities/injection.md` and then load the specific sink-family modules that match the codebase. A mandatory census hit for dynamic evaluation or shell code loading loads its specialist module immediately.
 - For C8, route to `references/shared/dependencies/index.md` and load the ecosystem modules that match the repo's manifests and lock files.
 - For C11, load `references/application/vulnerabilities/logging-monitoring.md` whenever the repo logs auth, errors, admin actions, exports, or security events.
 - For upload, download, export, archive extraction, or object storage flows, load `references/application/vulnerabilities/file-upload-download.md`.

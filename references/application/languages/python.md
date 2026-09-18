@@ -7,6 +7,7 @@ Language-specific security checklist organized by C1-C12 categories. Each sectio
 ## C1: Injection
 
 ### Key Questions
+- Was every `eval`, `exec`, `compile`, dynamic import, shell invocation, signing key, and signed-state consumer entered into the dangerous-capability census before exploitability pruning?
 - Are any SQL queries built with string formatting or concatenation?
 - Does any code call `os.system`, `subprocess` with `shell=True`, or `eval`/`exec`?
 - Is `pickle`, `yaml.load`, or `marshal` used on untrusted data?
@@ -19,6 +20,7 @@ Language-specific security checklist organized by C1-C12 categories. Each sectio
 - Django `extra()`, `raw()`, `RawSQL()` with interpolated strings
 - SQLAlchemy `text()` with string formatting
 - `__import__()` with user-controlled module names
+- API-controlled values reaching `eval` through apparently safe `dict.__repr__`; direct expression escape may be unproven, but the evaluator remains a high-risk alert and every allowlisted handler still requires tracing
 
 ### Dangerous Patterns
 
@@ -100,6 +102,7 @@ grep -rn "os\.popen(" --include="*.py"
 # Code execution
 grep -rn "eval(" --include="*.py"
 grep -rn "exec(" --include="*.py"
+grep -rn "compile(" --include="*.py"
 grep -rn "__import__(" --include="*.py"
 
 # Deserialization
@@ -119,6 +122,7 @@ grep -rn "marshal\.loads(" --include="*.py"
 - Is Flask's `SECRET_KEY` set to a strong random value?
 - Is Django's `SECRET_KEY` kept out of source code?
 - Are password reset tokens single-use and time-limited?
+- When a Flask/JWT/session signing key is fixed or predictable, were all signed-state consumers and identity/authorization decisions traced?
 
 ### Commonly Missed
 - PyJWT accepting `alg: none` (pre-2.x default behavior)

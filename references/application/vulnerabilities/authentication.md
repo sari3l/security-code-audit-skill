@@ -17,6 +17,22 @@ Focus on proving identity:
 2. every place sessions or bearer tokens are created or parsed
 3. fallback or legacy auth paths, including `/v1/`, mobile APIs, admin routes, and internal tools
 4. post-auth state changes such as password change, privilege elevation, or account recovery
+5. every signing-key definition and every consumer of the session, token, CSRF, webhook, or signed object it protects
+
+When a hardcoded, weak, predictable, leaked, or insecure-fallback signing key is found, trace consumers immediately:
+
+```text
+signing material
+  -> effective session/token backend and serializer
+  -> artifact creation and parsing
+  -> all identity-bearing reads/writes/membership tests
+  -> alternate cookie/header selectors
+  -> canonical subject selection
+  -> authentication and authorization decisions
+  -> sensitive response or privileged state change
+```
+
+For Flask, determine whether the default client-side signed session is active or a custom/server-side `session_interface` changes the model. A known key plus client-signed identity state can give an attacker offline artifact-minting capability without request data flowing into the key.
 
 ---
 
@@ -44,6 +60,8 @@ Focus on proving identity:
 - reverse proxies or auth middleware inject trusted identity headers without strict edge-only guarantees
 - one layer verifies the token but another layer later trusts an unverified copy, fallback claim, or alternate transport
 - first-win vs last-win behavior for duplicate `Authorization`, cookie, or identity headers changes the effective subject
+- a fixed Flask `SECRET_KEY` is reported only as generic credential leakage without tracing session consumers and identity decisions
+- one cookie chooses a username while a separately signed session is checked for membership, allowing a forged pair to select the effective subject
 
 ---
 
@@ -104,6 +122,7 @@ NoOpPasswordEncoder.getInstance();
 - Which layer chooses the active identity if the same request carries multiple credential sources?
 - Can gateway, middleware, library, and application code derive different subjects or assurance levels from the same request?
 - Are cookies marked `Secure`, `HttpOnly`, and `SameSite`?
+- Can known signing material mint an artifact that any login, identity, role, CSRF, reset, or authorization decision accepts?
 
 ---
 
@@ -118,6 +137,7 @@ The gate is not `covered` until the audit records:
 - lifecycle checks for creation, rotation, expiry, revocation, logout, password change, role change, account recovery, MFA enrollment, and privilege elevation
 - negative evidence that fallback paths, legacy API versions, mobile/admin/support flows, failure handlers, and multiple credential sources cannot weaken identity assurance
 - proof obligations for upstream gateway guarantees, key management, runtime cookie settings, or external IdP configuration that cannot be verified locally
+- signing-material provenance, effective session/token backend, serializer, all signed-state consumers, and whether key knowledge permits offline forgery
 
 Record design/implementation conflicts when:
 - docs claim MFA, gateway-only identity, one-time recovery, or token revocation but code or config leaves alternate weaker paths

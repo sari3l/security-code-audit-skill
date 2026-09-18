@@ -8,6 +8,7 @@ Focus on files such as:
 - Kubernetes manifests, Helm values, Terraform, cloud config
 - `nginx.conf`, Caddy, Traefik, Apache, ingress definitions
 - CI/CD workflows, startup scripts, Procfiles, systemd units
+- shell-loaded env/config files and the scripts that interpret them with `source` or `.`
 
 ---
 
@@ -18,6 +19,7 @@ Focus on files such as:
 - containers running as root, `privileged: true`, host networking, writable mounts, broad capabilities
 - proxy trust mistakes that let attackers spoof client IPs or bypass rate limits
 - overly broad CORS, wildcard hosts, disabled TLS validation, insecure cookie defaults
+- `source .env` or `. path/to/config` without proving the sourced file and path provenance share the script's trust level
 
 ---
 
@@ -28,6 +30,8 @@ Focus on files such as:
 - reverse-proxy headers differ between environments, changing auth or rate-limit behavior
 - build-time secrets leak through Docker layers, image history, or copied files
 - old versioned routes remain mounted through ingress even after code-level deprecation
+- `.env` is treated as passive key/value data even though a deploy or entrypoint script sources it as executable shell code
+- a sourced config file is fixed but its parent directory, symlink target, CI generator, artifact, mount, or secret writer is controlled by a lower-trust principal
 
 ---
 
@@ -67,6 +71,7 @@ add_header Access-Control-Allow-Origin *;
 - run containers as non-root with minimal capabilities and mounts
 - terminate and trust proxy headers only from known upstreams
 - review versioned ingress and route config for stale exposure
+- parse dotenv/config as data with a fixed key allowlist; never replace shell source with `eval` or `xargs` reparsing
 
 ---
 
@@ -77,6 +82,7 @@ add_header Access-Control-Allow-Origin *;
 - Can proxy or ingress settings weaken auth, rate limiting, or host validation?
 - Do Docker or Kubernetes settings expand filesystem, network, or privilege boundaries?
 - Do older API versions remain exposed through gateway or ingress config after deprecation?
+- Does any shell, CI step, entrypoint, or unit load a config file as code, and who can replace the file or any path component?
 
 ---
 
@@ -102,6 +108,7 @@ grep -rn 'DEBUG|APP_DEBUG|NODE_ENV|Development|UseDeveloperExceptionPage|debug=T
 grep -rn 'SECRET|TOKEN|PASSWORD|KEY|PRIVATE_KEY|AWS_' .
 grep -rn 'privileged: true|hostNetwork: true|runAsUser: 0|allowPrivilegeEscalation: true|CAP_SYS_ADMIN' .
 grep -rn 'Access-Control-Allow-Origin|AllowAnyOrigin|X-Forwarded-For|trusted_proxies|proxy_set_header' .
+grep -rnE '(^|[;&|])[[:space:]]*(source[[:space:]]+|\.[[:space:]]+)' --include='*.sh' --include='*.bash' --include='*.zsh' .
 ```
 
 ---
@@ -110,4 +117,5 @@ grep -rn 'Access-Control-Allow-Origin|AllowAnyOrigin|X-Forwarded-For|trusted_pro
 
 - `references/application/vulnerabilities/security-misconfiguration.md`
 - `references/application/vulnerabilities/data-exposure.md`
+- `references/application/vulnerabilities/shell-code-loading.md`
 - `references/shared/reporting/coverage-matrix.md`

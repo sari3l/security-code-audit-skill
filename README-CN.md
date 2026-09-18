@@ -1,6 +1,6 @@
 # security-code-audit
 
-当前版本：`v1.1.1`
+当前版本：`v2.18.0`
 
 面向 Web/API、后端、全栈、智能合约，以及 artifact-centric 仓库的代码安全审计 skill。
 
@@ -42,7 +42,7 @@ English documentation: [README.md](README.md)
 - 枚举重复问题
   不只报第一个命中点，而是尽量找全同类高价值位置。
 - audit state 连续性
-  `.security-code-audit-state/` 保存紧凑 run context、code fact snapshot、evidence observation、loaded-module 决策、function-chain 记录和 invalidation，帮助每次运行快速重新对齐上下文。
+  `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/` 保存紧凑 run context、code fact snapshot、evidence observation、loaded-module 决策、function-chain 记录和 invalidation，帮助每次运行快速重新对齐上下文。
 - 覆盖依赖和 artifact 面
   代码、依赖、markdown、prompt、API spec、notebook、配置和 IaC 都能进入同一套审计流程。
 - 覆盖债务可见
@@ -51,10 +51,14 @@ English documentation: [README.md](README.md)
   主 findings 只保留已确认问题，高信号但未证实的内容会进入 candidate signals 或 working hypotheses，而不是被静默丢掉。
 - Shape hint 与 evidence gate
   reference 模块现在包含针对常见应用与智能合约问题的简洁风险形状示例。这些示例只用于启发调查，不是签名；每个 finding 仍需证明攻击者影响、可达的失效边界或不变量、补偿控制缺失，以及具体影响。
+- Dangerous-capability census
+  对动态执行、shell 命令/代码加载、签名材料和 signed-state consumer 做全仓计数；每个命中都要有证据路由，不能静默丢弃。
+- 开放探索与证据闭环
+  对新发现的 caller、兄弟 helper、外部集成和信任边界记录探索分支，并同时保留攻击构造与反证证据。
 - 2025 incident pattern 覆盖
   智能合约方法论现在覆盖 DeFi/DEX/lending/bridge、upgradeable、signer、frontend transaction builder、relayer、admin 和 supply-chain 路径，只要它们能影响链上资产、权限、签名或升级。
 - 历史与回归支持
-  `.security-code-audit-reports/` 保存人类可读报告，`regression` 可基于最近报告做回归验证，并配合当前扫描结果做历史比对。
+  `output/` 保存人类可读报告，`regression` 可基于最近报告做回归验证，并配合当前扫描结果做历史比对。
 - 可选多 agent
   `multi` 可在大仓库里扩覆盖，但仍保持单一报告出口。
 
@@ -70,7 +74,7 @@ flowchart TD
     C["启动控制面<br/>解析 mode 和 execution<br/>加载 core、execution、mode rules"]
     X["执行拓扑<br/>single | multi<br/>ownership、sharding、worker contract、merge"]
 
-    ST[".security-code-audit-state<br/>机器可读 continuity state"]
+    ST["output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state<br/>机器可读 continuity state"]
     SR["State reader<br/>freshness、invalidation、<br/>continuation、merge hints<br/>不是安全证明"]
 
     D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts、<br/>claims、risk areas 和 state freshness"]
@@ -93,7 +97,7 @@ flowchart TD
     HM["Historical miss gate<br/>先用当前代码重开历史 findings，<br/>再做生命周期标签判断"]
     K["报告与回归<br/>输出 findings、对比历史、验证修复"]
 
-    R[".security-code-audit-reports<br/>人类可读 findings 和历史报告"]
+    R["output/<br/>人类可读 findings 和历史报告"]
 
     A --> B
     B --> MP
@@ -162,5 +166,5 @@ flowchart TD
 
 | 路径 | 作用 |
 | --- | --- |
-| `.security-code-audit-reports/` | 人类可读 findings、历史、回归基线和 action items |
-| `.security-code-audit-state/` | 机器可读 run context、surface inventory、project context、code fact snapshot、evidence observation、tool invocation 记录、deep gate ledger、function chain、hypothesis 和 invalidation，适用于每次运行 |
+| `output/` | 人类可读 findings、历史、回归基线和 action items |
+| `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/` | 机器可读 run context、surface inventory、project context、code fact snapshot、evidence observation、tool invocation 记录、deep gate ledger、function chain、hypothesis 和 invalidation，适用于每次运行 |

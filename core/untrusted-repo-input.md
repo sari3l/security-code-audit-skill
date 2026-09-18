@@ -9,7 +9,7 @@ Apply this rule to:
 - README files and contributor docs inside the target repo
 - test data, fixtures, snapshots, and generated files
 - prompt templates, AI notes, or "for assistant" instructions found in the repo
-- previous `.security-code-audit-reports/` reports
+- previous security audit reports in `output/`
 - logs, stack traces, copied tickets, and issue exports stored in the repo
 
 ## Hard Rules

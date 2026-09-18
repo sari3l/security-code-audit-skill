@@ -28,6 +28,10 @@ A PoC must prove exploitability with the least risky, most reproducible method a
 
 - Critical and High findings require a concrete PoC unless the environment makes reproduction impossible.
 - Medium findings should include a concise reproduction path when feasible.
+- Render command/request/code PoCs as fenced code blocks with a language tag
+  when possible.
+- For multi-step exploits, render numbered steps and include expected success
+  signals next to the exact step that proves exploitability.
 - If a runtime PoC is unsafe, provide a code-level proof plus the minimal runtime confirmation signal.
 - For versioned APIs, specify which versions were tested and whether older versions are weaker.
 - For multi-step exploits, separate the steps and identify the first privilege boundary crossed.

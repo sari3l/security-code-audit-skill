@@ -1,6 +1,6 @@
 # security-code-audit
 
-Current release: `v1.1.1`
+Current release: `v2.18.0`
 
 Code security audit skill for web/API, backend, full-stack, smart-contract, and artifact-centric repositories.
 
@@ -42,7 +42,7 @@ Examples:
 - Repeated-pattern enumeration
   The skill is built to find all materially affected locations, not just the first hit.
 - Audit-state continuity
-  `.security-code-audit-state/` stores compact run context, code fact snapshots, evidence observations, loaded-module decisions, function-chain records, and invalidations so every run can re-orient cleanly.
+  `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/` stores compact run context, code fact snapshots, evidence observations, loaded-module decisions, function-chain records, and invalidations so every run can re-orient cleanly.
 - Dependency and artifact coverage
   Application code, dependencies, markdown and prompt artifacts, API specs, notebooks, config, and IaC surfaces all fit into the same audit flow.
 - Honest coverage reporting
@@ -51,10 +51,14 @@ Examples:
   Main findings stay limited to confirmed issues, while unresolved high-signal cases remain visible as candidate signals or working hypotheses instead of being silently dropped.
 - Shape hints with evidence gates
   Reference modules now include concise risk-shape examples for common application and smart-contract failures. These examples are prompts for investigation, not signatures; every finding still requires attacker influence, a reachable failed boundary or invariant, missing effective controls, and concrete impact.
+- Dangerous-capability census
+  Dynamic evaluation, shell command/code loading, signing material, and signed-state consumers are counted across the repository and each occurrence remains visible until it is routed with evidence.
+- Open exploration with evidence closure
+  Material callers, siblings, integrations, and trust-boundary branches are recorded, then closed with both exploit construction and disconfirmation evidence.
 - 2025 incident-pattern coverage
   Smart-contract guidance now covers DeFi/DEX/lending/bridge, upgradeable, signer, frontend transaction-builder, relayer, admin, and supply-chain paths when they can affect on-chain assets, authority, signatures, or upgrades.
 - History and regression support
-  Findings are compared against `.security-code-audit-reports/`, and `regression` mode can retest the latest report directly after a fresh current-state pass or report-baseline selection.
+  Findings are compared against `output/`, and `regression` mode can retest the latest report directly after a fresh current-state pass or report-baseline selection.
 - Optional multi-agent execution
   `multi` can widen coverage for large repos while keeping a single reporting path.
 
@@ -70,7 +74,7 @@ flowchart TD
     C["Bootstrap control plane<br/>parse mode and execution<br/>load core, execution, mode rules"]
     X["Execution topology<br/>single | multi<br/>ownership, sharding, worker contract, merge"]
 
-    ST[".security-code-audit-state<br/>machine-readable continuity state"]
+    ST["output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state<br/>machine-readable continuity state"]
     SR["State reader<br/>freshness, invalidation,<br/>continuation, merge hints<br/>not safety proof"]
 
     D["Recon phase<br/>map repo surface, stack, artifacts,<br/>claims, risk areas, and state freshness"]
@@ -93,7 +97,7 @@ flowchart TD
     HM["Historical miss gate<br/>reopen prior findings against current code<br/>before lifecycle labels"]
     K["Reporting and regression<br/>write findings, compare history, retest fixes"]
 
-    R[".security-code-audit-reports<br/>human-readable findings and history"]
+    R["output/<br/>human-readable findings and history"]
 
     A --> B
     B --> MP
@@ -162,5 +166,5 @@ Output layers:
 
 | Path | Purpose |
 | --- | --- |
-| `.security-code-audit-reports/` | Human-readable findings, history, regression baselines, and action items |
-| `.security-code-audit-state/` | Machine-readable run context, surface inventories, project context, code fact snapshots, evidence observations, tool invocation records, deep gate ledgers, function chains, hypotheses, and invalidations for every run |
+| `output/` | Human-readable findings, history, regression baselines, and action items |
+| `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/` | Machine-readable run context, surface inventories, project context, code fact snapshots, evidence observations, tool invocation records, deep gate ledgers, function chains, hypotheses, and invalidations for every run |

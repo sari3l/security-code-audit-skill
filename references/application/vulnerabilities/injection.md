@@ -6,6 +6,8 @@ Injection flaws happen when untrusted input changes the structure, grammar, or e
 
 This category is intentionally broad, so do not stop here. Once you identify the sink family, load the deeper module for that family.
 
+Before source-to-sink pruning, run `core/dangerous-capability-census.md`. Dynamic evaluators and shell code-loading occurrences enter a counted ledger even when the first exploit attempt fails.
+
 ---
 
 ## Audit Model
@@ -59,6 +61,7 @@ Load:
 ### Template, Expression, And Dynamic Code Evaluation
 
 - SpEL, Jinja/Twig/ERB evaluation, `eval`, `Function`, `instance_eval`
+- Python `exec`/`compile`, dynamic imports, expression engines, runtime compilers, and reflective wrappers
 - user-controlled template bodies or raw expression interpolation
 
 Load:
@@ -97,6 +100,8 @@ db.query(`SELECT * FROM orders ORDER BY ${sort}`);
 
 Do not report by matching this shape alone. Confirm untrusted input reaches an interpreter-like sink after decoding, normalization, templating, or wrapper helpers; identify which grammar boundary changes; verify why parameterization, allowlists, escaping, or typed APIs do not apply on the real path; and show the resulting data, command, query, template, or object-materialization impact.
 
+This confirmation bar governs promotion to a confirmed injection finding. It does not permit an API/CLI/queue/CI/config-reachable dynamic evaluator to disappear. Preserve that case as a report-visible high-risk alert while direct injection, evaluator namespace, selected handlers, and downstream effects remain unresolved. See `dynamic-code-evaluation.md`.
+
 ---
 
 ## What To Enumerate First
@@ -117,6 +122,7 @@ grep -rn 'query\\(|execute\\(|raw\\(|statement\\(|createQuery\\(|FromSqlRaw' .
 grep -rn 'system\\(|exec\\(|shell=True|Process\\.Start|Runtime\\.getRuntime\\(\\)\\.exec' .
 grep -rn 'pickle\\.loads|ObjectInputStream|BinaryFormatter|unserialize\\(|yaml\\.load' .
 grep -rn 'eval\\(|Function\\(|parseExpression\\(|ERB\\.new|render inline:' .
+grep -rn 'exec\\(|compile\\(|__import__\\(|importlib\\.import_module' .
 grep -rn 'orderByRaw|whereRaw|Arel\\.sql|ORDER BY .*\\+' .
 ```
 

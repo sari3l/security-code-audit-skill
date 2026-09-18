@@ -8,6 +8,7 @@ This includes:
 - option smuggling such as attacker-controlled `-o` or `--config`
 - path and binary selection abuse
 - environment or wrapper abuse around system utilities
+- shell code loading through `source` or `.`, including files presented as `.env` data
 
 ---
 
@@ -38,6 +39,7 @@ This includes:
 - internal admin tooling often skips validation because it is "not public"
 - hostnames, file paths, branch names, and image parameters frequently reach process helpers
 - wrappers in shared utility modules hide the true sink from endpoint code
+- deploy scripts treat `.env` as passive data even though `source .env` executes substitutions and commands
 
 ---
 
@@ -85,6 +87,7 @@ Process.Start("sh", "-c " + command);
 - Do filenames or hostnames beginning with `-` change program behavior?
 - Are helper functions used across multiple routes or background jobs?
 - Is there an out-of-band effect even when command output is not returned?
+- Who can create, modify, replace, or symlink every sourced shell/config file and its parent directories?
 
 ---
 
@@ -96,6 +99,7 @@ grep -rn 'shell=True|subprocess\\.run\\(|subprocess\\.Popen\\(|os\\.system\\(' .
 grep -rn 'child_process|execFile|spawn\\(|ProcessBuilder|Runtime\\.getRuntime\\(\\)\\.exec|Process\\.Start' .
 grep -rn 'tar |zip |unzip |ffmpeg|convert |curl |wget |git |ping |nslookup' .
 grep -rn 'sh -c|bash -c|cmd /c|powershell -c' .
+grep -rnE '(^|[;&|])[[:space:]]*(source[[:space:]]+|\.[[:space:]]+)' --include='*.sh' --include='*.bash' --include='*.zsh' .
 ```
 
 ---
@@ -104,4 +108,5 @@ grep -rn 'sh -c|bash -c|cmd /c|powershell -c' .
 
 - `references/application/exploits/command-injection.md`
 - `references/application/vulnerabilities/injection.md`
+- `references/application/vulnerabilities/shell-code-loading.md`
 - `references/application/frameworks/go_gin.md`

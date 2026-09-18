@@ -52,7 +52,7 @@ grep -rn "use_debugger\|use_reloader" --include="*.py"
 
 ### 2. SECRET_KEY Exposure
 
-A weak or hardcoded SECRET_KEY allows session forgery, CSRF token prediction, and signature bypass.
+A weak or hardcoded SECRET_KEY allows session forgery, CSRF token prediction, and signature bypass. With Flask's default client-side signed session, knowledge of the key lets an attacker mint valid session state offline; this is an authentication-integrity capability, not merely a generic secret leak.
 
 **Dangerous:**
 ```python
@@ -65,15 +65,26 @@ SECRET_KEY = 'super-secret'  # in config.py committed to git
 **Safe:**
 ```python
 import os
-import secrets
 
-# Generate a strong random key
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or secrets.token_hex(32)
+# Require stable high-entropy runtime secret material; fail closed when absent.
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
 # Or load from a file not in version control
 with open('/etc/app/secret_key', 'r') as f:
     app.config['SECRET_KEY'] = f.read().strip()
 ```
+
+**Mandatory consumer trace:**
+
+1. resolve the effective `session_interface`, backend, serializer, and Flask/extension version
+2. enumerate every `session[...]` read/write, `session.get`, membership test, login/logout mutation, and decorator/middleware consumer
+3. identify any separate cookie/header/query value that selects the username or subject later checked against session state
+4. trace the canonical subject into role checks, admin gates, data lookups, and sensitive responses
+5. decide whether known key material permits offline creation of the exact artifact those decisions trust
+
+When the chain reaches identity or authorization, report it as a distinct C2 session/token forgery finding. Do not bury it inside a combined cloud/database credential finding; the exploit path and minimal fix differ. If consumer or deployment semantics are unresolved, keep a report-visible candidate or coverage debt.
+
+Key rotation is part of the minimal fix: remove the literal/fallback, rotate the key, invalidate old sessions, bind identity to one canonical server-verified subject, and avoid storing readable access tokens in Flask's default signed-but-not-encrypted cookie.
 
 **Detection:**
 ```bash
@@ -81,6 +92,7 @@ grep -rn "secret_key\|SECRET_KEY" --include="*.py" --include="*.cfg"
 grep -rn "secret_key.*=.*['\"]" --include="*.py"
 # Check for short/common keys
 grep -rn "SECRET_KEY.*=.*['\"][a-zA-Z0-9]\{1,20\}['\"]" --include="*.py"
+grep -rn "session\[\|session\.get\| in session\|session_interface\|SESSION_TYPE\|SESSION_SERIALIZER" --include="*.py"
 ```
 
 ### 3. Server-Side Template Injection (SSTI)

@@ -45,8 +45,9 @@ One fingerprint may cover multiple locations only when:
 ## Usage
 
 - Compute a fingerprint before assigning `New`, `Recurring`, or `Regression`.
-- Write each confirmed finding to `findings.jsonl` with its fingerprint before
-  generating Markdown.
+- Write each confirmed finding to
+  `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-findings.jsonl`
+  with its fingerprint before generating Markdown.
 - Derive Markdown display IDs by sorting canonical findings by severity rank,
   category/surface, then fingerprint, and numbering within each severity.
 - Do not derive display IDs from discovery order, worker return order, report

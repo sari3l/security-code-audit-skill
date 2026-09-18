@@ -14,6 +14,9 @@ This domain exists because contract auditing is not a thin variant of web Top 10
 - `references/smart-contract/vulnerabilities/index.md`
   Main methodology map for trust, calls, accounting, signatures, oracle assumptions, and upgradeability.
 
+- `references/smart-contract/vulnerabilities/authorization-and-integration.md`
+  Capability-to-asset-flow, execution-context binding, state-keying, allowance, recipient/spender, lifecycle revocation, and cross-contract settlement semantics.
+
 - `references/smart-contract/exploits/index.md`
   Contract exploit validation guidance once a finding is verified or strongly suspected.
 
@@ -49,6 +52,8 @@ These remain relevant when the surface matches, but they are supporting lenses r
 - model attacker profit paths, not just code smell
 - treat token semantics and market assumptions as part of the system
 - treat signer UX, frontend transaction builders, deployment scripts, relayers, and supply chain inputs as in-scope only when they can directly affect on-chain assets, authority, signatures, or upgrades
+- treat role validation and asset-destination validation as separate controls
+- expand every material issue across equivalent helpers and integration boundaries before closing it
 - separate code exploitability from economic feasibility, but capture both when relevant
 - do not force contract review into an application-style category cadence
 
@@ -58,7 +63,7 @@ These remain relevant when the surface matches, but they are supporting lenses r
 
 1. Start with `references/smart-contract/vulnerabilities/index.md`.
 2. Load `references/smart-contract/languages/index.md` when you need language-level grep starters or sink hints.
-3. Pull in only the deep dives that match the observed trust, accounting, signature, oracle, or deployment surface.
+3. Pull in only the deep dives that match the observed trust, accounting, signature, oracle, deployment, delegation, lifecycle, or settlement surface.
 4. Use `references/smart-contract/exploits/index.md` only when validation is needed.
 5. Use `references/smart-contract/standards/index.md` when you need to map findings and coverage back to OWASP or SCSVS language without changing the audit spine.
 6. Add `references/shared/` modules only when artifacts, dependencies, configuration, reporting, or history work actually require them.

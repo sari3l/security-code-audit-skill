@@ -35,6 +35,7 @@ The visible progress should reflect contract trust boundaries, accounting, signa
 - accounting, precision, permits, oracle assumptions, and deployment/proxy risk should dominate later stages
 - post-category analysis should use exploit-path and economic-abuse language instead of generic business-logic phrasing
 - when recon finds accounting/precision, permit/signature/meta-transaction, oracle/price, proxy/upgrade/initializer, or multi-contract delegation/callback trust surfaces, keep richer audit state and function-chain detail even if the repo is small
+- when recon finds role, allowance, recipient/spender, cooldown/rate-limit, strategy/adapter, solver, registry/CPI, delegatecall, remove-token, or settlement surfaces, require explicit capability-to-asset-flow, execution-context, lifecycle, and cross-contract semantic traces even when the role check itself appears correct
 
 ---
 
@@ -42,6 +43,7 @@ The visible progress should reflect contract trust boundaries, accounting, signa
 
 - use `references/smart-contract/index.md` as the primary audit domain router
 - use `references/smart-contract/vulnerabilities/smart-contracts.md` as the compact domain overview
+- use `references/smart-contract/vulnerabilities/authorization-and-integration.md` when roles can select recipients, spenders, routes, strategies, solvers, registry/CPI targets, delegatecall arguments, or settlement amounts
 - use `references/smart-contract/languages/solidity.md` for grep starters, sink patterns, and code-shape hints
 - use `references/smart-contract/exploits/smart-contracts.md` only when validation is needed
 - treat shared categories such as authz, misconfiguration, dependencies, cryptography, logging, and infrastructure as supporting lenses, not the main narrative

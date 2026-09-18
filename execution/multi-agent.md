@@ -35,7 +35,7 @@ Optional specialized roles:
 ## Hard Rules
 
 - only the `supervisor` may emit final findings, final severity, and final report text
-- only the `supervisor` may write shared audit state ledgers, `manifest.json`, `quality-gates.json`, and `latest.json`
+- only the `supervisor` may write shared audit state ledgers, `manifest.json`, and `quality-gates.json`
 - worker agents may suggest candidates, evidence, and validation results only
 - worker agents may suggest hypotheses, but only the `supervisor` may keep the shared hypothesis ledger or emit a final `Working Hypotheses` appendix
 - all worker-to-supervisor communication should follow `execution/worker-contract.md`

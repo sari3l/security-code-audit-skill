@@ -1,4 +1,4 @@
-# Regression Retest Standard
+# 回归复测标准
 
 Use this standard when mode is `regression`.
 
@@ -15,13 +15,13 @@ It answers:
 
 ## Baseline Selection
 
-- read the most recent usable standardized report from `.security-code-audit-reports/`, choosing by parsed filename timestamp first
+- read the most recent usable standardized report from the running directory's `output/` subdirectory, choosing by parsed filename timestamp first
 - use that report as the only required retest baseline
 - do not merge multiple older reports into one retest target set unless the user explicitly asks
 
 Preferred recency order:
-- parse the leading filename timestamp in the format `YYYY-MM-DD-HHMMSS`
-- only treat files matching the current standard filename shape `{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md` as usable regression baselines
+- parse the timestamp immediately after the `security-code-audit-` filename prefix in the format `YYYY-MM-DD-HHMMSS`
+- only treat files matching the current standard filename shape `security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}.md` in `output/` as usable regression baselines
 - ignore older alternate filename shapes instead of trying to normalize them into the new flow
 - if multiple reports share the same timestamp, prefer the newest file mtime
 - treat placeholder times as invalid if they were not generated from the real wall-clock time for that report
@@ -33,6 +33,19 @@ If no usable baseline report exists:
 - print a concise note
 - stop the run
 - do not perform a fallback broad scan
+
+Legacy state note:
+- older code-audit runs may have a usable baseline report in `output/` while
+  intermediate records live in `.security-code-audit-state/`
+- detect that split layout and record `legacy_split_state_detected`
+- the baseline report in `output/` remains the regression source of truth; do
+  not skip it just because legacy hidden-directory state is absent, stale, or
+  structurally incompatible
+- legacy state may provide optional untrusted hints only after fresh current
+  recon and freshness classification
+- the regression run must not write `.security-code-audit-state/`; write new
+  retest state under the standardized `output/security-code-audit-...-state/`
+  bundle
 
 ## Retest Target Selection
 
@@ -72,40 +85,40 @@ If the latest report has no usable findings, stop with a concise note.
 - when deployment or integration context materially lowers actual risk without removing the underlying weakness, explain both the reduced exposure and the remaining residual risk
 - do not create a new broad finding list for unrelated surfaces during regression mode
 
-## Output Requirements
+## 输出要求
 
-Terminal summary should include:
-- baseline report used
-- count of `Fixed`
-- count of `Still Present`
-- count of `Partially Fixed`
-- count of `Unable To Verify`
-- concise context-drift notes when deployment or integration changes materially altered exposure for one or more retested findings
+终端摘要使用中文，并包含：
+- 使用的基线报告
+- `已修复` 数量
+- `仍存在` 数量
+- `部分修复` 数量
+- `无法验证` 数量
+- 当部署或集成变化实质改变一个或多个复测项的暴露面时，给出简洁的上下文漂移说明
 
-History file should include:
-- baseline report metadata
-- baseline report timestamp
-- one retest entry per prior finding
-- concise rationale for each retest status
-- explicit blockers where retest confidence is limited
-- current exposure or integration context when it materially changes the real attack preconditions
+历史文件使用中文，并包含：
+- 基线报告元信息
+- 基线报告时间
+- 每个既往漏洞对应一个复测条目
+- 每个复测状态的简洁理由
+- 复测置信度受限时的明确阻塞项
+- 当当前暴露面或集成上下文实质改变真实攻击前置条件时，写明该上下文
 
-## Minimal Retest Entry Shape
+## 最小复测条目格式
 
 ```markdown
 ### [RETEST]-[NNN]: [Prior Finding Title]
-- **Baseline Report**: [file]
-- **Baseline Timestamp**: [YYYY-MM-DD HH:MM:SS TZ]
-- **Fingerprint**: [stable finding fingerprint]
-- **Prior Severity**: Critical / High / Medium / Low / Info
-- **Retest Status**: Fixed / Still Present / Partially Fixed / Unable To Verify
-- **Current Location**: `file/path.ext:line` or `N/A`
-- **Current Exposure Context**: [public, internal-only, host-app-auth, reverse-proxy-restricted, or similar when material]
-- **Retest Notes**: [What changed and what still holds]
-- **Context Drift**: [How deployment or integration changed the actual risk or attack preconditions, if material]
-- **Evidence**:
+- **基线报告**: [file]
+- **基线时间**: [YYYY-MM-DD HH:MM:SS TZ]
+- **指纹**: [稳定漏洞指纹]
+- **既往严重性**: 严重 / 高 / 中 / 低 / 信息
+- **复测状态**: 已修复 / 仍存在 / 部分修复 / 无法验证
+- **当前位置**: `file/path.ext:line` 或 `N/A`
+- **当前暴露上下文**: [public, internal-only, host-app-auth, reverse-proxy-restricted，或其他相关上下文]
+- **复测说明**: [什么改变了，什么仍然成立]
+- **上下文漂移**: [部署或集成如何改变实际风险或攻击前置条件；相关时填写]
+- **证据**:
   ```[lang]
-  // Current relevant code or config
+  // 当前相关代码或配置
   ```
-- **Residual Risk**: [Only if still present or partially fixed]
+- **残余风险**: [仅在仍存在或部分修复时填写]
 ```

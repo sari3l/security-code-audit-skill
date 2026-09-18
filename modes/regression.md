@@ -11,7 +11,7 @@ Retest the most recent vulnerability report instead of performing a new broad au
 Use when:
 - you want to verify whether previously reported issues were actually fixed
 - a release gate needs focused remediation validation
-- the latest `.security-code-audit-reports/` report should be treated as the retest baseline
+- the latest security audit report in `output/` should be treated as the retest baseline
 
 If no usable recent report exists, stop immediately with a concise note instead of running a fresh scan.
 
@@ -19,6 +19,8 @@ If no usable recent report exists, stop immediately with a concise note instead 
 
 ## Required Load
 
+- `core/dangerous-capability-census.md`
+- `core/exploration-and-evidence.md`
 - `references/shared/reporting/index.md`
 - `references/shared/reporting/history-standard.md`
 - `references/shared/reporting/regression-standard.md`
@@ -33,10 +35,16 @@ Use the matching exploit index only when a prior finding must be re-verified wit
 ## Recon Depth
 
 Required:
-- load the latest usable `.security-code-audit-reports/` report
+- load the latest usable security audit report from `output/`
 - extract the prior finding set and their fingerprints
 - map only the files, routes, helpers, configs, and trust boundaries needed to retest those findings
+- run the dangerous-capability census across those retest targets and affected consumers only, recording `scope: regression_targets` rather than whole-repository coverage
+- follow evidence-relevant sibling and integration branches from those retest targets only, and record the scoped branch decisions in `exploration-ledger.jsonl`
 - reopen the current deployment or integration path when auth, exposure, or reachability depends on a host app, reverse proxy, mount prefix, or internal-only network boundary
+- detect legacy split-layout state where the baseline report is in `output/`
+  but intermediate records are in `.security-code-audit-state/`; record
+  `legacy_split_state_detected` and do not treat missing legacy state as a
+  reason to skip the regression baseline report
 - initialize audit state with `current-change-context.json` for retest-target files and any baseline drift
 - optionally load audit-state remediation memory, historical attack chains, and prior function-chain shards only for the retest targets after freshness classification
 
@@ -68,6 +76,8 @@ Regression mode uses the shared 6-step progress display from `SKILL.md`, but the
 - verify whether the prior fix actually breaks exploitation
 - separately record whether current deployment or integration context narrowed, shifted, or otherwise changed the real attack surface relative to the baseline report
 - write retest task records, evidence observations, function-chain updates, remediation-memory references, and quality-gate results into audit state
+- write and reconcile `dangerous-capability-census.json` and `dangerous-capabilities.jsonl` for the scoped retest target set
+- write the retest run state only under `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-regression-{short-hash}-state/`; regression must not write `.security-code-audit-state/`
 - record `Fixed`, `Still Present`, `Partially Fixed`, or `Unable To Verify`
 - note if a finding moved, widened, or changed shape while remaining materially unfixed
 - do not mark a finding `Fixed` only because compensating controls such as Superset auth, reverse-proxy policy, or internal network placement reduced exposure; if the underlying code weakness remains, keep the retest status tied to the current code path and explain the reduced preconditions as context drift or residual risk
@@ -83,7 +93,7 @@ If an obvious unrelated Critical or High issue appears during retest:
 ## Output
 
 - terminal summary
-- regression retest history file in `.security-code-audit-reports/`
+- regression retest history report in `output/`
 - fixed / still-present / blocked counts based on the latest baseline report
 - audit state manifest and quality-gate result for the retest run
 
@@ -96,4 +106,5 @@ Regression mode is complete when:
 - every retest target from that report was classified
 - blockers or ambiguous cases were recorded explicitly
 - audit state quality gates pass or the retest report marks unresolved validation as `Unable To Verify`
+- every dangerous capability in the retest target set is disposed with no unreviewed occurrence
 - the retest summary was generated

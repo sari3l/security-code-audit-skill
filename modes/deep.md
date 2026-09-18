@@ -24,6 +24,7 @@ Use when:
 
 - everything required by `modes/standard.md`
 - `core/deep-semantic-controls.md`
+- `core/exploration-and-evidence.md`
 - `references/shared/dependencies/sca-integration.md` whenever external SCA data exists or dependency results come from non-native tooling
 - additional specialist modules whenever the surface suggests deeper analysis
 - exploit playbooks for verified or strongly suspected findings that need safe confirmation
@@ -51,6 +52,8 @@ Deep mode includes standard recon plus:
 - map business invariants, trust boundaries, data lifecycle, and attack-chain candidates into `architecture-map.json`, `deep-gates.jsonl`, `proof-obligations.jsonl`, `attack-chains.jsonl`, and `hypotheses.jsonl`
 - when reusing knowledge from previous runs, require `freshness_status` and invalidation-rule review before it can guide a gate; invalidated knowledge can only create tasks or debt
 - do not mark a high-risk surface covered from category completion alone; if the relevant deep gate is missing, partial, blocked, or invalidated, carry it as coverage debt
+- turn every dangerous-capability occurrence into a durable trace or explicit debt; independently reconcile evaluator components, signed-state consumers, and deployment/config provenance
+- preserve LLM-led exploration branches in `exploration-ledger.jsonl`; routed modules are minimum guidance, and every material branch requires construction plus disconfirmation evidence
 - group multiple downstream exploit paths into one finding only when the failed control, trust boundary, and minimal fix are materially shared
 - surface the most important exploit paths clearly in the title, `Attack Vector`, `Impact`, `Related Findings`, and `Attack Chains` instead of splitting findings by default
 - resolve native, external, or repo-configured dependency audit commands with `references/shared/tooling/command-resolution.md`, then run the confirmed command or document the blocker/manual fallback before reviewing transitive, runtime, and base-image exposure where feasible
@@ -69,6 +72,10 @@ After category coverage, perform:
 - deep semantic gate reconciliation: every applicable high-risk gate is `covered` or has explicit coverage debt, and every open proof obligation is routed to a finding, candidate signal, working hypothesis, integration assumption, or coverage debt
 - counted coverage reconciliation and exhaustive bounded function-chain review
 - audit state quality gate reconciliation: current-change-context exists, coverage counts reconcile, function-chain counts match explicit debt, open evidence is routed, final-blocking merge queue entries are resolved, and obvious secrets are redacted
+- dangerous-capability closure: all sentinel occurrences are traced and disposed, with no unreviewed row and no API-reachable evaluator silently negative-closed
+- exploration/evidence closure: every material branch and evidence observation is routed, and every contract capability tuple or integration assumption has a complete trace or explicit debt
+- execution-context closure: delegatecall/proxy/plugin/registry/CPI boundaries bind original caller, actual target, selector/instruction, and final asset account; remove/quarantine/supported-flag flows re-check stale allowances and every sibling entry point
+- callback-order closure: every external call that can invoke a receiver, token hook, adapter, or strategy records pre-call versus post-call state updates for cooldowns, limits, nonces, allowances, and phases
 - deferred history replay only after current findings and coverage are stable
 - historical-miss gate first: reopen prior findings that touch the same current helper, sink, route family, or trust boundary and check whether any still-live path was missed by the current scan
 - if any historical miss exists, record it, emit `Skill Optimization Suggestions`, and withhold lifecycle finalization
@@ -111,7 +118,7 @@ Deep mode is complete when:
 ## Output
 
 - terminal summary
-- full history file in `.security-code-audit-reports/`
+- full history report in `output/`
 - stronger historical context
 - detailed attack-chain section or appendix
 - counted coverage summary and exhaustive function-chain section derived from audit state
