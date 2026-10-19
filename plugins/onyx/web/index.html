@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Requirement Context</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-synthesis: none;
+        letter-spacing: 0;
+        --bg: #f6f7f8;
+        --surface: #ffffff;
+        --surface-muted: #f0f2f4;
+        --border: #d7dce1;
+        --text: #182026;
+        --muted: #5c6873;
+        --strong: #10161b;
+        --green: #147d64;
+        --green-soft: #dff4ed;
+        --amber: #9a5c08;
+        --amber-soft: #fff0d6;
+        --red: #b42318;
+        --red-soft: #fee9e7;
+        --blue: #2563a6;
+        --focus: #2563a6;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #171a1d;
+          --surface: #202428;
+          --surface-muted: #282d32;
+          --border: #3c434a;
+          --text: #e9edf0;
+          --muted: #adb7c0;
+          --strong: #ffffff;
+          --green: #70d7b6;
+          --green-soft: #173e35;
+          --amber: #f4bd68;
+          --amber-soft: #493515;
+          --red: #ff8b84;
+          --red-soft: #492321;
+          --blue: #8bbcf2;
+          --focus: #8bbcf2;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-width: 280px;
+        min-height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      body {
+        padding: 16px;
+      }
+
+      button,
+      input {
+        font: inherit;
+        letter-spacing: 0;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      a:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+
+      .shell {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        color: var(--strong);
+        font-size: 20px;
+        line-height: 1.3;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .status {
+        flex: 0 0 auto;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 5px 9px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+        text-transform: capitalize;
+      }
+
+      .status[data-state="available"] {
+        border-color: var(--green);
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .status[data-state="partial"],
+      .status[data-state="no_match"] {
+        border-color: var(--amber);
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .status[data-state="unavailable"],
+      .status[data-state="missing_auth"] {
+        border-color: var(--red);
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--surface);
+        margin-bottom: 14px;
+      }
+
+      .metric {
+        min-width: 0;
+        padding: 11px 12px;
+        border-right: 1px solid var(--border);
+      }
+
+      .metric:last-child {
+        border-right: 0;
+      }
+
+      .metric-value {
+        display: block;
+        color: var(--strong);
+        font-size: 18px;
+        line-height: 1.2;
+        font-weight: 700;
+      }
+
+      .metric-label {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.3;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .filter {
+        min-width: 0;
+        flex: 1;
+        height: 36px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0 10px;
+        background: var(--surface);
+        color: var(--text);
+      }
+
+      .segments {
+        display: inline-flex;
+        flex: 0 0 auto;
+        padding: 2px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--surface-muted);
+      }
+
+      .segments button {
+        height: 30px;
+        border: 0;
+        border-radius: 4px;
+        padding: 0 10px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .segments button[aria-pressed="true"] {
+        background: var(--surface);
+        color: var(--strong);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.9fr) minmax(340px, 1.3fr);
+        min-height: 360px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--surface);
+      }
+
+      .document-list {
+        min-width: 0;
+        max-height: 620px;
+        overflow: auto;
+        border-right: 1px solid var(--border);
+      }
+
+      .document-row {
+        width: 100%;
+        display: block;
+        border: 0;
+        border-bottom: 1px solid var(--border);
+        padding: 12px;
+        text-align: left;
+        background: var(--surface);
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .document-row:hover,
+      .document-row[aria-current="true"] {
+        background: var(--surface-muted);
+      }
+
+      .row-heading {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .row-title {
+        min-width: 0;
+        flex: 1;
+        color: var(--strong);
+        font-size: 13px;
+        line-height: 1.4;
+        font-weight: 680;
+        overflow-wrap: anywhere;
+      }
+
+      .confidence {
+        flex: 0 0 auto;
+        border-radius: 999px;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-weight: 750;
+        text-transform: uppercase;
+      }
+
+      .confidence[data-level="high"] {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .confidence[data-level="medium"] {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .confidence[data-level="low"] {
+        background: var(--surface-muted);
+        color: var(--muted);
+      }
+
+      .row-meta,
+      .row-snippet {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+
+      .row-snippet {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .detail {
+        min-width: 0;
+        padding: 18px;
+        overflow: auto;
+      }
+
+      .detail h2 {
+        margin: 0;
+        color: var(--strong);
+        font-size: 17px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+      }
+
+      .detail-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .detail-link {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .detail-link:hover {
+        text-decoration: underline;
+      }
+
+      .section-label {
+        margin: 18px 0 7px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        text-transform: uppercase;
+      }
+
+      .anchor-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .anchor {
+        max-width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 3px 6px;
+        background: var(--surface-muted);
+        color: var(--text);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 10px;
+        overflow-wrap: anywhere;
+      }
+
+      .document-content {
+        margin: 0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .notice,
+      .empty {
+        margin: 12px 0;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 12px;
+        color: var(--muted);
+        background: var(--surface-muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .notice[data-kind="error"] {
+        border-color: var(--red);
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 12px;
+        }
+
+        header,
+        .toolbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .status {
+          align-self: flex-start;
+        }
+
+        .metrics {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .metric:nth-child(2) {
+          border-right: 0;
+        }
+
+        .metric:nth-child(-n + 2) {
+          border-bottom: 1px solid var(--border);
+        }
+
+        .segments {
+          width: 100%;
+        }
+
+        .segments button {
+          flex: 1;
+        }
+
+        .workspace {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .document-list {
+          max-height: 300px;
+          border-right: 0;
+          border-bottom: 1px solid var(--border);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <div>
+          <h1>Requirement Context</h1>
+          <p class="subtitle" id="subtitle">Awaiting requirement context</p>
+        </div>
+        <span class="status" id="status" data-state="not_configured">not configured</span>
+      </header>
+
+      <section class="metrics" aria-label="Context summary">
+        <div class="metric"><span class="metric-value" id="document-count">0</span><span class="metric-label">Documents</span></div>
+        <div class="metric"><span class="metric-value" id="high-count">0</span><span class="metric-label">High confidence</span></div>
+        <div class="metric"><span class="metric-value" id="query-count">0</span><span class="metric-label">Queries</span></div>
+        <div class="metric"><span class="metric-value" id="conflict-count">0</span><span class="metric-label">Conflicts</span></div>
+      </section>
+
+      <div id="notices" aria-live="polite"></div>
+
+      <section class="toolbar" aria-label="Document filters">
+        <input class="filter" id="filter" type="search" placeholder="Filter documents" autocomplete="off" />
+        <div class="segments" role="group" aria-label="Confidence">
+          <button type="button" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-filter="high" aria-pressed="false">High</button>
+          <button type="button" data-filter="medium" aria-pressed="false">Medium</button>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Requirement documents">
+        <div class="document-list" id="document-list"></div>
+        <article class="detail" id="detail"></article>
+      </section>
+    </main>
+
+    <script type="module">
+      const state = {
+        context: null,
+        confidence: "all",
+        query: "",
+        selectedId: null,
+      };
+
+      const elements = {
+        status: document.querySelector("#status"),
+        subtitle: document.querySelector("#subtitle"),
+        documentCount: document.querySelector("#document-count"),
+        highCount: document.querySelector("#high-count"),
+        queryCount: document.querySelector("#query-count"),
+        conflictCount: document.querySelector("#conflict-count"),
+        notices: document.querySelector("#notices"),
+        filter: document.querySelector("#filter"),
+        segments: document.querySelector(".segments"),
+        list: document.querySelector("#document-list"),
+        detail: document.querySelector("#detail"),
+      };
+
+      const appendText = (parent, tag, className, text) => {
+        const child = document.createElement(tag);
+        if (className) child.className = className;
+        child.textContent = text ?? "";
+        parent.appendChild(child);
+        return child;
+      };
+
+      const safeExternalUrl = (value) => {
+        try {
+          const parsed = new URL(value);
+          if (!["http:", "https:"].includes(parsed.protocol)) return null;
+          if (parsed.username || parsed.password) return null;
+          return parsed.href;
+        } catch {
+          return null;
+        }
+      };
+
+      const visibleDocuments = () => {
+        const documents = state.context?.documents ?? [];
+        const query = state.query.toLowerCase();
+        return documents.filter((document) => {
+          const confidence = document.relevance?.confidence ?? "low";
+          if (state.confidence !== "all" && confidence !== state.confidence) return false;
+          if (!query) return true;
+          return [document.title, document.id, document.snippet, document.owner, document.status]
+            .join(" ")
+            .toLowerCase()
+            .includes(query);
+        });
+      };
+
+      const renderNotices = () => {
+        elements.notices.replaceChildren();
+        const context = state.context;
+        if (!context) return;
+        for (const connector of context.connector_statuses ?? []) {
+          if (["available"].includes(connector.status)) continue;
+          const notice = appendText(
+            elements.notices,
+            "div",
+            "notice",
+            `${connector.display_name ?? connector.connector_id}: ${connector.message ?? connector.status}`,
+          );
+          if (["unavailable", "missing_auth", "missing_tool"].includes(connector.status)) {
+            notice.dataset.kind = "error";
+          }
+        }
+      };
+
+      const renderDetail = (requirement) => {
+        elements.detail.replaceChildren();
+        if (!requirement) {
+          appendText(elements.detail, "div", "empty", "No matching requirement document");
+          return;
+        }
+        appendText(elements.detail, "h2", "", requirement.title);
+
+        const meta = appendText(elements.detail, "div", "detail-meta", "");
+        appendText(meta, "span", "", requirement.id);
+        if (requirement.status) appendText(meta, "span", "", requirement.status);
+        if (requirement.owner) appendText(meta, "span", "", requirement.owner);
+        if (requirement.updated_at) appendText(meta, "span", "", requirement.updated_at);
+        const externalUrl = safeExternalUrl(requirement.url);
+        if (externalUrl) {
+          const link = appendText(meta, "a", "detail-link", "Open source");
+          link.href = externalUrl;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.addEventListener("click", (event) => {
+            event.preventDefault();
+            rpcRequest("ui/open-link", { url: externalUrl }).catch((error) => {
+              console.error("MCP Apps host refused the document link", error);
+            });
+          });
+        }
+
+        appendText(elements.detail, "div", "section-label", "Matched anchors");
+        const anchors = appendText(elements.detail, "div", "anchor-list", "");
+        for (const match of requirement.relevance?.matched_anchors ?? []) {
+          appendText(anchors, "span", "anchor", `${match.family}: ${match.value}`);
+        }
+        if (!anchors.childElementCount) appendText(anchors, "span", "anchor", "No verified anchor match");
+
+        appendText(elements.detail, "div", "section-label", "Document content");
+        appendText(
+          elements.detail,
+          "pre",
+          "document-content",
+          requirement.content || requirement.snippet || "Content not fetched",
+        );
+      };
+
+      const renderDocuments = () => {
+        const documents = visibleDocuments();
+        elements.list.replaceChildren();
+        if (!documents.some((requirement) => requirement.id === state.selectedId)) {
+          state.selectedId = documents[0]?.id ?? null;
+        }
+        for (const requirement of documents) {
+          const row = document.createElement("button");
+          row.type = "button";
+          row.className = "document-row";
+          row.setAttribute("aria-current", String(requirement.id === state.selectedId));
+          row.addEventListener("click", () => {
+            state.selectedId = requirement.id;
+            renderDocuments();
+          });
+
+          const heading = appendText(row, "div", "row-heading", "");
+          appendText(heading, "span", "row-title", requirement.title);
+          const confidence = appendText(
+            heading,
+            "span",
+            "confidence",
+            `${requirement.relevance?.score ?? 0} ${requirement.relevance?.confidence ?? "low"}`,
+          );
+          confidence.dataset.level = requirement.relevance?.confidence ?? "low";
+          appendText(
+            row,
+            "div",
+            "row-meta",
+            [requirement.connector_id, requirement.status, requirement.owner].filter(Boolean).join(" · "),
+          );
+          if (requirement.snippet) appendText(row, "div", "row-snippet", requirement.snippet);
+          elements.list.appendChild(row);
+        }
+        if (!documents.length) appendText(elements.list, "div", "empty", "No matching requirement document");
+        renderDetail(documents.find((requirement) => requirement.id === state.selectedId));
+      };
+
+      const render = () => {
+        const context = state.context ?? { status: "not_configured", documents: [], query_log: [], conflicts: [] };
+        const documents = context.documents ?? [];
+        elements.status.textContent = String(context.status ?? "unknown").replaceAll("_", " ");
+        elements.status.dataset.state = context.status ?? "unknown";
+        elements.subtitle.textContent = (context.anchor_summary?.explicit_ids ?? []).length
+          ? `Anchored by ${context.anchor_summary.explicit_ids.join(", ")}`
+          : "Architecture and change anchors";
+        elements.documentCount.textContent = String(documents.length);
+        elements.highCount.textContent = String(
+          documents.filter((document) => document.relevance?.confidence === "high").length,
+        );
+        elements.queryCount.textContent = String(context.query_log?.length ?? 0);
+        elements.conflictCount.textContent = String(context.conflicts?.length ?? 0);
+        renderNotices();
+        renderDocuments();
+      };
+
+      elements.filter.addEventListener("input", () => {
+        state.query = elements.filter.value.trim();
+        renderDocuments();
+      });
+
+      elements.segments.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-filter]");
+        if (!button) return;
+        state.confidence = button.dataset.filter;
+        for (const candidate of elements.segments.querySelectorAll("button")) {
+          candidate.setAttribute("aria-pressed", String(candidate === button));
+        }
+        renderDocuments();
+      });
+
+      let rpcId = 0;
+      const pending = new Map();
+      const rpcRequest = (method, params) =>
+        new Promise((resolve, reject) => {
+          const id = ++rpcId;
+          pending.set(id, { resolve, reject });
+          window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
+        });
+
+      const rpcNotify = (method, params) => {
+        window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+      };
+
+      window.addEventListener(
+        "message",
+        (event) => {
+          if (event.source !== window.parent) return;
+          const message = event.data;
+          if (!message || message.jsonrpc !== "2.0") return;
+          if (message.id !== undefined && pending.has(message.id)) {
+            const request = pending.get(message.id);
+            pending.delete(message.id);
+            if (message.error) request.reject(message.error);
+            else request.resolve(message.result);
+            return;
+          }
+          if (message.method === "ui/notifications/tool-result") {
+            state.context = message.params?.structuredContent?.context ?? message.params?.structuredContent ?? null;
+            render();
+          }
+        },
+        { passive: true },
+      );
+
+      const initialize = async () => {
+        try {
+          await rpcRequest("ui/initialize", {
+            appInfo: { name: "security-code-audit-onyx", version: "0.1.0" },
+            appCapabilities: {},
+            protocolVersion: "2026-01-26",
+          });
+          rpcNotify("ui/notifications/initialized", {});
+        } catch (error) {
+          console.error("MCP Apps bridge initialization failed", error);
+        }
+      };
+
+      render();
+      initialize();
+    </script>
+  </body>
+</html>

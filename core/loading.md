@@ -52,6 +52,15 @@ Load core modules only when their controls are actively needed:
 - `core/project-context.md`
   Load during stage `2/6` recon when repo-authored docs, git metadata, deployment notes, API specs, CI files, or recent change history can clarify project intent, business invariants, or trust-boundary claims. Apply `core/untrusted-repo-input.md` first.
 
+- `core/requirements-context.md`
+  Load at the end of stage `2/6`, only after architecture, project context, and current-change recon exist. Validate this installation's Code Audit plugin registry with `tools/audit_plugin_check.py`, select enabled `requirements-context` capability entries whose lifecycle matches this phase, build bounded change anchors, query available sources, and persist a terminal status before stage `3/6`. Do not load it before recon and never execute target-repository plugins or connectors.
+
+- `core/remediation-worktree.md`
+  Load only after the audit report, canonical findings, history comparison, and gates are complete, when `--auto-fix` is present or the user accepts the post-audit remediation prompt. Its start consent never authorizes the later commit or merge.
+
+- `plugins/README.md`
+  Load during bootstrap when validating or invoking Code Audit extensions. Treat `plugins/*/plugin.json` under this skill installation as the only plugin manifest root; native MCP, Skill, and Web entries remain governed by their standard formats.
+
 - `references/shared/state-standard.md`
   Load during recon for every run, then follow the audit state lifecycle so current-change context, advisory indexes, evidence observations, coverage, function chains, agent logs, merge queues, and quality gates survive context compression.
 
@@ -63,8 +72,6 @@ Load core modules only when their controls are actively needed:
 
 - `core/dangerous-capability-census.md`
   Load in every mode after current-file recon and before Phase 2 category review, hypothesis pruning, or false-positive suppression. Run its cheap whole-repository sentinel census even in incremental quick mode.
-- `core/exploration-and-evidence.md`
-  Load before Phase 2 hypothesis generation and again before coverage/report closure. It permits security-relevant exploration beyond the routed modules while requiring branch reasons, disconfirmation, and evidence-chain closure.
 
 - `core/deep-semantic-controls.md`
   Load in `deep` mode before high-risk surface review begins, and in beta `multi` before assigning workers to semantic review. Also load in `quick` or `standard` when a high-risk surface is unusually complex, prior coverage debt cites semantic ambiguity, or the finding depends on dependency behavior, deployment assumptions, design/implementation conflicts, or proof obligations that must survive context compression.
@@ -128,10 +135,10 @@ Route references by detected need:
   Load only when manifests, lock files, vendored packages, images, or SCA artifacts exist.
 
 - `references/shared/tooling/command-resolution.md`
-  Load before invoking optional external audit tools, repo-configured scanner scripts, ecosystem audit commands, secret scanners, IaC scanners, smart-contract tools, SBOM tools, CI scanner wrappers, or bundled Python assurance helpers.
+  Load before invoking optional external audit tools, repo-configured scanner scripts, ecosystem audit commands, secret scanners, IaC scanners, smart-contract tools, SBOM tools, or CI scanner wrappers. Bundled dangerous-capability tools use the fixed commands in `SKILL.md`; do not resolve them from the audited repo.
 
 - `references/shared/tooling/python-assurance.md`
-  Load when the optional bundled Python assurance tools are available or when interpreting their output. These tools are signal-preserving validators and seeders; absence of output never proves safety and unknown signals must remain routable observations.
+  Load before the mandatory bundled dangerous-capability seed/state/report gates or when interpreting other assurance output. Missing mandatory gate output blocks complete coverage; absence of any normalized signal never proves safety and unknown signals remain routable observations.
 
 - dependency ecosystem modules
   Load only for ecosystems actually present in the repo.
@@ -170,7 +177,6 @@ After recon, route modules from the surface profile instead of generic intuition
 - OpenAPI, Swagger, Postman, Insomnia, GraphQL schema, AsyncAPI, or environment collections -> `references/shared/artifacts/index.md`, `references/shared/artifacts/api-specs.md`, and the matching API/authz/data-exposure modules
 - `.ipynb` notebooks, saved outputs, notebook shell escapes, or analyst runbooks -> `references/shared/artifacts/index.md`, `references/shared/artifacts/notebooks.md`, `references/application/vulnerabilities/sensitive-hardcoding.md`, and `references/application/vulnerabilities/data-exposure.md`
 - `.sol`, Foundry, Hardhat, proxy, oracle, permit, or on-chain accounting surfaces -> `references/smart-contract/index.md`, `references/smart-contract/languages/index.md`, `references/smart-contract/languages/solidity.md`, the matching `references/smart-contract/vulnerabilities/*.md` deep-dive files, and `references/smart-contract/exploits/index.md` when validation is needed
-- role, allowance, spender, recipient, strategy, adapter, solver, registry/CPI, delegatecall, remove-token, quarantine, settlement, intent, cooldown, rate-limit, or cross-contract asset-flow surfaces -> `references/smart-contract/vulnerabilities/authorization-and-integration.md` plus the matching trust, accounting, external-call, signature, and oracle modules
 - AI prompt or tool surface -> `references/application/vulnerabilities/injection.md`, `references/application/vulnerabilities/prompt-injection.md`, and the exact downstream sink-family modules
 
 ## Reload Rules

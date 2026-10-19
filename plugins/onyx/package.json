@@ -1,0 +1,23 @@
+{
+  "name": "security-code-audit-onyx",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Onyx requirement context MCP server and MCP Apps UI for security-code-audit.",
+  "scripts": {
+    "build": "esbuild server/index.mjs --bundle --platform=node --format=esm --outfile=server/bundle.mjs",
+    "pretest": "npm run build",
+    "start": "node server/index.mjs",
+    "test": "node --test server/test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

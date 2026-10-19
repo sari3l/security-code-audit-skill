@@ -15,8 +15,8 @@ In `regression`, use the same families and ledger contract only for the baseline
 Always seed and reconcile these families when applicable:
 
 - dynamic code evaluation: `eval`, `exec`, `compile`, string-to-code APIs, expression engines, dynamic module loading, and wrappers that invoke them
-- shell command execution: `os.system`, `popen`, `subprocess`, `child_process`, `exec`, `spawn`, and shell command wrappers
-- shell interpretation and code loading: `source`, `.`, shell `eval`, `sh -c`, `bash -c`, process substitution, command substitution in interpreted config, and wrappers that reintroduce a shell
+- shell command execution: `shell=True`, `system`, `popen`, command-string APIs, `sh -c`, `bash -c`, and wrappers or aliases that reintroduce a shell
+- shell interpretation and code loading: `source`, `.`, shell `eval`, process substitution, command substitution in interpreted config, and wrappers that load shell code
 - signing and authority material: hardcoded or predictable Flask/JWT/session/HMAC signing keys and insecure literal fallbacks
 - signed-state consumers: session/token creation, parsing, reads, writes, membership tests, identity selection, and authorization decisions that trust signed state
 
@@ -26,14 +26,17 @@ Language and framework modules may add families. They may not remove these senti
 
 Write `dangerous-capability-census.json` after the initial census with:
 
-- `schema_version: "1.0"`
+- `schema_version: "2.0"`
+- `scanner_version`, canonical `root`, `snapshot_digest`, and `records_digest`
 - `census_completed`
 - `scope`
 - `files_considered`
 - `required_families`
 - `family_totals`
 - `discovered_total`
-- `manual_search_evidence_refs` and optional tool-output refs
+- `raw_seed_file` and `scan_issues`
+
+Write immutable source-derived records to `dangerous-capability-seed.jsonl`. Run `tools/dangerous_capability_seed.py <target-root> --state-dir <state-dir>` after the state manifest exists. The mutable ledger may enrich dispositions and refs, but it must not change or delete seeded identity, family, kind, location, or source digest.
 
 Write one `dangerous-capabilities.jsonl` record per occurrence. Use the common audit-state fields plus:
 
@@ -53,7 +56,7 @@ discovered_total
   + coverage_debt
 ```
 
-`unreviewed` must be zero before any complete claim. The ledger count and per-family totals must reconcile with the census summary.
+`unreviewed` must be zero before any complete claim. The raw seed count and per-family totals must reconcile with the census summary. Every raw seed must have a ledger row; extra manually discovered rows require `origin: manual`.
 
 ## Disposition Rules
 
@@ -81,4 +84,6 @@ When signing material is found, route by use. A Flask session signing key must t
 
 Confirmed vulnerabilities, high-risk alerts, candidates, and coverage debt need stable report references. `negative_closed` records may remain in state, but must contain concrete negative evidence. Do not merge capabilities with different exploit paths or minimal fixes merely because they share a file or secret-scanner hit.
 
-Optional deterministic seeders may help enumerate literal patterns. Their silence never proves absence; perform manual language/framework-aware review and preserve unsupported shapes as evidence observations or coverage debt.
+Before reporting, run `tools/audit_state_check.py <state-dir> --target-root <target-root>`. It re-scans current source and rejects missing, fabricated, or stale seed records. Then run `tools/report_gate_check.py <report> --run-dir <state-dir> --target-root <target-root>`; report refs must be exact `Audit Ref: <id>` anchors in the correct section.
+
+The deterministic seeder establishes a mandatory lower bound, not a complete vulnerability oracle. Perform language/framework-aware review and preserve unsupported aliases, wrappers, parse failures, or unknown shapes as evidence observations or coverage debt.

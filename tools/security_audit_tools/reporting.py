@@ -17,6 +17,7 @@ SEVERITY_ORDER = {
 
 REQUIRED_FINDING_FIELDS = (
     "schema_version",
+    "run_id",
     "fingerprint",
     "severity",
     "maturity",

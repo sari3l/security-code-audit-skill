@@ -14,6 +14,7 @@ finding.
 Required `finding.v1` fields:
 
 - `schema_version`
+- `run_id`
 - `fingerprint`
 - `severity`
 - `maturity`
@@ -33,6 +34,9 @@ Required `finding.v1` fields:
 - `evidence_refs`
 
 Derived or override fields:
+
+- `dangerous_capability_refs`: optional source-bound dangerous capability IDs;
+  `report_render.py` emits one exact `Audit Ref` anchor for each ID
 
 - `mermaid`
   Optional Mermaid override for the attack or data-flow path. If omitted, the
@@ -66,22 +70,16 @@ structured Markdown objects. For code blocks, prefer:
 - Prefer `tools/report_render.py` to render `Confirmed Findings` from
   that canonical findings JSONL; if the tool is unavailable, hand-render the
   same fields and record `external_validator_unavailable`.
-- Run or apply the equivalent of `tools/report_gate_check.py` before finalizing
-  the report. Reports with missing canonical fields or unstable display IDs are
-  not final.
+- Run `tools/report_gate_check.py <report> --run-dir <state-dir> --target-root
+  <target-root>` before finalizing. A manual substring check cannot replace its
+  source re-scan and reference-integrity checks. Reports with missing canonical
+  fields or unstable display IDs are not final.
 - Display IDs such as `[HIGH]-001` are generated from sorted canonical records:
   severity rank, then `category_surface`, then `fingerprint`, numbering within
   each severity. Do not number findings by discovery order.
 - `evidence_chain` is required for every confirmed finding. It must contain the
   source or entry point, propagation or missing control, sink or state
   transition, and impact signal.
-- For smart-contract findings, the evidence chain must also identify the
-  caller/role, attacker-controlled token/recipient/spender/route/amount, the
-  authorization result, the relevant state key, any delegatecall/CPI/adapter or
-  callback semantics, the actual balance or authority delta, and the violated
-  invariant. If one of these depends on an external deployment or solver, keep
-  the assumption as a proof obligation or coverage debt instead of filling the
-  gap with a mock or function name.
 - Keep reproduction and evidence fields as readable Markdown. Do not collapse
   PoC, evidence, minimal fixes, or multi-step chains into one long string when
   code fences, numbered steps, or an attack-flow diagram would preserve intent.

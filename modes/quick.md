@@ -13,6 +13,7 @@ Use current diffs plus audit-state indexes after freshness classification to sel
 Audit state may provide indexed hints and prior knowledge for orientation; missing facts never prove a surface safe.
 Prior coverage records can influence recheck priority only after freshness classification; they never mark unchanged surfaces safe.
 Project context such as business assets, invariants, and trust-boundary claims may focus changed or invalidated high-risk surfaces, but quick mode does not build a full business model or full trust-boundary map.
+After architecture and current-change recon, apply `core/requirements-context.md`. Build queries from the current diff/change range plus affected architecture fan-out; do not use prior reports as requirement anchors.
 
 `incremental-first` means:
 - use change detection to decide which files and shared surfaces enter quick scope
@@ -32,7 +33,6 @@ Use when:
 ## Required Load
 
 - `core/dangerous-capability-census.md`
-- `core/exploration-and-evidence.md`
 - `references/application/languages/index.md`
 - the active knowledge domain router after recon:
   - `references/application/index.md`
@@ -55,6 +55,7 @@ Required:
 - perform audit state minimal probe only: latest/index/latest manifest/latest capsule/project profile
 - build `current-change-context.json` from fresh current recon before loading prior state shards
 - classify changed files and whether they hit critical shared surfaces before stage `3/6` when feasible
+- write `requirements-context.json` after those two steps and before stage `3/6`, preserving connector failure or no-match status without expanding quick scope
 
 Not required:
 - exhaustive route mapping
@@ -77,6 +78,8 @@ These labels should replace the neutral placeholder labels only after recon, bef
 ---
 
 ## Scan Tasks
+
+Immediately after the state manifest exists, run `tools/dangerous_capability_seed.py <target-root> --state-dir <state-dir>` across the whole repository. Do not limit this source-bound census to the diff; only later semantic tracing remains incremental-first.
 
 ### Incremental Scope Selection
 
@@ -124,6 +127,7 @@ Critical shared surfaces include:
 
 State writes required in quick:
 - `current-change-context.json` with changed files, changed shared surfaces, invalidations, and selective-load decisions
+- `requirements-context.json` with bounded anchors, connector terminal statuses, candidate verification, and no secret-bearing content
 - `task-ledger.jsonl` for selected quick-scope work and expansion decisions
 - `coverage-ledger.jsonl` with counted quick-scope coverage, even when not exhaustive
 - `dangerous-capability-census.json` and `dangerous-capabilities.jsonl`, with whole-repository sentinel totals and zero unreviewed occurrences before completion
@@ -151,7 +155,7 @@ Use `references/smart-contract/index.md` as the main router in that case.
 
 If the active profile is `artifact-centric`, triage prompt, rendering, trust-boundary, secret, and environment risk first.
 
-If one high-risk pattern is found, search for all materially affected occurrences across the current quick scope before reporting. If the root cause is a changed shared helper or sink family, widen locally enough to cover the affected scope before reporting. For contract patterns, fan out to equivalent helpers and integration boundaries in quick scope and record unresolved branches as candidate, hypothesis, or coverage debt.
+If one high-risk pattern is found, search for all materially affected occurrences across the current quick scope before reporting. If the root cause is a changed shared helper or sink family, widen locally enough to cover the affected scope before reporting.
 
 After the current-code quick pass is complete, perform a deferred history replay:
 - read up to 3 recent reports
@@ -193,7 +197,9 @@ Quick mode is complete when:
 - repeated high-risk instances have been enumerated
 - mandatory dangerous-capability families were searched globally, totals reconcile, and every hit is routed to a finding, high-risk alert, candidate, negative closure, or coverage debt
 - any `strict incremental` limitation or expansion refusal is recorded when applicable
+- requirement-context processing ran after recon; connector absence or failure is explicit and did not reduce scope
 - material evidence observations are routed to confirmed findings, candidate signals, negative evidence, coverage debt, working hypotheses, or schema-gap suggestions
-- material exploration branches are routed in `exploration-ledger.jsonl` or carried as explicit debt
 - audit state quality gates pass or the report explicitly states partial/blocked quick coverage
+- `tools/audit_state_check.py <state-dir> --target-root <target-root>` passes against current source
+- `tools/report_gate_check.py <report> --run-dir <state-dir> --target-root <target-root>` passes with exact report anchors
 - report output is generated

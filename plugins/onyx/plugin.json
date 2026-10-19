@@ -1,0 +1,23 @@
+{
+  "$schema": "../plugin.schema.json",
+  "schemaVersion": "1.0",
+  "id": "onyx",
+  "displayName": "Onyx Requirements",
+  "enabled": true,
+  "capabilities": [
+    "requirements-context"
+  ],
+  "entrypoints": {
+    "mcp": "./.mcp.json",
+    "skills": [
+      "./skills/audit-requirements-context/SKILL.md"
+    ],
+    "web": "./web/index.html"
+  },
+  "config": "./config.json",
+  "lifecycle": {
+    "after": "architecture-and-change-recon",
+    "before": "security-semantic-review",
+    "failure": "continue"
+  }
+}

@@ -5,6 +5,7 @@ import argparse
 import re
 from pathlib import Path
 
+from audit_state_check import check_state
 from security_audit_tools.common import Issue, emit_json, issue_payload, read_jsonl
 from security_audit_tools.reporting import MARKDOWN_FIELD_ALIASES, MARKDOWN_REQUIRED_FIELDS, parse_markdown_findings
 
@@ -17,10 +18,15 @@ def main() -> int:
         type=Path,
         help="Optional audit-state directory used to reconcile dangerous capability dispositions.",
     )
+    parser.add_argument(
+        "--target-root",
+        type=Path,
+        help="Current source tree; required with --run-dir for source-bound validation.",
+    )
     args = parser.parse_args()
 
     text = args.report.read_text(encoding="utf-8", errors="replace")
-    issues = check_report(text, run_dir=args.run_dir)
+    issues = check_report(text, run_dir=args.run_dir, target_root=args.target_root)
     payload = issue_payload(
         "report_gate_check",
         issues,
@@ -30,7 +36,9 @@ def main() -> int:
     return 1 if payload["status"] == "failed" else 0
 
 
-def check_report(text: str, *, run_dir: Path | None = None) -> list[Issue]:
+def check_report(
+    text: str, *, run_dir: Path | None = None, target_root: Path | None = None
+) -> list[Issue]:
     issues: list[Issue] = []
     findings = _section_any(text, ("Findings", "漏洞", "已确认漏洞"))
     if findings and re.search(r"(^|\n)\s*#{3,}\s*\[?CAND\]?-", findings, re.IGNORECASE):
@@ -66,6 +74,7 @@ def check_report(text: str, *, run_dir: Path | None = None) -> list[Issue]:
             )
         )
     if run_dir is not None:
+        issues.extend(check_state(run_dir, target_root=target_root))
         issues.extend(_check_dangerous_capability_routing(text, run_dir, bool(complete_claim)))
     return issues
 
@@ -91,12 +100,28 @@ def _check_dangerous_capability_routing(text: str, run_dir: Path, complete_claim
                 issues.append(Issue("REPORT043", f"{disposition} has no report_refs", record_id=rid))
                 continue
             destination = _dangerous_capability_destination(text, disposition)
-            destination_folded = destination.casefold()
-            if not any(isinstance(ref, str) and ref.strip().casefold() in destination_folded for ref in refs):
-                issues.append(Issue("REPORT044", f"required report section does not contain a stable report_ref for {disposition}", record_id=rid))
+            anchored_refs = _report_anchor_refs(destination)
+            missing_refs = [ref for ref in refs if not isinstance(ref, str) or ref not in anchored_refs]
+            if missing_refs:
+                issues.append(Issue("REPORT044", f"required report section lacks exact Audit Ref anchors: {', '.join(str(ref) for ref in missing_refs)}", record_id=rid))
     if complete_claim and any(issue.code in {"REPORT040", "REPORT041", "REPORT042", "REPORT043", "REPORT044"} for issue in issues):
         issues.append(Issue("REPORT045", "report claims complete coverage while dangerous capability routing is incomplete"))
     return issues
+
+
+def _report_anchor_refs(section: str) -> set[str]:
+    refs: set[str] = set()
+    pattern = re.compile(
+        r"^\s*(?:[-*]\s*)?(?:Audit|Report|Finding|Candidate|Debt)\s+Ref\s*[:：]\s*`?([A-Za-z0-9_.:-]+)`?\s*$",
+        re.IGNORECASE | re.MULTILINE,
+    )
+    localized = re.compile(
+        r"^\s*(?:[-*]\s*)?(?:审计|报告|漏洞|候选|债务)引用\s*[:：]\s*`?([A-Za-z0-9_.:-]+)`?\s*$",
+        re.MULTILINE,
+    )
+    refs.update(match.group(1) for match in pattern.finditer(section))
+    refs.update(match.group(1) for match in localized.finditer(section))
+    return refs
 
 
 def _dangerous_capability_destination(text: str, disposition: str) -> str:

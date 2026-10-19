@@ -21,15 +21,15 @@ Common rules remain in:
   Incremental-first high-risk validation using current diffs, reliable audit-state freshness, and global cheap checks. Use `quick.md`.
 
 - `standard`
-  Default full current-code discovery with structured coverage and practical business/trust-boundary review. Use `standard.md`.
+  Full current-code discovery with structured coverage and practical business/trust-boundary review. Use `standard.md`.
 
 - `deep`
-  Semantic-assurance audit with stronger closure for invariants, trust boundaries, data lifecycle, attack chains, and proof obligations. Use `deep.md`.
+  Default semantic-assurance audit with stronger closure for invariants, trust boundaries, data lifecycle, attack chains, and proof obligations. Use `deep.md`.
 
 - `regression`
   Latest-report remediation retest with early exit when no usable report exists. Use `regression.md`.
 
-If no argument is provided, use `standard`.
+If no argument is provided, use `deep`.
 
 Mode controls scope, depth, and stop conditions only:
 
@@ -46,7 +46,8 @@ Target profile still controls semantics after recon, knowledge domain still cont
 
 ## Loading Guidance
 
-1. Parse the first skill argument.
+1. Parse recognized mode tokens independently of flags. If no mode token is present,
+   use `deep`; do not mistake `--auto-fix` or `--agents=...` for a mode.
 2. Load `core/index.md` and `core/loading.md`.
 3. Load this file.
 4. Load exactly one mode file:
