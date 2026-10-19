@@ -233,6 +233,9 @@ def _render_finding(display_id: str, finding: dict[str, Any]) -> list[str]:
         f"- **攻击路径**: {finding['attack_vector']}",
         f"- **影响**: {finding['impact']}",
     ]
+    for audit_ref in finding.get("dangerous_capability_refs", []):
+        if isinstance(audit_ref, str) and audit_ref.strip():
+            lines.append(f"Audit Ref: `{audit_ref.strip()}`")
     lines.extend(_render_markdown_field("PoC", finding["poc"]))
     if finding.get("evidence_chain"):
         lines.extend(_render_chain_field("证据链", finding["evidence_chain"]))

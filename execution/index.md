@@ -17,6 +17,9 @@ If no execution parameter is provided, use `single`.
 - positional: `single` or `multi`
 - flag form: `--agents=single` or `--agents=multi`
 
+Ignore the orthogonal remediation flag `--auto-fix` while selecting execution mode.
+It does not imply `single` or `multi`.
+
 Execution mode is a separate dimension from scan depth:
 - depth: `quick` / `standard` / `deep`
 - execution: `single` / `multi`

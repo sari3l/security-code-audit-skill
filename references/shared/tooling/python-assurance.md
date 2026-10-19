@@ -43,17 +43,17 @@ The bundled tools live under `tools/` and use only the Python standard library.
 |------|---------|----------------|
 | `tools/capability_map_seed.py` | Read instruction-bearing files and seed raw observations plus advisory capability candidates | `raw-observations.jsonl`, `unmapped-signals.jsonl`, `capabilities.jsonl`, `capability-paths.jsonl`, `capability-claims.jsonl` |
 | `tools/capability_map_check.py` | Validate capability-map shape, enums, evidence refs, and claim/effect contradictions | JSON diagnostics with stable `CAP*` codes |
-| `tools/audit_state_check.py` | Validate mandatory state files, freshness, and coverage count reconciliation | JSON diagnostics with stable `STATE*` codes |
-| `tools/dangerous_capability_seed.py` | Seed open-world dangerous capability occurrences without executing audited code | JSON diagnostics or optional raw JSONL requiring manual state enrichment |
+| `tools/audit_state_check.py` | Re-scan the explicit target root and validate state freshness, source-bound seed, real refs, and coverage reconciliation | JSON diagnostics with stable `STATE*` and `DANGER*` codes |
+| `tools/dangerous_capability_seed.py` | Seed source-bound dangerous capability occurrences without executing audited code | JSON diagnostics plus immutable seed/census and initialized ledger records with `--state-dir` |
 | `tools/report_render.py` | Render canonical `finding.v1` JSONL records into deterministic Markdown confirmed findings, including fenced PoC/evidence blocks, required evidence chains, and generated Mermaid attack flow | Markdown report or section plus `RENDER*` diagnostics |
-| `tools/report_gate_check.py` | Validate report maturity boundaries, open observation routing, and optional dangerous-capability report reconciliation with `--run-dir` | JSON diagnostics with stable `REPORT*` codes |
-| `tools/vulnerability_benchmark.py` | Evaluate benchmark reports for confirmed recall, signal preservation, false positives, false suppression, and coverage honesty | JSON metrics with stable `BENCH*` diagnostics plus report-gate diagnostics |
+| `tools/report_gate_check.py` | Validate report maturity, source-bound state, real refs, and exact report anchors with `--run-dir --target-root` | JSON diagnostics with stable `REPORT*` codes |
+| `tools/vulnerability_benchmark.py` | Scan real source fixtures before evaluating report recall, routing, false positives, suppression, and coverage honesty | Discovery/report metrics with stable `BENCH*` diagnostics |
 
 Use command resolution before invoking these tools. Resolve them from this skill directory, not from similarly named files inside the audited repository.
 
 ## Benchmarking
 
-Use `tools/vulnerability_benchmark.py` for skill regression checks, prompt comparisons, and release confidence. It evaluates report behavior against curated cases:
+Use `tools/vulnerability_benchmark.py` for skill regression checks, prompt comparisons, and release confidence. Every case must contain a `source/` tree and `expected_discovery` assertions; prewritten report text cannot earn discovery recall. It evaluates:
 - expected confirmed findings were reported with required evidence anchors
 - high-signal unknowns were preserved as candidates, schema gaps, coverage debt, negative evidence, or optimization suggestions
 - benign or negative-evidence cases were not promoted to confirmed findings
@@ -61,7 +61,7 @@ Use `tools/vulnerability_benchmark.py` for skill regression checks, prompt compa
 
 Benchmark cases are guardrails, not a closed vulnerability oracle. Passing the benchmark does not prove the skill is complete, and missing benchmark labels must not suppress current-code observations. Add cases that exercise unfamiliar shapes, negative examples, and coverage honesty whenever the skill changes in a way that could affect recall or false positives.
 
-The release benchmark must contain labeled expectations for `dynamic_code_evaluation`, `shell_command_execution`, `shell_code_loading`, `signing_material`, and `signed_state_consumer`. Each sentinel family requires 100% recall independently; an empty fixture suite or a missing sentinel family fails instead of receiving a vacuous perfect score.
+The release benchmark must contain real source expectations for `dynamic_code_evaluation`, `shell_command_execution`, `shell_code_loading`, `signing_material`, and `signed_state_consumer`, plus report expectations for `dynamic_code_evaluation`, `shell_code_loading`, and `signing_key_identity`. Each family requires 100% recall independently; an empty fixture suite or a missing family fails.
 Each sentinel expectation must also define `record_ref`, `location`, `source`, `sink`, and `trace`; all anchors and expected terms must occur in the same Markdown finding/alert block. Whole-report keyword presence is insufficient.
 
 ---

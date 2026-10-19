@@ -1,6 +1,6 @@
 # Standard Mode
 
-Default full audit mode.
+Explicit full audit mode with practical semantic depth.
 
 ---
 
@@ -14,7 +14,7 @@ Do not inspect prior report details until the current standard-mode findings, co
 Business assets, business invariants, trust-boundary claims, deployment assumptions, and context conflicts are discovery inputs in standard mode. Use them for practical business-logic and trust-boundary review, but do not require deep semantic gate closure unless the surface is unusually complex or prior coverage debt requires it.
 
 Use when:
-- no specific mode is requested
+- the user explicitly requests `standard`
 - you want actionable findings with structured coverage
 - you need historical comparison and a full report
 
@@ -23,7 +23,6 @@ Use when:
 ## Required Load
 
 - `core/dangerous-capability-census.md`
-- `core/exploration-and-evidence.md`
 - `references/application/languages/index.md`
 - `references/application/frameworks/index.md`
 - the active knowledge domain router after recon:
@@ -50,15 +49,17 @@ In addition to the shared base recon in `SKILL.md`, standard mode requires:
 - security config review
 - practical business-logic and trust-boundary surface mapping
 - audit state current-change-context creation before any prior-state shard is loaded
+- requirement-context connector discovery, bounded search, and document relevance verification after architecture/current-change recon and before semantic scanning; write the terminal result to `requirements-context.json`
 
 ---
 
 ## Scan Depth
 
+Immediately after the state manifest exists, run `tools/dangerous_capability_seed.py <target-root> --state-dir <state-dir>`. This whole-repository source-bound census is identical in `quick`, `standard`, and `deep`; mode differences begin after the common high-risk denominator is established.
+
 - execute the primary domain audit path from `SKILL.md`
 - run the whole-repository dangerous-capability census before category review or hypothesis pruning, then trace and reconcile every occurrence
 - enumerate repeated vulnerable patterns across the codebase
-- keep LLM exploration open to callers, sibling helpers, integrations, state keys, and new trust boundaries; record each material branch and its disconfirmation result in `exploration-ledger.jsonl`
 - group multiple downstream exploit paths into one finding only when the failed control, trust boundary, and minimal fix are materially shared
 - surface operator-significant exploit paths clearly in the title, `Attack Vector`, `Impact`, `Related Findings`, or `Attack Chains` instead of splitting findings by default
 - resolve native, external, or repo-configured dependency audit commands with `references/shared/tooling/command-resolution.md` when lock files/manifests exist, then run the confirmed command or document the blocker/manual fallback instead of skipping C8
@@ -76,7 +77,6 @@ After category coverage, perform:
 - counted coverage reconciliation and bounded function-chain inventory review
 - audit state quality gate review: current-change-context exists, coverage counts reconcile, high-signal observations are routed, and function-chain debt is explicit
 - dangerous-capability reconciliation: mandatory families searched, census/ledger totals match, and no occurrence remains unreviewed
-- exploration/evidence reconciliation: every material branch is routed and every material hypothesis has construction plus disconfirmation evidence or explicit debt
 - deferred history replay only after current findings and coverage are stable
 - historical-miss gate first: reopen prior findings that touch the same current helper, sink, route family, or trust boundary and check whether any still-live path was missed by the current scan
 - if any historical miss exists, record it, emit `Skill Optimization Suggestions`, and withhold lifecycle finalization
@@ -109,7 +109,10 @@ Standard mode is complete when:
 - critical and high findings have reproduction evidence
 - audit state includes counted coverage totals and bounded function-chain records for all security-relevant functions in scope, or explicit coverage debt where that was not possible
 - audit state quality gates pass, or every failed gate is represented as partial/blocked coverage
+- requirement-context processing has a terminal status and every material requirement-code conflict is routed
 - dangerous-capability census and ledger reconcile, with all non-negative dispositions visible in the report
+- `tools/audit_state_check.py <state-dir> --target-root <target-root>` passes against current source
+- `tools/report_gate_check.py <report> --run-dir <state-dir> --target-root <target-root>` passes with exact report anchors
 
 ---
 

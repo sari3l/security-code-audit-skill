@@ -1,170 +1,181 @@
-# security-code-audit
+# Security Code Audit
 
-当前版本：`v2.18.0`
+`security-code-audit` 用来检查代码仓库里的安全风险，适用于 Web/API、后端、全栈应用、配置与依赖、代码型文档 artifact，以及 Solidity 智能合约。
 
-面向 Web/API、后端、全栈、智能合约，以及 artifact-centric 仓库的代码安全审计 skill。
+当前版本：`4.0.0`
 
-`security-code-audit` 适合代码安全审计、SAST 风格分析、OWASP 风格检查、依赖审计、智能合约审计、artifact 与 prompt 面审计，以及修复回归验证。重点是基于真实代码、真实攻击面、bounded tracing、持久化 audit state 和高信号报告，而不是只做浅层模式匹配。
+## 意义
 
-English documentation: [README.md](README.md)
+代码仓库里的安全问题不一定会直接出现在一个明显的危险函数里。真实风险经常藏在路由、鉴权、数据流、配置、依赖、部署假设、业务流程、价格/额度计算、文件处理、模板渲染、prompt/markdown artifact 或智能合约状态变化之间。
 
-## 1. 使用方式
+普通搜索或浅层 pattern matching 很容易只找到单点命中，漏掉完整攻击链、重复出现的问题、历史修复回归，或者把没有证据的猜测写成 finding。
 
-- `/security-code-audit`
-  默认完整审计。等价于 `standard single`。
-- `/security-code-audit quick`
-  快速高风险初筛。
-- `/security-code-audit deep`
-  深度审计，覆盖更强，攻击链和验证更深。
-- `/security-code-audit regression`
-  以最近一份报告为基线做修复回归验证。
-- `/security-code-audit help`
-  显示参数、模式、执行方式和示例。
+这个 Skill 的作用是把代码安全审计整理成一套可重复的流程，帮助你判断：
 
-参数：
-- 深度：`quick` | `standard` | `deep` | `regression`
-- 执行模式：`single` | `multi`
-- `multi` 是 beta；如果宿主不支持 delegation，会自动回退到 `single`
+- 代码里有没有真实可利用的鉴权、注入、SSRF、XSS、路径穿越、反序列化、文件上传下载、数据泄露或业务逻辑问题
+- 依赖、配置、CI、API spec、notebook、markdown/prompt artifact 是否引入额外风险
+- 智能合约里有没有重入、权限、升级、签名、预言机、精度、会计或状态机问题
+- source/sink、source/state、信任边界和部署假设是否能闭环证明
+- 修复是否真的挡住原攻击路径，而不是只改掉表面现象
+- 哪些审计面已经覆盖，哪些只是 partial、blocked、time-boxed 或需要后续补证
 
-示例：
-- `/security-code-audit deep multi`
-- `/security-code-audit regression`
-- `/security-code-audit deep --agents=multi`
+## 目标
 
-## 2. 核心能力
+这个 Skill 不承诺证明“绝对安全”。它的目标是：
 
-- 按目标面路由
-  RECON 后先选择 target profile，再根据实际 surface 路由到主知识域和共享模块。
-- 基于真实代码和证据
-  finding 需要落到真实文件、真实利用路径和可执行的最小修复建议。
-- bounded tracing
-  双向 tracing 会把 source-to-sink 和 state-transition 分析收敛到真实信任边界，而不是无限制扩图。
-- 枚举重复问题
-  不只报第一个命中点，而是尽量找全同类高价值位置。
-- audit state 连续性
-  `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/` 保存紧凑 run context、code fact snapshot、evidence observation、loaded-module 决策、function-chain 记录和 invalidation，帮助每次运行快速重新对齐上下文。
-- 覆盖依赖和 artifact 面
-  代码、依赖、markdown、prompt、API spec、notebook、配置和 IaC 都能进入同一套审计流程。
-- 覆盖债务可见
-  对于 partial、blocked、invalidated 的审计面，会显式记录成 coverage debt，而不是假装已经扫完。
-- 证据分层
-  主 findings 只保留已确认问题，高信号但未证实的内容会进入 candidate signals 或 working hypotheses，而不是被静默丢掉。
-- Shape hint 与 evidence gate
-  reference 模块现在包含针对常见应用与智能合约问题的简洁风险形状示例。这些示例只用于启发调查，不是签名；每个 finding 仍需证明攻击者影响、可达的失效边界或不变量、补偿控制缺失，以及具体影响。
-- Dangerous-capability census
-  对动态执行、shell 命令/代码加载、签名材料和 signed-state consumer 做全仓计数；每个命中都要有证据路由，不能静默丢弃。
-- 开放探索与证据闭环
-  对新发现的 caller、兄弟 helper、外部集成和信任边界记录探索分支，并同时保留攻击构造与反证证据。
-- 2025 incident pattern 覆盖
-  智能合约方法论现在覆盖 DeFi/DEX/lending/bridge、upgradeable、signer、frontend transaction builder、relayer、admin 和 supply-chain 路径，只要它们能影响链上资产、权限、签名或升级。
-- 历史与回归支持
-  `output/` 保存人类可读报告，`regression` 可基于最近报告做回归验证，并配合当前扫描结果做历史比对。
-- 可选多 agent
-  `multi` 可在大仓库里扩覆盖，但仍保持单一报告出口。
+1. 扫描当前仓库的代码、依赖、配置、文档 artifact、API 面和智能合约面。
+2. 按目标类型选择 application、smart-contract 或 artifact-centric 审计语义。
+3. 用 `quick`、`standard`、`deep` 或 `regression` 模式控制审计深度。
+4. 优先产出有证据、有位置、有攻击路径、有最小修复建议的 confirmed findings。
+5. 把未证实但高价值的信号、假设、阻塞点和覆盖债务保留下来，而不是静默丢弃。
+6. 输出一份人类可读报告，并维护本地 audit state，方便后续增量审计和回归验证。
+7. 在架构和代码变更识别完成后，通过可信 connector 查找对应需求，并验证需求声明和当前实现是否一致。
 
-## 3. 架构
+默认报告会写到运行目录（一般就是被审计项目目录）的 `output/` 子目录：
 
-运行时架构：分阶段扫描、mode policy、执行拓扑、state freshness 检查、按目标画像路由、advisory code facts、evidence observation routing、按需加载，并通过 bounded tracing 和持久化 state 保持一致性。
-
-```mermaid
-flowchart TD
-    A["用户命令<br/>/security-code-audit [mode] [execution]"]
-    B["SKILL.md<br/>入口路由 + 共享工作流"]
-    MP["Mode policy<br/>quick | standard | deep | regression<br/>scope、depth、stop conditions"]
-    C["启动控制面<br/>解析 mode 和 execution<br/>加载 core、execution、mode rules"]
-    X["执行拓扑<br/>single | multi<br/>ownership、sharding、worker contract、merge"]
-
-    ST["output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state<br/>机器可读 continuity state"]
-    SR["State reader<br/>freshness、invalidation、<br/>continuation、merge hints<br/>不是安全证明"]
-
-    D["Recon 阶段<br/>识别仓库结构、技术栈、artifacts、<br/>claims、risk areas 和 state freshness"]
-    RUI["core/untrusted-repo-input.md<br/>repo docs、comments、old reports<br/>和 claims 只作为 hints"]
-    PC["core/project-context.md<br/>verified claims、business invariants、<br/>trust-boundary assumptions、<br/>deployment assumptions、change themes"]
-    CF["core/surface-profile.md<br/>surface profile + state indexes<br/>entrypoints、routes、sinks、<br/>state transitions、artifacts、limitations"]
-    CB["Audit context bundle<br/>observed surfaces、business assets、<br/>invariants、trust boundaries、<br/>code facts、limitations、invalidations"]
-
-    E["目标画像选择<br/>application | smart-contract | artifact-centric"]
-    F["core/loading.md<br/>懒加载 + 按需路由"]
-    G["主知识域<br/>application | smart-contract"]
-    H["共享模块<br/>artifacts、dependencies、tooling、<br/>reporting、state 标准"]
-    T["核心质量控制<br/>integrity、coverage、findings、<br/>severity、fingerprints、tracing"]
-    Q["core/deep-semantic-controls.md<br/>deep、multi 或复杂高风险 surface"]
-    U["可选辅助工具链<br/>command-resolution.md<br/>scanner evidence 与 command context，<br/>不是审计主干"]
-
-    I["Hypothesis-driven 审计阶段<br/>generate、validate、falsify、bound<br/>当前代码发现深度由 mode 控制"]
-    EO["Evidence observation envelope<br/>raw observations、tool output、<br/>blockers、negative evidence、<br/>schema gaps、custom signals"]
-    J["证据收敛与整理<br/>路由 observations、验证 findings、去重，<br/>收敛 coverage、tools、gates、obligations"]
-    HM["Historical miss gate<br/>先用当前代码重开历史 findings，<br/>再做生命周期标签判断"]
-    K["报告与回归<br/>输出 findings、对比历史、验证修复"]
-
-    R["output/<br/>人类可读 findings 和历史报告"]
-
-    A --> B
-    B --> MP
-    B --> C
-    C --> X
-    ST -. read .-> SR
-    SR -. freshness 与 invalidation .-> D
-    SR -. continuation 与 open obligations .-> CB
-    SR -. merge ledgers 与 coverage state .-> J
-    MP --> D
-    X --> D
-    RUI --> D
-    D --> PC
-    D --> CF
-    PC --> CB
-    CF --> CB
-    CB --> E
-    E --> F
-    F --> G
-    F --> H
-    F --> T
-    F --> Q
-    H --> U
-    MP --> I
-    X --> I
-    G --> I
-    H --> I
-    T --> I
-    Q -. conditional semantic controls .-> I
-    U -. 可选 scanner 证据 .-> I
-    U -. tool-output observations 与 blockers .-> EO
-    I --> EO
-    EO --> J
-    J --> HM
-    HM --> K
-    K --> R
-    X -. persist topology 与 merge inputs .-> ST
-    D -. persist run context .-> ST
-    PC -. persist project context .-> ST
-    CF -. persist code facts 与 limitations .-> ST
-    F -. persist selected modules .-> ST
-    U -. persist command probes 与 blockers .-> ST
-    EO -. preserve observations before routing .-> ST
-    I -. update traces、tools、gates、coverage .-> ST
-    J -. persist hypotheses、obligations、invalidations .-> ST
-    HM -. persist historical misses 或 lifecycle allowance .-> ST
-    R -. regression input only .-> K
+```text
+<运行目录>/output/security-code-audit-<timestamp>-<mode>-<short-hash>.md
+<运行目录>/output/security-code-audit-<timestamp>-<mode>-<short-hash>-findings.jsonl
+<运行目录>/output/security-code-audit-<timestamp>-<mode>-<short-hash>-state/
 ```
 
-`State reader` 是概念性操作：读取 prior state，总结 freshness / invalidation、continuation / open obligations 和 coverage / merge hints，然后在不把这些 hints 当作安全证明的前提下使用它们。它不是新的运行时文件、schema、服务或平台组件。
+报告、canonical findings JSONL 和 state bundle 都放在运行目录的 `output/` 下，并且文件名包含 `security-code-audit-` 前缀、真实本地时间戳和短 hash，避免和 `output/` 里的其他报告混在一起，也避免多次运行互相覆盖。`output/` 是审计产物目录，不应当被当作被审计项目自身的业务代码。
 
-这套 skill 按层拆分：
+## 使用步骤
 
-| 路径 | 作用 |
-| --- | --- |
-| `SKILL.md` | 主路由、help path、共享流程和进度规则 |
-| `core/` | integrity、coverage、findings、severity、project context、懒加载、surface profile、advisory code facts、bidirectional tracing 和 deep semantic 控制 |
-| `execution/` | single-agent 和 beta multi-agent 执行拓扑、worker contract、sharding 与 merge 规则 |
-| `profiles/` | RECON 后的目标语义：`application`、`smart-contract`、`artifact-centric` |
-| `references/application/` | Web/API/后端审计主知识域 |
-| `references/smart-contract/` | 智能合约与链上逻辑审计主知识域 |
-| `references/shared/` | artifact、dependency、tooling、reporting 和 audit-state 的共享标准 |
-| `modes/` | `quick`、`standard`、`deep`、`regression` 的深度契约 |
+### 在Agent里使用
 
-输出层：
+审计当前项目，直接说：
 
-| 路径 | 作用 |
-| --- | --- |
-| `output/` | 人类可读 findings、历史、回归基线和 action items |
-| `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/` | 机器可读 run context、surface inventory、project context、code fact snapshot、evidence observation、tool invocation 记录、deep gate ledger、function chain、hypothesis 和 invalidation，适用于每次运行 |
+```text
+/security-code-audit
+```
+
+这等价于 `deep single`，会做高保证当前代码发现、攻击链追踪和语义闭环。
+
+如果只想快速看高风险变更：
+
+```text
+/security-code-audit quick
+```
+
+如果要做更深的语义审计：
+
+```text
+/security-code-audit deep
+```
+
+如果要验证最近报告里的修复是否真的生效：
+
+```text
+/security-code-audit regression
+```
+
+查看帮助：
+
+```text
+/security-code-audit help
+```
+
+审计完成后，默认会询问是否需要自动修复。若希望在启动时就允许准备修复，使用：
+
+```text
+/security-code-audit deep --auto-fix
+```
+
+`--auto-fix` 只跳过“是否开始修复”的首次询问。它会在独立 Git worktree 和修复分支中修改、测试并重新验证，然后把最终 diff、测试结果、剩余风险和建议 commit message 交给用户阅览。只有用户阅览后明确接受，才会创建 commit，并用 `git merge --ff-only` 合并回审计开始时的当前分支；不会自动 push 或部署。
+
+如果原工作区有未提交修改、处于 detached HEAD、原分支/HEAD 在阅览期间发生变化，自动集成会停止，不会 stash、覆盖、rebase 或自动解决冲突。
+建议在审计前让 `.gitignore` 已包含 `output/`；如果审计初始化刚修改了 tracked ignore 文件，该变化也会被视为未提交修改，需要用户先阅览处理。目标仓库自定义 Git hooks 和 clean/smudge content filter 不会在自动修复流程中执行，检测到自定义 filter 时会停止。
+
+### 模式选择
+
+- `quick`
+  增量优先的高风险验证，结合当前 diff 和 audit state freshness，同时保留全局低成本的 secret 与依赖检查。
+- `standard`
+  显式选择的完整当前代码发现，包含结构化覆盖、业务逻辑和信任边界审查。
+- `deep`
+  默认模式。深度语义审计，对不变量、信任边界、数据生命周期、攻击链和证明义务做更强闭环。
+- `regression`
+  基于最近一份可用报告做修复回归验证；如果没有可用报告，会提前退出而不是伪造一次回归。
+
+### 覆盖与性能
+
+`quick`、`standard`、`deep` 使用同一个全仓、源码绑定的危险能力 census，因此 `eval`、`shell=True`、`source`、签名密钥和 Session 消费者不会因为选择 `quick` 而只扫描 diff。模式差异发生在后续语义分析：
+
+| 模式 | 固定成本 | 主要增量成本 |
+|---|---|---|
+| `quick` | 全仓危险 census、secret 与依赖入口检查 | 变更及失效表面的高风险追踪 |
+| `standard` | 同上 | 全仓类别、路由、函数链和实用信任边界审查 |
+| `deep` | 同上 | Standard 全部内容，加不变量、数据生命周期、证明义务和攻击链闭环 |
+
+默认使用 `deep` 以优先保证召回和语义完整性。只有明确需要快速增量分诊时才选择 `quick`；其报告必须说明非危险能力部分的增量覆盖边界。
+
+### 执行方式
+
+默认使用单 agent：
+
+```text
+/security-code-audit deep single
+```
+
+大仓库可以尝试 beta 多 agent：
+
+```text
+/security-code-audit deep multi
+```
+
+也可以写成：
+
+```text
+/security-code-audit deep --agents=multi
+```
+
+`multi` 仍是 beta。如果宿主环境不支持 delegation，会回退到 `single`。
+
+### 需求上下文接入
+
+审计不会只依赖 commit title 查需求。在 Stage 2 完成架构、业务域、信任边界和当前代码变更识别后，会按下面的优先级生成查询锚点：
+
+1. 从用户审计范围、宿主 MR/PR 元数据、本地 Git refs、branch 和 commit 中自动发现的 MR/PR 引用，以及 ticket、RFC、Issue 或文档 ID
+2. 变更的 route、API、class、function、contract、data entity、configuration key
+3. service、component、actor、role、business flow、invariant 和 trust boundary
+4. branch、commit subject/body 和 changed path
+
+用户不需要另外输入 `merge_requests/1412`。当用户只说“审计此次更新”或“全量审计”时，Code Audit 会先确定审计范围并读取 Git/MR 历史，然后自动调用已启用且已认证的 `requirements-context` plugin。若审计范围或本地 Git 元数据中已有 `panacea-backend/merge_requests/1412`、`MR1412` 或 `!1412`，会自动归一化并查询；若没有 MR 编号，则使用 repository、HEAD commit、source branch、commit prose 和代码/架构语义让 Onyx 反查对应变更。返回结果仍需通过项目/MR 路径或其他当前代码证据回验。
+
+因此需求查询是 Code Audit Stage 2 的内置步骤，不是用户单独调用 Onyx Skill 的步骤；Onyx plugin 只提供通用 connector 能力。
+
+`security-code-audit` 在自己的 `plugins/` 中定义扩展协议。每个 `plugins/<id>/` 都通过 `plugin.json` 声明 capability、MCP/Skill/Web 入口、配置和生命周期；审计用 `tools/audit_plugin_check.py` 验证随包插件，而不扫描被审计仓库的插件目录。
+
+当前提供 `plugins/onyx/`，它声明 `requirements-context` capability。仓库中的 `config.json` 只包含禁用的 `https://onyx.example.com/mcp` 示例地址，不保存组织内部 endpoint。使用时创建用户自己的 `onyx.json`，并在启动 Codex 前让 `ONYX_AUDIT_CONFIG` 指向它的绝对路径：
+
+```json
+{
+  "url": "https://your-onyx-host.example/mcp",
+  "enabled": true
+}
+```
+
+```bash
+export ONYX_AUDIT_CONFIG="$HOME/.config/security-code-audit/plugins/onyx.json"
+export ONYX_AUDIT_TOKEN='<temporary audit token>'
+codex
+```
+
+如果 discovery 没有检测到 token，当前审计会记录 `missing_auth`，跳过 Git 需求锚点和全部 Onyx search/fetch/render 调用，然后继续代码审计，不会尝试远端连接。
+
+用户 JSON 位于插件外，修改 endpoint 不需要编辑安装缓存或重新安装插件。环境变量必须在启动 Codex 前设置。
+
+token 不应写入聊天、插件配置、工具参数、Web UI、audit state、日志或报告。Onyx 不可用、token 缺失、工具名不匹配或没有命中时，审计会在 `requirements-context.json` 中记录准确状态并继续，不能因此缩小代码审计范围。
+
+Code Audit Plugin 规范见 `plugins/README.md`；Onyx 的安装、默认配置、用户 JSON、验证步骤、MCP tools 和状态说明见 `plugins/onyx/README.md`。每个 Code Audit Plugin 都必须提供自己的 `README.md`。
+
+## 注意事项
+
+- `standard` 和 `deep` 始终是当前代码发现模式。历史报告只能用于后置对比，不能直接压掉当前 findings。
+- `quick` 可以利用当前变更和 audit state 缩小优先级，但旧 state 不能证明未变更代码安全。
+- confirmed finding 必须有证据、位置、攻击路径和修复建议；猜测应进入 candidate signal、working hypothesis 或 coverage debt。
+- `output/security-code-audit-<timestamp>-<mode>-<short-hash>-state/` 是运行态审计记忆和增量索引，不是最终报告。
+- 需求文档是待验证的外部声明；需求与代码冲突是审计信号，但只有当前代码证明具体不安全路径时才升级为 finding。
+- 可执行工作流以 `SKILL.md` 为准；维护结构说明见 `ARCHITECTURE.md`，版本规则见 `VERSIONING.md`。

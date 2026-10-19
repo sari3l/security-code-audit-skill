@@ -43,18 +43,20 @@ output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/
   manifest.tmp
   summary-capsule.json
   current-change-context.json
+  requirements-context.json
+  remediation-session.json
   project-context.json
   architecture-map.json
   write-ahead-events.jsonl
   task-ledger.jsonl
   coverage-ledger.jsonl
   dangerous-capability-census.json
+  dangerous-capability-seed.jsonl
   dangerous-capabilities.jsonl
   trace-ledger.jsonl
   function-chains.jsonl
   attack-chains.jsonl
   evidence-observations.jsonl
-  exploration-ledger.jsonl
   hypotheses.jsonl
   proof-obligations.jsonl
   deep-gates.jsonl
@@ -117,6 +119,21 @@ Layer responsibilities:
   shared helpers, dependency/config changes, invalidation fan-out, and selective
   load decisions.
 
+`requirements-context.json`
+: Required after architecture and change recon and before security semantic review.
+  Includes bounded anchor/query metadata, connector terminal statuses, candidate
+  requirement documents, verification results, requirement-code conflicts, and
+  privacy/trust handling. It must exist even when status is `not_configured`,
+  `missing_auth`, `unavailable`, `no_match`, or `not_applicable`; never store tokens,
+  authorization headers, full diffs, source code, or unnecessary full documents.
+
+`remediation-session.json`
+: Optional and created only when post-audit remediation starts. Records start-consent
+  source, original branch/HEAD, repair branch/worktree, selected finding refs,
+  changed-file digest, validation and re-audit summaries, review status, explicit final
+  acceptance and one-time integration receipt hash, commit hash, and fast-forward merge status. Start consent and final
+  acceptance are separate fields; `--auto-fix` may set only the former.
+
 `quality-gates.json`
 : Required before final reporting. Records the skill-native quality-gate status
   and every gate used to decide whether the run can claim complete, partial,
@@ -126,9 +143,16 @@ Layer responsibilities:
 `dangerous-capability-census.json`
 : Required sentinel census summary: whole-repository for `quick`, `standard`,
   and `deep`, or `scope: regression_targets` for targeted regression. Include `schema_version:
-  "1.0"`, completion status, searched families, counted totals, scope, files
-  considered, and manual/tool evidence refs. An empty result still requires a
+  "2.0"`, scanner version, canonical target root, source snapshot digest, raw
+  records digest, completion status, searched families, counted totals, scope,
+  files considered, and scan issues. An empty result still requires a
   completed summary and an empty `dangerous-capabilities.jsonl` file.
+
+`dangerous-capability-seed.jsonl`
+: Immutable source-derived lower bound generated after `manifest.json` exists.
+  Final validation re-runs the seeder against the explicit target root and
+  rejects missing rows, changed source, digest mismatch, parse/read failures,
+  and stale scanner versions. Do not hand-author or prune this file.
 
 `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-findings.jsonl`
 : Required before final report generation when confirmed findings exist. It is
@@ -197,18 +221,27 @@ Every run follows this order:
    - Mark old records as `fresh_current`, `comparable`,
      `stale_needs_recheck`, `invalidated`, or `not_applicable`.
 
-4. Selective prior-state loading
+4. Current requirement-context lookup
+   - Apply `core/requirements-context.md` only after architecture and change recon.
+   - Discover only trusted installed-plugin connectors and build privacy-minimized
+     anchors from the current change and architecture context.
+   - Query every enabled connector, verify candidate relevance against current code,
+     route material conflicts, and write `requirements-context.json`.
+   - Connector absence or failure is terminal context status, not permission to narrow
+     audit scope and not coverage debt by itself.
+
+5. Selective prior-state loading
    - Load only shards tied to changed surfaces, open obligations, unresolved
      hypotheses, prior high-risk chains, remediation memory, or assigned worker
      scope.
    - Record every load/skip decision in `current-change-context.json`.
 
-5. Runtime checkpointing
+6. Runtime checkpointing
    - After recon, task assignment, meaningful trace progress, proof updates,
      worker handoff, merge, and pre-report review, update the relevant ledger
      and capsule.
 
-6. Quality-gate validation
+7. Quality-gate validation
    - Evaluate the quality gates in this standard directly and write
      `quality-gates.json`.
    - Optional external validators may assist maintainers, but Python, JSON
@@ -216,10 +249,16 @@ Every run follows this order:
    - If any required gate fails, the report must say partial/blocked/invalidated
      and create coverage debt instead of claiming complete coverage.
 
-7. Knowledge promotion
+8. Knowledge promotion
    - Promote only verified records with evidence, scope, confidence, freshness,
      and invalidation rules.
    - Demote or invalidate knowledge when current changes touch its trigger.
+
+9. Optional remediation
+   - Run only after reporting and audit gates complete.
+   - Apply `core/remediation-worktree.md` and persist `remediation-session.json` once a
+     worktree is created.
+   - Never infer final commit/merge acceptance from the start prompt or `--auto-fix`.
 
 ---
 
@@ -292,14 +331,13 @@ Invalidated records must not support `covered`, `fixed`, `complete`, or
   `negative_closed`, or `coverage_debt`; `unreviewed` blocks completion.
   Include source reachability and stable trace/finding/report/negative/debt refs
   appropriate to the disposition.
+  Every source-seeded row must preserve seed identity, family, kind, location,
+  and source digest. Additional discoveries require `origin: manual`.
 
 `trace-ledger.jsonl`
-: Source/sink/state-transition checkpoints. Every material row includes the
-  common record fields plus `entry_point`, `source`, `sink_or_transition`,
-  `status`, and `evidence_refs`; include transformations, join checkpoints,
-  state/authorization checkpoints, bounded reason, negative evidence, and
-  blocker as applicable. Dangerous-capability `trace_refs` must resolve to these
-  rows or the state gate fails.
+: Source/sink/state-transition checkpoints. Include source, transformations,
+  join checkpoints, sink/transition, status, bounded reason, negative evidence,
+  and blocker if any.
 
 `function-chains.jsonl`
 : Every in-scope security-relevant function or state transition gets one
@@ -317,13 +355,6 @@ Invalidated records must not support `covered`, `fixed`, `complete`, or
   blockers, negative evidence, history signals, schema gaps, and unknown shapes.
   Every high-signal item must be routed, rejected, or carried as coverage debt /
   working hypothesis / skill optimization before final reporting.
-
-`exploration-ledger.jsonl`
-: Durable record of LLM-led audit branches. Each row records the trigger,
-  question, branch type, actions, evidence refs, disconfirmation result, next
-  action, and routed status. This ledger keeps lazy-loading and worker context
-  bounded without turning the routed module list into a closed exploration
-  boundary.
 
 Optional Python assurance outputs such as `raw-observations.jsonl`,
 `unmapped-signals.jsonl`, `capabilities.jsonl`, `capability-paths.jsonl`,
@@ -424,29 +455,28 @@ changes hit its invalidation rule.
 Before final reporting, evaluate and record these checks in
 `quality-gates.json`:
 - `current-change-context.json` exists and says fresh recon completed
+- `requirements-context.json` belongs to the current run, says architecture/change recon completed before query, gives every discovered connector a terminal status, and contains no credentials or source payloads
 - every reused old record has `freshness_status`
 - invalidated records do not support covered/fixed/complete/confirmed claims
 - coverage rows have counted denominators
-- dangerous-capability census covers every mandatory sentinel family, ledger and family totals reconcile, and no occurrence remains unreviewed
+- fresh source re-scan matches `dangerous-capability-seed.jsonl`, census digests and family totals reconcile, every seed has a ledger row, and no occurrence remains unreviewed
 - API/CLI/queue/CI/config-reachable dynamic evaluators are report-visible when direct exploitability remains unresolved
 - function-chain counts reconcile with explicit debt
+- dangerous-capability evidence, trace, finding, and debt refs resolve to real current-run records
 - confirmed findings reference current-run evidence, trace, or function-chain
 - open evidence observations are routed or converted to report-visible debt
-- material exploration branches are routed or converted to report-visible debt
 - open proof obligations are routed or marked deferred with report destination
 - final-blocking merge queue items are resolved
 - deep/multi runs have agent logs and passing quality gates
 - state contains no obvious unredacted sensitive material
 
-External tooling may additionally validate these checks, but the skill must not
-depend on a Python environment or any repository-local test harness. Missing
-external validation is recorded as `external_validator_unavailable` and does not
-block the scan when the skill-native gates were evaluated.
-
-Bundled Python assurance tools may validate these gates when available. Their
-failures block only the claim they validate, such as complete coverage or report
-maturity; they do not dismiss confirmed evidence, candidates, raw observations,
-or schema gaps.
+The bundled `dangerous_capability_seed.py`, `audit_state_check.py`, and
+`report_gate_check.py` are mandatory source-bound gates for `quick`, `standard`,
+and `deep`. Missing Python 3 or a tool failure blocks complete coverage and must
+be reported as coverage debt; it never dismisses confirmed evidence, candidates,
+raw observations, or schema gaps. Other external scanners remain optional and
+may be recorded as `external_validator_unavailable` without blocking unrelated
+claims when equivalent skill-native review was completed.
 
 ---
 

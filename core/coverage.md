@@ -16,10 +16,8 @@ Use this file to minimize shallow scans, skipped surfaces, and false negatives.
 - Invalidated prior state or knowledge cannot count as coverage. It can only create a task, a re-audit trigger, or coverage debt.
 - In `quick`, `standard`, and `deep`, prior findings touching the same helper, sink, route family, or trust boundary must be reopened against current code before they can be counted as covered or fixed.
 - A still-live prior vulnerability that the current scan missed is a historical miss, not a valid clean comparison; record it as coverage debt and emit `Skill Optimization Suggestions`.
-- Coverage is not complete until `dangerous-capability-census.json` and `dangerous-capabilities.jsonl` exist, all mandatory sentinel families were searched, totals reconcile, and no occurrence remains `unreviewed`.
+- Coverage is not complete until a fresh re-scan of the explicit target root matches immutable `dangerous-capability-seed.jsonl`, the census digest and family totals reconcile, every seed has a ledger row, and no occurrence remains `unreviewed`.
 - API-, CLI-, queue-, CI-, or config-reachable dynamic execution must remain a report-visible high-risk alert when direct exploitability is unresolved; a failed sample payload cannot remove it from the denominator.
-- Coverage is not complete until every material exploration branch is routed in `exploration-ledger.jsonl` and every high-signal evidence observation is consumed by a trace, finding, hypothesis, negative closure, attack chain, or coverage debt record.
-- Mandatory reference routing is a minimum. The auditor may inspect any adjacent or previously unlisted surface that a current hypothesis or integration boundary reaches; the absence of a routed module never closes that branch.
 
 ## Exhaustiveness Rules
 
@@ -48,7 +46,7 @@ Do not finish the audit until:
 - advisory inventory gaps that affect security-relevant dynamic, generated, reflected, framework-magic, or artifact-mediated behavior are either resolved or carried as coverage debt
 - high-signal evidence observations are routed, rejected with negative evidence, or carried forward honestly
 - every dangerous capability is routed to a confirmed finding, high-risk alert, candidate, evidence-backed negative closure, or coverage debt
-- every material hypothesis has both construction and disconfirmation evidence, or an explicit proof obligation / coverage debt record
 - historical `Fixed` claims affecting in-scope current code were explicitly reopened or carried as coverage debt
 - deferred history replay either found no historical misses, or every historical miss is recorded with coverage debt, `Skill Optimization Suggestions`, and a withheld lifecycle comparison
 - audit state quality gates have been evaluated and recorded, or the final report marks the run partial/blocked with explicit debt
+- the bundled state and report gates passed against the explicit current target root; missing tooling or a failed re-scan blocks complete coverage

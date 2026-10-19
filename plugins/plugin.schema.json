@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/sari3l/security-code-audit-skill/main/plugin.schema.json",
+  "title": "Security Code Audit Plugin",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "displayName",
+    "enabled",
+    "capabilities",
+    "entrypoints",
+    "config",
+    "lifecycle"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{0,63}$"
+      }
+    },
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mcp": {
+          "$ref": "#/$defs/localPath"
+        },
+        "skills": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/localPath"
+          }
+        },
+        "web": {
+          "$ref": "#/$defs/localPath"
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["mcp"]
+        },
+        {
+          "required": ["skills"]
+        }
+      ],
+      "dependentRequired": {
+        "web": ["mcp"]
+      }
+    },
+    "config": {
+      "$ref": "#/$defs/localPath"
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["after", "before", "failure"],
+      "properties": {
+        "after": {
+          "$ref": "#/$defs/phase"
+        },
+        "before": {
+          "$ref": "#/$defs/phase"
+        },
+        "failure": {
+          "enum": ["continue", "coverage-debt", "abort"]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "localPath": {
+      "type": "string",
+      "pattern": "^\\./[^\\u0000]+$"
+    },
+    "phase": {
+      "enum": [
+        "audit-start",
+        "architecture-and-change-recon",
+        "security-semantic-review",
+        "coverage-verification",
+        "report-finalization",
+        "audit-complete"
+      ]
+    }
+  }
+}

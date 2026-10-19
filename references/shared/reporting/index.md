@@ -39,7 +39,8 @@ Use these files to keep reports consistent, auditable, and actionable:
 - For confirmed findings, create canonical `finding.v1` records in
   `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-findings.jsonl` before writing
   Markdown. Prefer `tools/report_render.py` when available, then validate the
-  final report with `tools/report_gate_check.py` or the equivalent manual gate.
+  final report with the mandatory source-bound `tools/report_gate_check.py
+  <report> --run-dir <state-dir> --target-root <target-root>` command.
 - Load `history-standard.md` after the independent current-code scan is complete when reading security audit report history from `output/`, ordering reports by timestamp, and writing `Historical Context`.
 - Load `regression-standard.md` when mode is `regression` and the latest timestamped report becomes the retest baseline.
 - Apply `core/fingerprints.md` before `history-standard.md` when matching current findings to prior reports.

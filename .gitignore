@@ -1,22 +1,58 @@
-# macOS artifacts
+# macOS and filesystem noise
 .DS_Store
-__MACOSX/
+.AppleDouble
+.LSOverride
+Icon?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# Python artifacts
-__pycache__/
-*.py[cod]
+# Editor and IDE state
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 
-# Local agent/tooling state
-.claude/
+# Logs and runtime output
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
 
-# Local environment and secrets
+# Environment and local secrets
 .env
 .env.*
-.envrc
-*.pem
-*.key
-*.p12
-*.pfx
-id_rsa
-id_ed25519
-output/
+!.env.example
+!.env.sample
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Node dependencies and build output
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+coverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
