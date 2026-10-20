@@ -515,3 +515,14 @@ findings and history.
 If report and state disagree, trust current code reading and current evidence,
 then update state or record coverage debt. Do not silently let either artifact
 paper over the mismatch.
+
+## Optional External Dependency Scan State
+
+When dependency review selects an installed `dependency-sca` capability, retain
+`sca-context.json` for the current `run_id` and target. It carries provider,
+namespace/project, scan ID when available, timestamps, input paths and hashes,
+terminal status, limitations, and artifact references. Raw and normalized
+artifacts are external evidence, not canonical confirmed findings. Recheck input
+hashes before using them after source changes. Failed, partial, unavailable, or
+unsupported scans become explicit dependency limitations; no provider means
+`not_configured` and full local review. Credential values never enter this state.

@@ -1,6 +1,6 @@
 # Security Code Audit
 
-Current release: `v4.1.0`
+Current release: `v4.2.0`
 
 A code security audit skill for web/API, service, smart-contract, deployment, CI,
 and instruction-bearing repositories. Chinese documentation: [README-CN.md](README-CN.md).
@@ -26,7 +26,7 @@ Optional `multi` execution requires explicit selection and host support.
 - Safe local execution boundaries, fresh verification, and stable coverage identity
 - Application and contract authorization, state, integration, and settlement review
 - Persistent audit state, report rendering, history comparison, and remediation worktrees
-- Provider-independent requirement context after architecture/change reconnaissance
+- Provider-independent requirement context and optional dependency-sca plugin routing after recon
 
 Reports and state live in the running directory's `output/` using the
 `security-code-audit-` prefix. See [SKILL.md](SKILL.md) for the execution contract.

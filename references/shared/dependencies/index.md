@@ -17,7 +17,7 @@ Load this directory whenever the repo contains any of:
 2. Load the matching ecosystem file(s) from this directory.
 3. Before invoking native, external, or repo-configured audit tools, load `references/shared/tooling/command-resolution.md`, inspect safe repo scripts, probe the installed tool, and read current help so command names and flags come from the environment rather than memory.
 4. Run the strongest native or repo-configured audit path that the ecosystem file recommends and command resolution confirms.
-5. If results come from an external scanner, also load `references/shared/dependencies/sca-integration.md`.
+5. After recon, invoke enabled installed `dependency-sca` plugins against the current target, preserving project identity and `sca-context.json` terminal status before coverage closes. If results come from an external scanner, also load `references/shared/dependencies/sca-integration.md`.
 6. Triage direct vs transitive, runtime vs dev-only, reachable vs unreachable, and base-image or vendored exposure.
 7. Cross-reference dependency findings with code findings before final severity decisions.
 

@@ -58,5 +58,6 @@ temp/
 *.bak
 output/
 
-# Public distribution: provider implementation stays internal
+# Public distribution: provider implementations stay internal
 /plugins/onyx/
+/plugins/sca/
