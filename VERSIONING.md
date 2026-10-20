@@ -3,7 +3,7 @@
 The skill version tracks how much the audit framework itself changed, not the target project's risk level.
 
 Current version:
-- `4.1.0`
+- `4.2.0`
 
 Version format:
 - `MAJOR.MINOR.PATCH`

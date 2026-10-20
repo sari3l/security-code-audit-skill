@@ -21,6 +21,15 @@ wrappers, deployment commands, or hooks merely to inspect a repository. Do not
 contact deployed endpoints, provider APIs, shared queues, registries, paid
 services, production identities, or another user's data.
 
+## Trusted connector network access
+
+The target-execution sandbox above applies to target-controlled code. Trusted
+installed requirements/SCA connectors may use a user-configured HTTPS service
+and its dedicated credential within their declared capability. They may read
+bounded dependency manifests or approved context without executing target code.
+Never forward credentials to target commands, follow target-supplied endpoints,
+or treat connector access as permission to run package scripts with network.
+
 ## Evidence promotion
 
 Scratch output is target-controlled and cannot support a final finding by

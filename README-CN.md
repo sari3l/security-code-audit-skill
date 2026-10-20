@@ -2,7 +2,7 @@
 
 `security-code-audit` 用来检查代码仓库里的安全风险，适用于 Web/API、后端、全栈应用、配置与依赖、代码型文档 artifact，以及 Solidity 智能合约。
 
-当前版本：`4.1.0`
+当前版本：`4.2.0`
 
 ## 意义
 
@@ -153,6 +153,8 @@
 因此需求查询是 Code Audit Stage 2 的内置步骤，由已配置的需求插件提供 connector 能力。
 
 `security-code-audit` 在自己的 `plugins/` 中定义扩展协议。每个 `plugins/<id>/` 都通过 `plugin.json` 声明 capability、MCP/Skill/Web 入口、配置和生命周期；审计用 `tools/audit_plugin_check.py` 验证随包插件，而不扫描被审计仓库的插件目录。
+
+依赖识别后会按 capability 调用已安装的 `dependency-sca` 插件，绑定当前项目并保留输入 hash 与扫描状态；远端结果经过本地核对后才进入漏洞验证流程。
 
 插件实现按发行范围提供。公开版本保留通用协议、schema 和校验工具；内部版本可附带需求提供方。没有可用 provider 时，记录 `not_configured` 后继续完整代码审计。
 

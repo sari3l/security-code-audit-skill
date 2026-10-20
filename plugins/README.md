@@ -87,3 +87,11 @@ For `requirements-context`, invocation is automatic after Code Audit resolves th
 ## Web Entries
 
 `web` names the HTML source served by the plugin's MCP server. The corresponding MCP tool must advertise a `ui://` resource and `text/html;profile=mcp-app`; the file path alone does not make the UI executable.
+
+
+For `dependency-sca`, invocation follows dependency recon and precedes coverage
+verification. Derive project identity from the current scan target, retain
+current-run status and input hashes, and reconcile remote advisories with local
+manifests and reachability. A skill-based CLI adapter is supported without MCP;
+no provider is required by the public framework. Follow
+`references/shared/dependencies/sca-integration.md` from the skill root.

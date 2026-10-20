@@ -151,6 +151,7 @@ Route references by detected need:
   Load before the mandatory bundled dangerous-capability seed/state/report gates or when interpreting other assurance output. Missing mandatory gate output blocks complete coverage; absence of any normalized signal never proves safety and unknown signals remain routable observations.
 
 - dependency ecosystem modules
+  When current manifests exist, select enabled installed `dependency-sca` plugins after recon, load their trusted skill entry and `references/shared/dependencies/sca-integration.md`, and record current-run status before coverage verification. No provider or failed remote matching never removes local dependency review.
   Load only for ecosystems actually present in the repo.
 
 - `references/application/exploits/index.md`

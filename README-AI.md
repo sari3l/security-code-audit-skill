@@ -337,3 +337,8 @@ implementations and marketplace entries. Keep provider-specific tests inside the
 provider directory. Run shared tests against both editions before synchronizing.
 Do not replace newer uncommitted features with an older release merely because
 it has the higher version number; reconcile behavior and retain recoverable backups.
+
+Internal dependency scanners belong under `plugins/<id>/` and are selected by
+`dependency-sca`; keep their organization endpoint, authentication helper, tests,
+and marketplace registration out of the public edition. Shared routing and SCA
+normalization requirements remain provider independent in both editions.

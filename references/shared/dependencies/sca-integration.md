@@ -41,9 +41,33 @@ Every dependency finding sourced from SCA should still include:
 - the package path or dependency chain if available
 - the minimal upgrade, removal, or pinning action
 
-## Future Outbound Fetching
+## Installed Dependency Plugins
 
-If this skill later gains outbound SCA access:
+After architecture/change recon, select enabled `dependency-sca` plugins from
+this skill's validated registry. Load the selected trusted skill entry; never
+execute target-repository plugins, scanner wrappers, or package scripts. A CLI
+skill entry is sufficient when it provides project-scoped scan submission,
+polling, and machine-readable results. MCP is optional.
+
+Bind the project to the current target's namespace/project, preferably its Git
+origin. An explicit user override wins; never silently use a global/default
+project left over from another scan. Record `sca-context.json` with `run_id`,
+target, provider, project, timestamps, input hashes, exact terminal status, and
+references to this run's raw and normalized artifacts. No configured provider
+records `not_configured` and continues local review. Only a current successful
+scan supports an SCA result; missing authentication, unsupported inputs, parser
+warnings, timeouts, partial, failed, or stale-source results preserve limitations
+and dependency coverage debt. A zero-finding response proves only the scanner's
+matching result for the submitted inputs.
+
+Remote findings start as candidates. Input-file provenance is not an exact
+package-to-manifest mapping; preserve unknown scope, dependency path, directness,
+and reachability until local inspection resolves them. Never write remote
+candidates directly into canonical confirmed findings or bypass verification.
+
+## Outbound Fetching
+
+When the user configures an outbound SCA connector:
 - prefer the repo's primary SCA source over multiple overlapping feeds
 - fetch only the current project or image scope
 - keep raw scanner output as an artifact, but summarize normalized findings in the report
