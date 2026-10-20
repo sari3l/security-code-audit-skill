@@ -80,6 +80,13 @@ structured Markdown objects. For code blocks, prefer:
 - `evidence_chain` is required for every confirmed finding. It must contain the
   source or entry point, propagation or missing control, sink or state
   transition, and impact signal.
+- For smart-contract findings, the evidence chain must also identify the
+  caller/role, attacker-controlled token/recipient/spender/route/amount, the
+  authorization result, the relevant state key, any delegatecall/CPI/adapter or
+  callback semantics, the actual balance or authority delta, and the violated
+  invariant. If one of these depends on an external deployment or solver, keep
+  the assumption as a proof obligation or coverage debt instead of filling the
+  gap with a mock or function name.
 - Keep reproduction and evidence fields as readable Markdown. Do not collapse
   PoC, evidence, minimal fixes, or multi-step chains into one long string when
   code fences, numbered steps, or an attack-flow diagram would preserve intent.

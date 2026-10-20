@@ -37,11 +37,11 @@ def valid_context(*, status="not_configured"):
         },
     }
     if status == "available":
-        context["connector_statuses"] = [{"connector_id": "onyx", "status": "available"}]
+        context["connector_statuses"] = [{"connector_id": "sample-requirements", "status": "available"}]
         context["documents"] = [
             {
                 "id": "doc-482",
-                "connector_id": "onyx",
+                "connector_id": "sample-requirements",
                 "title": "SEC-482 refund approval",
                 "url": "https://requirements.example.test/doc-482",
                 "document_status": "approved",
@@ -82,8 +82,8 @@ class RequirementContextStateTests(unittest.TestCase):
     def test_active_connector_statuses_must_be_unique_and_terminal(self):
         payload = valid_context(status="available")
         payload["connector_statuses"] = [
-            {"connector_id": "onyx", "status": "running"},
-            {"connector_id": "onyx", "status": "available"},
+            {"connector_id": "sample-requirements", "status": "running"},
+            {"connector_id": "sample-requirements", "status": "available"},
         ]
         codes = {issue.code for issue in self.check_payload(payload)}
         self.assertIn("REQCTX013", codes)
@@ -91,7 +91,7 @@ class RequirementContextStateTests(unittest.TestCase):
 
         payload = valid_context()
         payload["status"] = "missing_auth"
-        payload["connector_statuses"] = [{"connector_id": "onyx", "status": "available"}]
+        payload["connector_statuses"] = [{"connector_id": "sample-requirements", "status": "available"}]
         self.assertIn("REQCTX034", {issue.code for issue in self.check_payload(payload)})
 
     def test_privacy_flags_credentials_and_raw_payloads_are_rejected(self):

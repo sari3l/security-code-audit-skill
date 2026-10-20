@@ -85,6 +85,8 @@ Examples:
 - `REPORT010` candidate in Findings: move it to Candidate Signals or add missing evidence before confirming.
 - `REPORT030` missing canonical finding field: render from `output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-findings.jsonl` or add the missing schema-backed Markdown field.
 - `REPORT032` unstable display ID: sort canonical findings by severity rank, category/surface, and fingerprint, then number within severity.
+- `REPORT050` confirmed finding has no verifier ledger while a run-state directory is being checked.
+- `STATE044` coverage ID does not match its canonical dimensions; `STATE045` duplicate coverage ID; `STATE053` confirmed verification lacks verifier independence.
 
 ---
 

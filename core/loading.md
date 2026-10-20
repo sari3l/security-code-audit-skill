@@ -9,7 +9,9 @@ Do not bulk-load the whole skill tree. Load only the modules required by the cur
 Always load only these first:
 - `core/index.md`
 - `core/loading.md`
+- `core/execution-safety.md`
 - `execution/index.md`
+- `execution/verification.md`
 - exactly one execution file
 - `modes/index.md`
 - exactly one mode file
@@ -72,6 +74,14 @@ Load core modules only when their controls are actively needed:
 
 - `core/dangerous-capability-census.md`
   Load in every mode after current-file recon and before Phase 2 category review, hypothesis pruning, or false-positive suppression. Run its cheap whole-repository sentinel census even in incremental quick mode.
+- `core/exploration-and-evidence.md`
+  Load before Phase 2 hypothesis generation and again before coverage/report closure. It permits security-relevant exploration beyond the routed modules while requiring branch reasons, disconfirmation, and evidence-chain closure.
+
+- `core/execution-safety.md`
+  Load before any target-controlled local execution, artifact promotion, or sandbox-dependent PoC. If the required controls are unavailable, preserve the blocker and do not execute target code.
+
+- `execution/verification.md`
+  Load before candidate validation, final record verification, or coverage-critic passes. It defines fresh-verifier independence and the structured verification ledger.
 
 - `core/deep-semantic-controls.md`
   Load in `deep` mode before high-risk surface review begins, and in beta `multi` before assigning workers to semantic review. Also load in `quick` or `standard` when a high-risk surface is unusually complex, prior coverage debt cites semantic ambiguity, or the finding depends on dependency behavior, deployment assumptions, design/implementation conflicts, or proof obligations that must survive context compression.
@@ -177,6 +187,7 @@ After recon, route modules from the surface profile instead of generic intuition
 - OpenAPI, Swagger, Postman, Insomnia, GraphQL schema, AsyncAPI, or environment collections -> `references/shared/artifacts/index.md`, `references/shared/artifacts/api-specs.md`, and the matching API/authz/data-exposure modules
 - `.ipynb` notebooks, saved outputs, notebook shell escapes, or analyst runbooks -> `references/shared/artifacts/index.md`, `references/shared/artifacts/notebooks.md`, `references/application/vulnerabilities/sensitive-hardcoding.md`, and `references/application/vulnerabilities/data-exposure.md`
 - `.sol`, Foundry, Hardhat, proxy, oracle, permit, or on-chain accounting surfaces -> `references/smart-contract/index.md`, `references/smart-contract/languages/index.md`, `references/smart-contract/languages/solidity.md`, the matching `references/smart-contract/vulnerabilities/*.md` deep-dive files, and `references/smart-contract/exploits/index.md` when validation is needed
+- role, allowance, spender, recipient, strategy, adapter, solver, registry/CPI, delegatecall, remove-token, quarantine, settlement, intent, cooldown, rate-limit, or cross-contract asset-flow surfaces -> `references/smart-contract/vulnerabilities/authorization-and-integration.md` plus the matching trust, accounting, external-call, signature, and oracle modules
 - AI prompt or tool surface -> `references/application/vulnerabilities/injection.md`, `references/application/vulnerabilities/prompt-injection.md`, and the exact downstream sink-family modules
 
 ## Reload Rules

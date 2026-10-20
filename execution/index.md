@@ -32,7 +32,8 @@ Execution mode is a separate dimension from scan depth:
 4. Load exactly one execution file:
    - `execution/single-agent.md`
    - `execution/multi-agent.md`
-5. If execution mode is `multi`, also load:
+5. Load `execution/verification.md` whenever the run can emit candidates or confirmed findings.
+6. If execution mode is `multi`, also load:
    - `execution/sharding.md`
    - `execution/worker-contract.md`
    - `execution/merge.md`

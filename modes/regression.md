@@ -20,6 +20,7 @@ If no usable recent report exists, stop immediately with a concise note instead 
 ## Required Load
 
 - `core/dangerous-capability-census.md`
+- `core/exploration-and-evidence.md`
 - `references/shared/reporting/index.md`
 - `references/shared/reporting/history-standard.md`
 - `references/shared/reporting/regression-standard.md`
@@ -38,6 +39,7 @@ Required:
 - extract the prior finding set and their fingerprints
 - map only the files, routes, helpers, configs, and trust boundaries needed to retest those findings
 - run the dangerous-capability census across those retest targets and affected consumers only, recording `scope: regression_targets` rather than whole-repository coverage
+- follow evidence-relevant sibling and integration branches from those retest targets only, and record the scoped branch decisions in `exploration-ledger.jsonl`
 - reopen the current deployment or integration path when auth, exposure, or reachability depends on a host app, reverse proxy, mount prefix, or internal-only network boundary
 - detect legacy split-layout state where the baseline report is in `output/`
   but intermediate records are in `.security-code-audit-state/`; record

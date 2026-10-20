@@ -41,6 +41,9 @@ Finding controls consume the flexible evidence envelope from audit state. An `ev
 - Treat `evidence-observations.jsonl` records as pre-promotion evidence. Route each material observation to a confirmed finding, candidate signal, negative evidence, coverage debt, working hypothesis, integration assumption, supplemental note, or skill optimization suggestion.
 - Use `Confirmed` for issues with enough code, exploitability, and impact evidence to enter the main findings list.
 - Use `Candidate` for high-signal suspicious cases that still lack sufficient proof.
+- Every candidate that may become `Confirmed` needs an independent fresh verifier. A second pass by the discovering agent is a `fresh_pass` only when the candidate evidence is discarded and the source is reread from scratch; it cannot satisfy the high-assurance requirement for Critical or High findings when no independent verifier is available.
+- Preserve verifier provenance (`verifier_id`, decision, source recheck, local-check boundary, and evidence refs) in `verification-ledger.jsonl` when verification is material. Do not add verifier prose directly to the finding as a substitute for structured provenance.
+- Map external `needs_validation` records to our `Candidate Signals`, `Working Hypotheses`, or `Coverage Debt` sections according to the missing fact; map external `rejected` records to negative evidence. Keep `High-Risk Dangerous Capability Alerts` separate because reachable dangerous execution is report-visible even when direct exploitability is unresolved.
 - Do not let `Candidate` entries appear in the main findings list.
 - Apply `references/shared/reporting/evidence-standard.md` before promoting a suspicious case to `Confirmed`.
 - Use `Working Hypotheses` for broader unresolved models such as attack chains, shared vulnerable helpers, or trust-boundary assumptions that are not yet precise enough to be written as a localized candidate finding.

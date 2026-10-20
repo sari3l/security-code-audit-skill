@@ -3,7 +3,7 @@
 The skill version tracks how much the audit framework itself changed, not the target project's risk level.
 
 Current version:
-- `4.0.0`
+- `4.1.0`
 
 Version format:
 - `MAJOR.MINOR.PATCH`
@@ -33,6 +33,7 @@ Examples:
 - adding or revising a framework or language reference file
 - adding a reporting standard file within an existing directory
 - changing report fields in a backward-compatible way
+- adding backward-compatible coverage identity or independent verification controls
 
 Reset `PATCH` to `0` when bumping `MINOR`.
 

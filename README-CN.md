@@ -2,7 +2,7 @@
 
 `security-code-audit` 用来检查代码仓库里的安全风险，适用于 Web/API、后端、全栈应用、配置与依赖、代码型文档 artifact，以及 Solidity 智能合约。
 
-当前版本：`4.0.0`
+当前版本：`4.1.0`
 
 ## 意义
 
@@ -16,6 +16,8 @@
 - 依赖、配置、CI、API spec、notebook、markdown/prompt artifact 是否引入额外风险
 - 智能合约里有没有重入、权限、升级、签名、预言机、精度、会计或状态机问题
 - source/sink、source/state、信任边界和部署假设是否能闭环证明
+- LLM 是否能沿着新发现的调用者、兄弟 helper 和外部集成继续探索，并把分支与反证留下可审计记录
+- 智能合约的角色权限是否真正约束到 token、spender、recipient、route、amount、结算语义和状态键
 - 修复是否真的挡住原攻击路径，而不是只改掉表面现象
 - 哪些审计面已经覆盖，哪些只是 partial、blocked、time-boxed 或需要后续补证
 
@@ -40,6 +42,10 @@
 ```
 
 报告、canonical findings JSONL 和 state bundle 都放在运行目录的 `output/` 下，并且文件名包含 `security-code-audit-` 前缀、真实本地时间戳和短 hash，避免和 `output/` 里的其他报告混在一起，也避免多次运行互相覆盖。`output/` 是审计产物目录，不应当被当作被审计项目自身的业务代码。
+
+- 新 coverage 单元可使用 `coverage_id` 与 `canonical_refs` 建立跨 agent、跨运行的稳定身份；状态 gate 会校验 ID 与维度是否一致。
+- 需要执行目标代码时必须满足无外网、清空环境、目标只读、scratch-only 写入和资源限制；否则保留为需要验证的证据，不把失败执行当成安全证明。
+- `standard`/`deep` 的确认漏洞要经过独立 verifier；多 agent 运行还要在每轮 hunting 后经过 coverage critic。
 
 ## 使用步骤
 
@@ -142,34 +148,15 @@
 3. service、component、actor、role、business flow、invariant 和 trust boundary
 4. branch、commit subject/body 和 changed path
 
-用户不需要另外输入 `merge_requests/1412`。当用户只说“审计此次更新”或“全量审计”时，Code Audit 会先确定审计范围并读取 Git/MR 历史，然后自动调用已启用且已认证的 `requirements-context` plugin。若审计范围或本地 Git 元数据中已有 `panacea-backend/merge_requests/1412`、`MR1412` 或 `!1412`，会自动归一化并查询；若没有 MR 编号，则使用 repository、HEAD commit、source branch、commit prose 和代码/架构语义让 Onyx 反查对应变更。返回结果仍需通过项目/MR 路径或其他当前代码证据回验。
+用户不需要另外输入 `merge_requests/1412`。当用户只说“审计此次更新”或“全量审计”时，Code Audit 会先确定审计范围并读取 Git/MR 历史，然后自动调用已启用且已认证的 `requirements-context` plugin。若审计范围或本地 Git 元数据中已有 `panacea-backend/merge_requests/1412`、`MR1412` 或 `!1412`，会自动归一化并查询；若没有 MR 编号，则使用 repository、HEAD commit、source branch、commit prose 和代码/架构语义让已配置的需求连接器反查对应变更。返回结果仍需通过项目/MR 路径或其他当前代码证据回验。
 
-因此需求查询是 Code Audit Stage 2 的内置步骤，不是用户单独调用 Onyx Skill 的步骤；Onyx plugin 只提供通用 connector 能力。
+因此需求查询是 Code Audit Stage 2 的内置步骤，由已配置的需求插件提供 connector 能力。
 
 `security-code-audit` 在自己的 `plugins/` 中定义扩展协议。每个 `plugins/<id>/` 都通过 `plugin.json` 声明 capability、MCP/Skill/Web 入口、配置和生命周期；审计用 `tools/audit_plugin_check.py` 验证随包插件，而不扫描被审计仓库的插件目录。
 
-当前提供 `plugins/onyx/`，它声明 `requirements-context` capability。仓库中的 `config.json` 只包含禁用的 `https://onyx.example.com/mcp` 示例地址，不保存组织内部 endpoint。使用时创建用户自己的 `onyx.json`，并在启动 Codex 前让 `ONYX_AUDIT_CONFIG` 指向它的绝对路径：
+插件实现按发行范围提供。公开版本保留通用协议、schema 和校验工具；内部版本可附带需求提供方。没有可用 provider 时，记录 `not_configured` 后继续完整代码审计。
 
-```json
-{
-  "url": "https://your-onyx-host.example/mcp",
-  "enabled": true
-}
-```
-
-```bash
-export ONYX_AUDIT_CONFIG="$HOME/.config/security-code-audit/plugins/onyx.json"
-export ONYX_AUDIT_TOKEN='<temporary audit token>'
-codex
-```
-
-如果 discovery 没有检测到 token，当前审计会记录 `missing_auth`，跳过 Git 需求锚点和全部 Onyx search/fetch/render 调用，然后继续代码审计，不会尝试远端连接。
-
-用户 JSON 位于插件外，修改 endpoint 不需要编辑安装缓存或重新安装插件。环境变量必须在启动 Codex 前设置。
-
-token 不应写入聊天、插件配置、工具参数、Web UI、audit state、日志或报告。Onyx 不可用、token 缺失、工具名不匹配或没有命中时，审计会在 `requirements-context.json` 中记录准确状态并继续，不能因此缩小代码审计范围。
-
-Code Audit Plugin 规范见 `plugins/README.md`；Onyx 的安装、默认配置、用户 JSON、验证步骤、MCP tools 和状态说明见 `plugins/onyx/README.md`。每个 Code Audit Plugin 都必须提供自己的 `README.md`。
+插件的安装、配置、环境变量和验证方法由各自的 `plugins/<id>/README.md` 说明；通用协议见 [plugins/README.md](plugins/README.md)。
 
 ## 注意事项
 

@@ -327,3 +327,13 @@ Before finishing a change:
 - Required audit behavior belongs in `SKILL.md` or delivered subdirectory files.
 - `State reader` is a conceptual operation for reading prior state and summarizing freshness / invalidation, continuation / open obligations, and coverage / merge hints. Do not add a `state-reader` file, schema, service, or platform component unless the runtime design explicitly changes.
 - Historical misses, schema gaps, coverage debt, and `Skill Optimization Suggestions` are out-of-band skill-improvement signals for humans and future AI maintainers. They are not an automatic learning platform or a reason to mutate rules during an audit.
+
+## Distribution Boundary
+
+Maintain one shared runtime across the Skills, RockBund, and GitHub checkouts.
+The public GitHub distribution includes `plugins/README.md`, `plugin.schema.json`,
+and `tools/audit_plugin_check.py`, but excludes organization-specific provider
+implementations and marketplace entries. Keep provider-specific tests inside the
+provider directory. Run shared tests against both editions before synchronizing.
+Do not replace newer uncommitted features with an older release merely because
+it has the higher version number; reconcile behavior and retain recoverable backups.

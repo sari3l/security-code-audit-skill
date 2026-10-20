@@ -49,8 +49,34 @@ def check_report(
             )
         )
     confirmed_findings = _section_any(text, ("已确认漏洞", "Confirmed Findings")) or findings
+    parsed_confirmed = parse_markdown_findings(confirmed_findings) if confirmed_findings else []
     if confirmed_findings:
         issues.extend(_check_confirmed_findings(confirmed_findings))
+    if run_dir is not None and parsed_confirmed:
+        verification_path = run_dir / "verification-ledger.jsonl"
+        if not verification_path.exists():
+            issues.append(
+                Issue(
+                    "REPORT050",
+                    "confirmed findings require verification-ledger.jsonl when a run-state directory is provided",
+                    file=str(verification_path),
+                )
+            )
+        else:
+            verified = {
+                row.get("candidate_fingerprint")
+                for row in read_jsonl(verification_path)
+                if row.get("decision") == "confirmed"
+                and row.get("stage") == "final_record"
+                and row.get("independence") in {"fresh_agent", "fresh_pass"}
+                and row.get("source_rechecked") is True
+                and row.get("blockers") == []
+                and isinstance(row.get("candidate_fingerprint"), str)
+            }
+            for finding in parsed_confirmed:
+                fingerprint = (_field_value(finding.fields, "fingerprint") or "").strip().strip("`")
+                if not fingerprint or fingerprint not in verified:
+                    issues.append(Issue("REPORT051", "confirmed finding lacks a matching completed final verification", record_id=fingerprint or finding.title))
     if findings and re.search(r"\b(tool_output|schema_gap|raw_observation)\b", findings, re.IGNORECASE):
         issues.append(
             Issue(

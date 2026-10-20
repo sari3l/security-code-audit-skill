@@ -25,6 +25,12 @@ If the host does not support sub-agents or delegation:
   Broad review of an explicitly owned service, route family, subsystem, or audit surface.
 - `validator`
   Validates high-signal findings, attack paths, bypasses, and cross-shard chain steps.
+- `coverage-critic`
+  Freshly checks the complete coverage ledger after a hunter wave and proposes only source-backed missing or reassigned units.
+- `candidate-verifier`
+  Attempts to disprove one candidate without receiving another verifier's conclusion.
+- `record-verifier`
+  Rechecks each retained confirmed or needs-validation record before final reporting.
 
 Optional specialized roles:
 - `shared-surface-auditor`
@@ -44,6 +50,8 @@ Optional specialized roles:
 - every worker must preserve mergeable code fact deltas and evidence observation deltas for its owned scope, including unfamiliar observations that require `custom:*`, `schema_gap`, or `unstructured_hypothesis` labels
 - when `deep` mode or a high-risk semantic surface is in scope, every worker must also emit mergeable deep gate deltas covering gate status, dependency semantics, design/implementation conflicts, proof obligations, semantic assumptions, evidence refs, negative evidence, and any required coverage debt
 - all worker output must be normalized through `core/findings.md` and `core/severity.md`
+- candidate and record verifiers must follow `execution/verification.md`; the discovering worker cannot verify its own candidate
+- target-controlled local execution must follow `core/execution-safety.md`; missing controls become explicit blockers
 - all history matching and dedupe must pass through `core/fingerprints.md`
 - in `quick`, `standard`, and `deep`, the `supervisor` must treat history as deferred post-scan comparison only; do not read prior report details before recon, current-code scanning, and worker kickoff are already underway
 - in `quick`, `standard`, and `deep`, kickoff commentary must not say that workers will start after reading history "for background" or any equivalent pre-scan framing

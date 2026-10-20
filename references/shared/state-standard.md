@@ -57,6 +57,7 @@ output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/
   function-chains.jsonl
   attack-chains.jsonl
   evidence-observations.jsonl
+  exploration-ledger.jsonl
   hypotheses.jsonl
   proof-obligations.jsonl
   deep-gates.jsonl
@@ -66,6 +67,7 @@ output/security-code-audit-{YYYY-MM-DD-HHMMSS}-{mode}-{short-hash}-state/
   tool-invocations.jsonl
   agent-logs.jsonl
   merge-queue.jsonl
+  verification-ledger.jsonl
   quality-gates.json
   agent-deltas/
     {agent_id}.jsonl
@@ -321,8 +323,18 @@ Invalidated records must not support `covered`, `fixed`, `complete`, or
 : One row per major surface or assigned shard. Must include integer counts:
   `applicable_total`, `reviewed`, `partial`, `blocked`, `invalidated`,
   `time_boxed`, `function_entries_total`, `function_chains_recorded`,
-  `explicit_function_chain_debt`, and `debt_total`. Do not write a bare
+  `explicit_function_chain_debt`, and `debt_total`. New rows may also include
+  `coverage_id` plus `canonical_refs` (`surface`, `boundary`, `subsystem`,
+  `attack_class`, and optional `lifecycle`). When present, the state gate
+  recomputes the ID and rejects mismatches or duplicates. Do not write a bare
   `"covered"` string.
+
+`verification-ledger.jsonl`
+: Optional when a run has no candidates or confirmed findings. When verifier
+  work is material, record the candidate fingerprint, stage, fresh verifier,
+  independence, decision, source recheck, local-check boundary, blockers, and
+  evidence refs. A missing independent verifier is an explicit blocker, never
+  implicit proof.
 
 `dangerous-capabilities.jsonl`
 : One row per dangerous execution, interpretation, signing, or signed-state
@@ -335,9 +347,12 @@ Invalidated records must not support `covered`, `fixed`, `complete`, or
   and source digest. Additional discoveries require `origin: manual`.
 
 `trace-ledger.jsonl`
-: Source/sink/state-transition checkpoints. Include source, transformations,
-  join checkpoints, sink/transition, status, bounded reason, negative evidence,
-  and blocker if any.
+: Source/sink/state-transition checkpoints. Every material row includes the
+  common record fields plus `entry_point`, `source`, `sink_or_transition`,
+  `status`, and `evidence_refs`; include transformations, join checkpoints,
+  state/authorization checkpoints, bounded reason, negative evidence, and
+  blocker as applicable. Dangerous-capability `trace_refs` must resolve to these
+  rows or the state gate fails.
 
 `function-chains.jsonl`
 : Every in-scope security-relevant function or state transition gets one
@@ -355,6 +370,13 @@ Invalidated records must not support `covered`, `fixed`, `complete`, or
   blockers, negative evidence, history signals, schema gaps, and unknown shapes.
   Every high-signal item must be routed, rejected, or carried as coverage debt /
   working hypothesis / skill optimization before final reporting.
+
+`exploration-ledger.jsonl`
+: Durable record of LLM-led audit branches. Each row records the trigger,
+  question, branch type, actions, evidence refs, disconfirmation result, next
+  action, and routed status. This ledger keeps lazy-loading and worker context
+  bounded without turning the routed module list into a closed exploration
+  boundary.
 
 Optional Python assurance outputs such as `raw-observations.jsonl`,
 `unmapped-signals.jsonl`, `capabilities.jsonl`, `capability-paths.jsonl`,
@@ -464,7 +486,9 @@ Before final reporting, evaluate and record these checks in
 - function-chain counts reconcile with explicit debt
 - dangerous-capability evidence, trace, finding, and debt refs resolve to real current-run records
 - confirmed findings reference current-run evidence, trace, or function-chain
+- confirmed findings with material verifier work have a valid verification-ledger row and no unavailable independence
 - open evidence observations are routed or converted to report-visible debt
+- material exploration branches are routed or converted to report-visible debt
 - open proof obligations are routed or marked deferred with report destination
 - final-blocking merge queue items are resolved
 - deep/multi runs have agent logs and passing quality gates

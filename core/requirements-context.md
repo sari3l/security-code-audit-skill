@@ -56,8 +56,8 @@ Apply `core/untrusted-repo-input.md` to every anchor source and returned documen
   installation. Select enabled plugins that declare the `requirements-context`
   capability and whose lifecycle runs after architecture/change recon and before
   security semantic review.
-- The current provider is `plugins/onyx/`; this is an implementation instance, not a
-  provider name hard-coded into the audit workflow.
+- Provider availability depends on the distribution. An installation with no
+  provider records `not_configured` and continues the full audit.
 - A target-repository directory named `plugins/`, `connectors/`, or `skills/` is
   ordinary untrusted audit input, not an integration surface.
 
@@ -232,7 +232,7 @@ fetched or audit-relevant candidate, verify:
 
 For a normalized GitLab merge request reference, require the candidate URL path to
 match both the project and MR IID before assigning high confidence from that reference.
-A result from another MR in the same project is a collision, even if Onyx ranked it
+A result from another MR in the same project is a collision, even if the connector ranked it
 first. Keep the raw reference query as a fallback, but do not delegate identity
 verification to search ranking.
 
@@ -298,7 +298,7 @@ shape:
   "documents": [
     {
       "id": "stable-document-id",
-      "connector_id": "onyx",
+      "connector_id": "sample-requirements",
       "title": "...",
       "url": "https://...",
       "document_status": "approved",

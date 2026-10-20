@@ -62,8 +62,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("never execute target-repository connectors", combined)
         self.assertIn("never reduces audit scope", combined)
         requirement_controls = documents["core/requirements-context.md"]
-        plugin_skill = read_doc("plugins/onyx/skills/audit-requirements-context/SKILL.md")
-        for document in (requirement_controls, plugin_skill):
+        for document in (requirement_controls,):
             self.assertIn("auth.configured: true", document)
             self.assertIn("missing_auth", document)
             self.assertIn("do not call", document.lower())
@@ -74,7 +73,7 @@ class SkillContractTests(unittest.TestCase):
 
     def test_requirement_context_release_version_is_consistent(self):
         for path in ("SKILL.md", "README.md", "VERSIONING.md"):
-            self.assertIn("4.0.0", read_doc(path), path)
+            self.assertIn("4.1.0", read_doc(path), path)
 
     def test_auto_fix_requires_isolation_and_separate_final_acceptance(self):
         documents = {
@@ -105,7 +104,7 @@ class SkillContractTests(unittest.TestCase):
     def test_default_mode_is_deep_and_core_skill_stays_compact(self):
         skill = read_doc("SKILL.md")
         modes = read_doc("modes/index.md")
-        readme = read_doc("README.md")
+        readme = read_doc("README-CN.md")
 
         self.assertLessEqual(len(skill.splitlines()), 500)
         self.assertIn("none / `deep`", skill)
@@ -137,7 +136,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("independent C2 finding", hardcoding_rules)
 
     def test_readme_uses_agent_neutral_usage_heading(self):
-        readme = read_doc("README.md")
+        readme = read_doc("README-CN.md")
 
         self.assertNotIn("在 Codex 里使用", readme)
         self.assertIn("在Agent里使用", readme)
@@ -190,6 +189,83 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("legacy_split_state_detected", combined)
         self.assertIn("must not write", combined)
         self.assertIn("regression", combined)
+
+
+    def test_exploration_is_open_but_durable_and_evidence_closes(self):
+        paths = [
+            "SKILL.md",
+            "core/exploration-and-evidence.md",
+            "core/coverage.md",
+            "references/shared/state-standard.md",
+            "modes/quick.md",
+            "modes/standard.md",
+            "modes/deep.md",
+            "modes/regression.md",
+        ]
+        combined = "\n".join(read_doc(path) for path in paths)
+
+        self.assertIn("exploration-ledger.jsonl", combined)
+        self.assertIn("not a closed boundary", combined)
+        self.assertIn("disconfirmation", combined)
+        self.assertIn("entry/caller", combined)
+        self.assertIn("external semantics", combined)
+
+    def test_contract_coverage_expands_authorization_and_integration_surfaces(self):
+        coverage = read_doc("references/smart-contract/vulnerabilities/coverage.md")
+        module = read_doc(
+            "references/smart-contract/vulnerabilities/authorization-and-integration.md"
+        )
+        skill = read_doc("SKILL.md")
+
+        for needle in (
+            "Authorization And Asset Flow",
+            "Cross-Contract Integration And Settlement",
+            "State Keying, Limits And Replay",
+        ):
+            self.assertIn(needle, coverage)
+            self.assertIn(needle, skill)
+        self.assertIn("Capability-to-Asset", module)
+        self.assertIn("gross or net", module)
+        self.assertIn("spender", module)
+        self.assertIn("actual balance deltas", module)
+
+    def test_contract_context_ordering_and_lifecycle_rules_are_explicit(self):
+        module = read_doc("references/smart-contract/vulnerabilities/authorization-and-integration.md")
+        calls = read_doc("references/smart-contract/vulnerabilities/external-calls-and-reentrancy.md")
+        coverage = read_doc("references/smart-contract/vulnerabilities/coverage.md")
+        state = read_doc("references/shared/state-standard.md")
+
+        for needle in ("delegatecall", "execution context", "CPI", "is_supported", "stale"):
+            self.assertIn(needle, module)
+        self.assertIn("pre-call state snapshot", calls)
+        self.assertIn("post-call state write", calls)
+        self.assertIn("Execution Context And Capability Lifecycle", coverage)
+        self.assertIn("trace_refs", state)
+        self.assertIn("state gate fails", state)
+        self.assertIn("approveRestrictively", module)
+        self.assertIn("caller/role", read_doc("references/shared/reporting/finding-detail-standard.md"))
+
+    def test_execution_safety_and_independent_verification_are_routed(self):
+        paths = [
+            "SKILL.md",
+            "core/loading.md",
+            "core/execution-safety.md",
+            "execution/index.md",
+            "execution/single-agent.md",
+            "execution/multi-agent.md",
+            "execution/verification.md",
+            "core/coverage.md",
+            "core/findings.md",
+            "references/shared/state-standard.md",
+        ]
+        combined = "\n".join(read_doc(path) for path in paths)
+
+        self.assertIn("execution-safety.md", combined)
+        self.assertIn("no external network", combined)
+        self.assertIn("coverage_id", combined)
+        self.assertIn("coverage critic", combined)
+        self.assertIn("fresh verifier", combined)
+        self.assertIn("verification-ledger.jsonl", combined)
 
 
 if __name__ == "__main__":

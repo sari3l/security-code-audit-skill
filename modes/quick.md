@@ -33,6 +33,7 @@ Use when:
 ## Required Load
 
 - `core/dangerous-capability-census.md`
+- `core/exploration-and-evidence.md`
 - `references/application/languages/index.md`
 - the active knowledge domain router after recon:
   - `references/application/index.md`
@@ -155,7 +156,7 @@ Use `references/smart-contract/index.md` as the main router in that case.
 
 If the active profile is `artifact-centric`, triage prompt, rendering, trust-boundary, secret, and environment risk first.
 
-If one high-risk pattern is found, search for all materially affected occurrences across the current quick scope before reporting. If the root cause is a changed shared helper or sink family, widen locally enough to cover the affected scope before reporting.
+If one high-risk pattern is found, search for all materially affected occurrences across the current quick scope before reporting. If the root cause is a changed shared helper or sink family, widen locally enough to cover the affected scope before reporting. For contract patterns, fan out to equivalent helpers and integration boundaries in quick scope and record unresolved branches as candidate, hypothesis, or coverage debt.
 
 After the current-code quick pass is complete, perform a deferred history replay:
 - read up to 3 recent reports
@@ -199,6 +200,7 @@ Quick mode is complete when:
 - any `strict incremental` limitation or expansion refusal is recorded when applicable
 - requirement-context processing ran after recon; connector absence or failure is explicit and did not reduce scope
 - material evidence observations are routed to confirmed findings, candidate signals, negative evidence, coverage debt, working hypotheses, or schema-gap suggestions
+- material exploration branches are routed in `exploration-ledger.jsonl` or carried as explicit debt
 - audit state quality gates pass or the report explicitly states partial/blocked quick coverage
 - `tools/audit_state_check.py <state-dir> --target-root <target-root>` passes against current source
 - `tools/report_gate_check.py <report> --run-dir <state-dir> --target-root <target-root>` passes with exact report anchors
