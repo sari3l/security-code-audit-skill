@@ -47,19 +47,15 @@ def make_skill_plugin(root: Path, manifest: dict[str, object] | None = None) -> 
 
 
 class AuditPluginContractTests(unittest.TestCase):
-    def test_bundled_onyx_plugin_satisfies_code_audit_contract(self) -> None:
-        plugins, issues = check_plugins(ROOT / "plugins")
+    def test_bundled_plugin_registry_is_valid(self) -> None:
+        _, issues = check_plugins(ROOT / "plugins")
         self.assertEqual([], [issue.to_dict() for issue in issues])
-        onyx = next(plugin for plugin in plugins if plugin["id"] == "onyx")
-        onyx_config = json.loads(
-            (ROOT / "plugins" / "onyx" / "config.json").read_text(encoding="utf-8")
-        )
-        self.assertEqual(["requirements-context"], onyx["capabilities"])
-        self.assertEqual("https://onyx.example.com/mcp", onyx_config["url"])
-        self.assertFalse(onyx_config["enabled"])
-        self.assertEqual((ROOT / "plugins" / "onyx" / "README.md").resolve(), Path(onyx["readme"]))
-        self.assertEqual("architecture-and-change-recon", onyx["lifecycle"]["after"])
-        self.assertEqual("security-semantic-review", onyx["lifecycle"]["before"])
+
+    def test_framework_supports_no_bundled_providers(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            plugins, issues = check_plugins(Path(temp_dir))
+        self.assertEqual([], plugins)
+        self.assertEqual([], issues)
 
     def test_skill_only_plugin_is_supported(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

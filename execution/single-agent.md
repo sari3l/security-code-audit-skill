@@ -14,6 +14,7 @@ Default execution mode.
 - one agent owns the full audit lifecycle
 - still use `core/` controls for integrity, coverage, findings, and severity
 - do not simulate fake sub-agents in prose
+- perform the end-of-scan coverage critic and a fresh verification pass before confirmed findings; if a genuinely independent verifier is unavailable, preserve the exact limitation in `verification-ledger.jsonl`
 
 ## Strengths
 

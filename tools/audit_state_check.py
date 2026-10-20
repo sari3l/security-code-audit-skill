@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from pathlib import Path
 from typing import Any
 
+from coverage_identity import CoverageIdentityError, coverage_id
 from dangerous_capability_seed import SCANNER_VERSION, SENTINEL_FAMILIES, records_digest, seed_tree
 from security_audit_tools.common import Issue, emit_json, issue_payload, read_json, read_jsonl
 
@@ -117,6 +119,12 @@ REQUIREMENT_SECRET_PATTERNS = (
 )
 
 
+VERIFICATION_STAGES = {"candidate", "final_record"}
+VERIFICATION_INDEPENDENCE = {"fresh_agent", "fresh_pass", "unavailable"}
+VERIFICATION_DECISIONS = {"confirmed", "needs_validation", "rejected"}
+VERIFICATION_LOCAL_CHECKS = {"none", "bounded_fixture", "sandbox_blocked"}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate security-code-audit runtime state.")
     parser.add_argument("run_dir", type=Path)
@@ -149,7 +157,7 @@ def check_state(run_dir: Path, *, target_root: Path | None = None) -> list[Issue
     else:
         try:
             manifest = read_json(manifest_path)
-        except Exception as exc:  # noqa: BLE001 - stable CLI diagnostics
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
             issues.append(Issue("STATE002", f"manifest.json is invalid JSON: {exc}", file=str(manifest_path)))
         else:
             if manifest.get("schema_version") != "2.0":
@@ -163,7 +171,7 @@ def check_state(run_dir: Path, *, target_root: Path | None = None) -> list[Issue
     else:
         try:
             change = read_json(change_path)
-        except Exception as exc:  # noqa: BLE001
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
             issues.append(Issue("STATE011", f"current-change-context.json is invalid JSON: {exc}", file=str(change_path)))
         else:
             if not (
@@ -185,6 +193,7 @@ def check_state(run_dir: Path, *, target_root: Path | None = None) -> list[Issue
             issues.append(Issue("STATE013", f"coverage row missing fields: {', '.join(missing)}", record_id=rid))
         if row.get("freshness_status") not in FRESHNESS:
             issues.append(Issue("STATE014", f"invalid freshness_status {row.get('freshness_status')!r}", record_id=rid))
+        issues.extend(_check_coverage_row_identity(row, rid))
         for field in COUNT_FIELDS:
             if field not in row:
                 issues.append(Issue("STATE015", f"coverage row missing count field {field}", record_id=rid))
@@ -201,11 +210,177 @@ def check_state(run_dir: Path, *, target_root: Path | None = None) -> list[Issue
                         record_id=rid,
                     )
                 )
+    issues.extend(_check_coverage_identity_duplicates(coverage, str(coverage_path)))
+    verification_path = run_dir / "verification-ledger.jsonl"
+    if verification_path.exists():
+        issues.extend(_check_verification_ledger(read_jsonl(verification_path), str(verification_path)))
+    issues.extend(_check_trace_ledger(run_dir, read_jsonl(run_dir / "dangerous-capabilities.jsonl")))
+    exploration_path = run_dir / "exploration-ledger.jsonl"
+    if not exploration_path.exists():
+        issues.append(Issue("STATE030", "exploration-ledger.jsonl is missing", file=str(exploration_path)))
     issues.extend(check_requirements_context(run_dir, run_id=run_id))
     issues.extend(check_remediation_session(run_dir, run_id=run_id))
     issues.extend(_check_dangerous_capabilities(run_dir, target_root=target_root, run_id=run_id))
     return issues
 
+
+def _check_coverage_row_identity(row: dict[str, Any], record_id: str) -> list[Issue]:
+    """Validate the optional canonical identity on one coverage row."""
+    coverage_value = row.get("coverage_id")
+    canonical_refs = row.get("canonical_refs")
+    if coverage_value is None and canonical_refs is None:
+        return []
+
+    issues: list[Issue] = []
+    if not isinstance(coverage_value, str) or not coverage_value.strip():
+        issues.append(Issue("STATE040", "coverage_id must be a non-empty string", record_id=record_id))
+    if not isinstance(canonical_refs, dict):
+        issues.append(Issue("STATE041", "canonical_refs must be an object when coverage_id is present", record_id=record_id))
+        return issues
+
+    required = ("surface", "boundary", "subsystem", "attack_class")
+    values: dict[str, str] = {}
+    for field in required:
+        value = canonical_refs.get(field)
+        if not isinstance(value, str) or not value.strip():
+            issues.append(Issue("STATE042", f"canonical_refs[{field!r}] must be a non-empty string", record_id=record_id))
+        else:
+            values[field] = value
+    lifecycle = canonical_refs.get("lifecycle")
+    if lifecycle is not None and (not isinstance(lifecycle, str) or not lifecycle.strip()):
+        issues.append(Issue("STATE042", "canonical_refs['lifecycle'] must be a non-empty string when present", record_id=record_id))
+    if issues or not isinstance(coverage_value, str):
+        return issues
+
+    try:
+        expected = coverage_id(
+            surface=values["surface"],
+            boundary=values["boundary"],
+            subsystem=values["subsystem"],
+            attack_class=values["attack_class"],
+            lifecycle=lifecycle if isinstance(lifecycle, str) else None,
+        )
+    except CoverageIdentityError as exc:
+        issues.append(Issue("STATE043", f"canonical_refs cannot form a coverage ID: {exc}", record_id=record_id))
+    else:
+        if coverage_value != expected:
+            issues.append(Issue("STATE044", "coverage_id does not match canonical_refs", record_id=record_id))
+    return issues
+
+def _check_coverage_identity_duplicates(rows: list[dict[str, Any]], file: str) -> list[Issue]:
+    """Reject duplicate canonical IDs while keeping legacy rows compatible."""
+    seen: dict[str, str] = {}
+    issues: list[Issue] = []
+    for row in rows:
+        coverage_value = row.get("coverage_id")
+        if not isinstance(coverage_value, str) or not coverage_value:
+            continue
+        record_id = str(row.get("id") or "<missing>")
+        previous = seen.get(coverage_value)
+        if previous is not None:
+            issues.append(
+                Issue(
+                    "STATE045",
+                    f"duplicate coverage_id {coverage_value!r}; first record is {previous}",
+                    file=file,
+                    record_id=record_id,
+                )
+            )
+        else:
+            seen[coverage_value] = record_id
+    return issues
+
+def _check_verification_ledger(rows: list[dict[str, Any]], file: str) -> list[Issue]:
+    """Validate verifier provenance without requiring it for legacy runs."""
+    required = {
+        "id",
+        "candidate_fingerprint",
+        "stage",
+        "verifier_id",
+        "independence",
+        "decision",
+        "source_rechecked",
+        "local_check",
+        "evidence_refs",
+        "blockers",
+    }
+    issues: list[Issue] = []
+    seen: set[str] = set()
+    for row in rows:
+        record_id = str(row.get("id") or "<missing>")
+        if "_parse_error" in row:
+            issues.append(Issue("STATE050", row["_parse_error"], file=file, line=row.get("_line")))
+            continue
+        missing = sorted(field for field in required if field not in row)
+        if missing:
+            issues.append(Issue("STATE051", f"verification row missing fields: {', '.join(missing)}", record_id=record_id))
+            continue
+        if record_id in seen:
+            issues.append(Issue("STATE052", "duplicate verification record id", record_id=record_id))
+        seen.add(record_id)
+        if row.get("stage") not in VERIFICATION_STAGES:
+            issues.append(Issue("STATE054", f"invalid verification stage {row.get('stage')!r}", record_id=record_id))
+        if row.get("independence") not in VERIFICATION_INDEPENDENCE:
+            issues.append(Issue("STATE055", f"invalid verifier independence {row.get('independence')!r}", record_id=record_id))
+        if row.get("decision") not in VERIFICATION_DECISIONS:
+            issues.append(Issue("STATE056", f"invalid verification decision {row.get('decision')!r}", record_id=record_id))
+        if row.get("local_check") not in VERIFICATION_LOCAL_CHECKS:
+            issues.append(Issue("STATE057", f"invalid verifier local_check {row.get('local_check')!r}", record_id=record_id))
+        if not isinstance(row.get("source_rechecked"), bool):
+            issues.append(Issue("STATE058", "source_rechecked must be boolean", record_id=record_id))
+        if not _nonempty_list(row.get("evidence_refs")):
+            issues.append(Issue("STATE059", "verification row requires evidence_refs", record_id=record_id))
+        if row.get("decision") == "confirmed" and row.get("independence") == "unavailable":
+            issues.append(Issue("STATE053", "confirmed verification cannot use unavailable independence", record_id=record_id))
+        if row.get("decision") == "confirmed" and (row.get("source_rechecked") is not True or row.get("blockers") != []):
+            issues.append(Issue("STATE061", "confirmed verification requires a source recheck and no unresolved blockers", record_id=record_id))
+        if row.get("decision") == "needs_validation" and not _nonempty_list(row.get("blockers")):
+            issues.append(Issue("STATE060", "needs_validation verification requires blockers", record_id=record_id))
+    return issues
+
+def _check_trace_ledger(run_dir: Path, dangerous_rows: list[dict[str, Any]]) -> list[Issue]:
+    """Ensure evidence references resolve to structured, usable trace checkpoints."""
+    issues: list[Issue] = []
+    trace_path = run_dir / "trace-ledger.jsonl"
+    if not trace_path.exists():
+        issues.append(Issue("STATE031", "trace-ledger.jsonl is missing", file=str(trace_path)))
+        return issues
+
+    traces = read_jsonl(trace_path)
+    trace_ids: set[str] = set()
+    required_trace_fields = COMMON_RECORD_FIELDS | {
+        "entry_point",
+        "source",
+        "sink_or_transition",
+        "status",
+    }
+    for trace in traces:
+        rid = str(trace.get("id") or "<missing>")
+        if "_parse_error" in trace:
+            issues.append(Issue("STATE032", trace["_parse_error"], file=str(trace_path), line=trace.get("_line")))
+            continue
+        trace_ids.add(rid)
+        missing = sorted(field for field in required_trace_fields if field not in trace)
+        if missing:
+            issues.append(Issue("STATE033", f"trace row missing fields: {', '.join(missing)}", record_id=rid))
+        if trace.get("freshness_status") not in FRESHNESS:
+            issues.append(Issue("STATE034", f"invalid trace freshness_status {trace.get('freshness_status')!r}", record_id=rid))
+        if not _nonempty_list(trace.get("evidence_refs")):
+            issues.append(Issue("STATE035", "trace row requires evidence_refs", record_id=rid))
+        if not isinstance(trace.get("status"), str) or not trace["status"].strip():
+            issues.append(Issue("STATE036", "trace row requires a non-empty status", record_id=rid))
+
+    trace_dispositions = {"confirmed_finding", "high_risk_alert", "candidate", "negative_closed"}
+    for row in dangerous_rows:
+        if row.get("disposition") not in trace_dispositions:
+            continue
+        refs = row.get("trace_refs")
+        if not _nonempty_list(refs):
+            continue
+        missing = [ref for ref in refs if ref not in trace_ids]
+        if missing:
+            issues.append(Issue("STATE037", f"trace_refs do not resolve: {', '.join(missing)}", record_id=str(row.get("id") or "<missing>")))
+    return issues
 
 def check_remediation_session(run_dir: Path, *, run_id: str) -> list[Issue]:
     path = run_dir / "remediation-session.json"

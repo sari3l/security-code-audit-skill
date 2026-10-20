@@ -39,6 +39,12 @@ If the safest remediation needs a compiler or dependency bump, say so explicitly
 - privileged functions reachable before initialization
 - `tx.origin` used for auth
 - upgrade, pause, mint, withdraw, or rescue functions with weak caller restrictions
+- role checks that do not bind token, recipient, spender, route, strategy, adapter, amount, or downstream settlement
+
+### Capability And Integration Semantics
+- approvals, allowances, cooldowns, and rate limits keyed too broadly for the policy they claim to enforce
+- solver, vault, strategy, router, or adapter interfaces that disagree on gross/net amounts, fees, decimals, return values, or balance deltas
+- caller-selected recipients, token accounts, or spenders forwarded across a trusted role boundary
 
 ### Accounting and Precision
 - share inflation, rounding drift, stale accounting snapshots
@@ -89,6 +95,7 @@ rg -n "delegatecall|call\\{|call\\(|staticcall|selfdestruct|tx\\.origin|ecrecove
 rg -n "transfer\\(|transferFrom\\(|safeTransfer\\(|safeTransferFrom\\(|onERC721Received|tokensReceived|flashLoan|swap|oracle|price" .
 rg -n "block\\.timestamp|blockhash|block\\.prevrandao|keccak256\\(abi\\.encodePacked|abi\\.encodePacked\\(" .
 rg -n "for \\(|while \\(|mapping|totalSupply|shares|assets|exchangeRate|previewMint|previewRedeem" .
+rg -n "approve|allowance|spender|recipient|receiver|beneficiary|strategy|adapter|solver|settle|amountIn|amountOut|fee|cooldown|rateLimit|nonce" .
 ```
 
 ---
@@ -97,6 +104,7 @@ rg -n "for \\(|while \\(|mapping|totalSupply|shares|assets|exchangeRate|previewM
 
 - `references/smart-contract/index.md`
 - `references/smart-contract/vulnerabilities/accounting-and-precision.md`
+- `references/smart-contract/vulnerabilities/authorization-and-integration.md`
 - `references/smart-contract/vulnerabilities/signatures-and-meta-transactions.md`
 - `references/smart-contract/vulnerabilities/oracle-mev-and-market-abuse.md`
 - `references/smart-contract/vulnerabilities/upgradeability-and-deployment.md`

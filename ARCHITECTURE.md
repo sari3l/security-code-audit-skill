@@ -194,6 +194,7 @@ Important files:
 - `core/integrity.md`
 - `core/coverage.md`
 - `core/findings.md`
+- `core/execution-safety.md`
 - `core/fingerprints.md`
 - `core/severity.md`
 
@@ -211,10 +212,12 @@ Directory:
 Purpose:
 - define topology, not scan depth
 - separate `single` from beta `multi`
-- keep worker roles, handoff contracts, sharding, and merge behavior explicit
+- keep worker roles, handoff contracts, coverage critics, independent verifiers,
+  sharding, and merge behavior explicit
 
 Rule:
-- execution answers "how agents are arranged", not "how deep the audit is".
+- execution answers "how agents are arranged and independently checked", not
+  "how deep the audit is".
 
 ### 4. Profile Layer
 
@@ -297,8 +300,10 @@ Boundary rules:
 - credentials enter only through connector-declared environment variables and never enter prompts, tool arguments, UI state, audit state, logs, or reports
 - connector scores prioritize candidates; current code and architecture evidence determine applicability
 
-Current implementation:
-- `plugins/onyx/` provides the `requirements-context` capability after architecture/change recon and before semantic review
+Distribution boundary:
+- the public distribution includes the generic plugin contract and validator
+- optional provider implementations may be bundled in the internal distribution
+- no provider is required for a complete code-audit runtime
 
 ---
 

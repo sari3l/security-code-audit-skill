@@ -26,12 +26,18 @@ Use this file for execution ordering, callback surfaces, delegation, and interac
 - low-gas reentrancy assumptions where fallback, receive, ERC hooks, or token callbacks can still mutate the relevant state
 - double-entry or wrapper-token flows where the apparent token transfer triggers a second asset movement or callback path
 - flash-loan callbacks that validate the initiator but not the asset, amount, fee, pool, route, receiver, or final invariant
+- state writes, cooldowns, limits, nonces, and phase changes that occur before
+  versus after the external call; a guard written after a callback may be
+  bypassed within the same transaction
 
 ---
 
 ## Audit Questions
 
 - Does any external interaction happen before all critical state is committed?
+- Is the state that closes the window written before the call, or only after the
+  receiver/token/adapter can reenter? Trace revert behavior and repeated calls
+  in the same transaction.
 - Can attacker-controlled token behavior reopen the flow?
 - Can a callback alter allowance, debt, collateral, or reward state before settlement finishes?
 - Can a strategy, adapter, or plugin execute arbitrary code in protocol context?
@@ -54,6 +60,18 @@ function exit(uint256 shares) external {
 ```
 
 Do not report by matching this shape alone. Confirm attacker-controlled code can execute before balances, shares, debt, permissions, or phase state are finalized; trace the reachable reentry or callback path; account for existing guards and settlement ordering; and show repeat withdrawal, stale accounting, under-collateralization, privilege change, or liveness impact.
+
+For every callback-capable payout, record the ordering explicitly:
+
+```text
+pre-call state snapshot -> external call / callback -> post-call state write
+```
+
+If a cooldown, transfer timestamp, nonce, allowance, or phase flag is updated
+only in the post-call step, test whether the callback can invoke a sibling entry
+point before that write. A receiver that needs a second role or capability is
+still a valid path when the initiating action can grant or already possesses
+that capability.
 
 ---
 

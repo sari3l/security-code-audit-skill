@@ -28,8 +28,8 @@ plugins/
 {
   "$schema": "../plugin.schema.json",
   "schemaVersion": "1.0",
-  "id": "onyx",
-  "displayName": "Onyx Requirements",
+  "id": "sample-requirements",
+  "displayName": "Sample Requirements",
   "enabled": true,
   "capabilities": ["requirements-context"],
   "entrypoints": {
@@ -60,7 +60,7 @@ Rules:
 
 Each plugin README must document its capability, installation, safe defaults, optional user override file, authentication environment variables, verification procedure, normal usage, terminal/failure statuses, security boundary, and development tests. Put provider-specific instructions in that README instead of expanding the Code Audit core documentation.
 
-When a plugin supports a user-owned JSON override, its bundled `config.json` should declare a dedicated `configEnv` such as `ONYX_AUDIT_CONFIG`. The MCP entry must forward both that variable and every credential variable named by the config. The override file lives outside the installed plugin so a reinstall cannot erase user settings.
+When a plugin supports a user-owned JSON override, its bundled `config.json` should declare a dedicated `configEnv` such as `SAMPLE_AUDIT_CONFIG`. The MCP entry must forward both that variable and every credential variable named by the config. The override file lives outside the installed plugin so a reinstall cannot erase user settings.
 
 ## Discovery
 

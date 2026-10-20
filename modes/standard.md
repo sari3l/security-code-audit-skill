@@ -23,6 +23,7 @@ Use when:
 ## Required Load
 
 - `core/dangerous-capability-census.md`
+- `core/exploration-and-evidence.md`
 - `references/application/languages/index.md`
 - `references/application/frameworks/index.md`
 - the active knowledge domain router after recon:
@@ -60,6 +61,7 @@ Immediately after the state manifest exists, run `tools/dangerous_capability_see
 - execute the primary domain audit path from `SKILL.md`
 - run the whole-repository dangerous-capability census before category review or hypothesis pruning, then trace and reconcile every occurrence
 - enumerate repeated vulnerable patterns across the codebase
+- keep LLM exploration open to callers, sibling helpers, integrations, state keys, and new trust boundaries; record each material branch and its disconfirmation result in `exploration-ledger.jsonl`
 - group multiple downstream exploit paths into one finding only when the failed control, trust boundary, and minimal fix are materially shared
 - surface operator-significant exploit paths clearly in the title, `Attack Vector`, `Impact`, `Related Findings`, or `Attack Chains` instead of splitting findings by default
 - resolve native, external, or repo-configured dependency audit commands with `references/shared/tooling/command-resolution.md` when lock files/manifests exist, then run the confirmed command or document the blocker/manual fallback instead of skipping C8
@@ -77,6 +79,7 @@ After category coverage, perform:
 - counted coverage reconciliation and bounded function-chain inventory review
 - audit state quality gate review: current-change-context exists, coverage counts reconcile, high-signal observations are routed, and function-chain debt is explicit
 - dangerous-capability reconciliation: mandatory families searched, census/ledger totals match, and no occurrence remains unreviewed
+- exploration/evidence reconciliation: every material branch is routed and every material hypothesis has construction plus disconfirmation evidence or explicit debt
 - deferred history replay only after current findings and coverage are stable
 - historical-miss gate first: reopen prior findings that touch the same current helper, sink, route family, or trust boundary and check whether any still-live path was missed by the current scan
 - if any historical miss exists, record it, emit `Skill Optimization Suggestions`, and withhold lifecycle finalization

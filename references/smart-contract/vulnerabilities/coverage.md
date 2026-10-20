@@ -11,8 +11,12 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 | Surface | Key Questions | Covered? | Findings |
 |---------|---------------|----------|----------|
 | Trust And Privilege | All owner/admin/upgrader/signer roles mapped? Init/reinit paths reviewed? Rescue, pause, sweep, queue, claim, and governance assumptions checked? Critical privilege transitions emit monitorable events? Entry-like emergency paths distinguished from true exits? Any `msg.value`-accepting or request-creating emergency helper reviewed as entry-like rather than auto-whitelisted as an exit? | | |
-| External Calls And Reentrancy | All external calls traced? Callback-capable token and receiver flows reviewed? Related-function reentrancy considered? Delegation and arbitrary target execution checked? | | |
+| Authorization And Asset Flow | For every privileged or semi-privileged entry point, is the `(caller, action, token, source, recipient, spender, route, amount, state key, phase)` capability tuple checked? Are role checks separated from destination, allowance, selector, and downstream strategy constraints? | | |
+| External Calls And Reentrancy | All external calls traced? Callback-capable token and receiver flows reviewed? Related-function reentrancy considered? Delegation and arbitrary target execution checked? Is every cooldown, nonce, limit, or phase write ordered before the callback-sensitive call? | | |
+| Cross-Contract Integration And Settlement | Do interface, adapter, solver, vault, and strategy traces verify gross/net, fees, decimals, actual balance deltas, min-out, deadlines, recipient binding, and mock/deployment semantic parity? | | |
 | Accounting And Precision | Assets/shares/debt invariants reconstructed? Rounding direction reviewed? Fee-on-transfer, rebasing, decimals, bootstrap, donation, and low-liquidity edge cases checked? Sibling helpers reviewed for post-fix threshold or rounding drift across open/manage/exit paths? | | |
+| State Keying, Limits And Replay | Are allowances, cooldowns, rate limits, nonces, replay guards, and settlement records keyed by every policy dimension such as token, spender, user, route, and intent? Are reset, revocation, expiry, multicall, and sibling paths consistent? | | |
+| Execution Context And Capability Lifecycle | For delegatecall/proxy/plugin/CPI/registry boundaries, are original caller, execution context, selected target, selector/instruction, and final asset account bound together? Do remove/quarantine/disable/supported flags revoke or gate stale allowances and every sibling execution path? | | |
 | Signatures And Meta-Tx | Permit, EIP-712, relayer, and signer paths mapped? Nonce, expiry, chain, domain, beneficiary, and replay protections verified? | | |
 | Oracle / Market Abuse | Price source, freshness, manipulation resistance, liquidation math, and same-tx reserve dependence reviewed? Economic exploit path considered? | | |
 | Upgradeability And Deployment | Proxy type identified? Upgrade auth and init reachability reviewed? Storage-layout risk considered? Deployment and environment assumptions checked? | | |
@@ -23,7 +27,9 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 
 ## Coverage Standards
 
-- **Mandatory**: Trust And Privilege, External Calls And Reentrancy, Accounting And Precision, and Signatures And Meta-Tx
+- **Mandatory**: Trust And Privilege, Authorization And Asset Flow, External Calls And Reentrancy, Accounting And Precision, and Signatures And Meta-Tx
+- **Mandatory when applicable**: Cross-Contract Integration And Settlement and State Keying, Limits And Replay for any adapter, solver, strategy, allowance, cooldown, rate-limit, or intent flow
+- **Mandatory when applicable**: Execution Context And Capability Lifecycle for any delegatecall, proxy/plugin, registry/CPI, remove-token, quarantine, revoke, or supported-flag flow
 - **Mandatory when applicable**: Oracle / Market Abuse for any price-sensitive or liquidity-sensitive protocol
 - **Mandatory when applicable**: Upgradeability And Deployment for any proxy, factory, clone, beacon, or staged deployment system
 - **Mandatory when applicable**: Token Integration Semantics when integrating external tokens or token standards beyond trivial fixed-behavior assumptions
@@ -61,3 +67,5 @@ Its job is to verify that the audit really covered contract-native risk, not jus
 - frontend-assisted signing, supply chain to signature, and ProxyAdmin blast-radius controls reviewed when present
 - compound exploit paths documented where they materially change impact
 - every in-scope privileged, accounting, signature, call, or upgrade function has a bounded function-chain record or explicit coverage debt
+- every in-scope capability tuple and integration assumption has a bounded trace, deep gate, or explicit coverage debt
+- every callback-sensitive state transition records pre-call/post-call ordering, and every delegation or lifecycle boundary records target binding and stale-authority behavior

@@ -193,6 +193,7 @@ class StateFixture:
             encoding="utf-8",
         )
         (run_dir / "coverage-ledger.jsonl").write_text("", encoding="utf-8")
+        (run_dir / "exploration-ledger.jsonl").write_text("", encoding="utf-8")
         payload = seed_tree(target)
         if payload["status"] != "ok":
             raise AssertionError(payload["issues"])
@@ -206,7 +207,18 @@ class StateFixture:
             row["source_reachability"] = "unknown"
             row["trace_refs"] = [trace_id]
             row["report_refs"] = [row["id"]]
-            traces.append({"id": trace_id, "run_id": "run-1", "status": "open"})
+            traces.append({
+                "id": trace_id,
+                "run_id": "run-1",
+                "scope": "app.py",
+                "owner": "auditor",
+                "freshness_status": "fresh_current",
+                "entry_point": "fixture input",
+                "source": "expression",
+                "sink_or_transition": "eval",
+                "status": "open",
+                "evidence_refs": row["evidence_refs"],
+            })
         StateFixture.write_jsonl(run_dir / "dangerous-capabilities.jsonl", ledger)
         StateFixture.write_jsonl(run_dir / "trace-ledger.jsonl", traces)
         return ledger

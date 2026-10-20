@@ -20,6 +20,7 @@ Before a candidate becomes a finding, the supervisor must normalize:
 - function-chain deltas and join checkpoints
 - agent-log deltas that explain bounded paths, blockers, and routing decisions
 - evidence quality
+- verifier independence, decision, source recheck, local-check boundary, and blockers
 - finding fingerprint
 - affected locations
 - exploitability claim

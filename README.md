@@ -1,19 +1,42 @@
-# security-code-audit
+# Security Code Audit
 
-Current release: `v4.0.0`
+Current release: `v4.1.0`
 
-High-recall code security audit skill for web/API, backend, full-stack, smart-contract, deployment, CI, and instruction-bearing repositories.
+A code security audit skill for web/API, service, smart-contract, deployment, CI,
+and instruction-bearing repositories. Chinese documentation: [README-CN.md](README-CN.md).
 
-The runtime supports quick, standard, deep, and regression modes; dangerous-capability census, bounded tracing, persistent audit state, requirements-context integration, isolated remediation worktrees, and evidence-gated reporting.
+## Usage
 
-This distribution includes the optional Onyx requirements-context plugin under [`plugins/onyx`](plugins/onyx/README.md). It ships with disabled placeholder configuration; credentials and real endpoints stay in user environment/configuration.
+- `/security-code-audit`: default `deep single` discovery
+- `/security-code-audit quick`: incremental semantic review with a global dangerous-capability census
+- `/security-code-audit standard`: full discovery with practical semantic depth
+- `/security-code-audit deep`: stronger invariant, trust-boundary, and attack-chain closure
+- `/security-code-audit regression`: retest the latest usable report
+- `/security-code-audit help`: show options without starting an audit
+- `/security-code-audit deep --auto-fix`: prepare isolated remediation after the audit;
+  commit and merge still require separate acceptance of the reviewed changes
 
-Chinese documentation: [README-CN.md](README-CN.md)
+Optional `multi` execution requires explicit selection and host support.
 
-Usage:
+## Capabilities
 
-- `/security-code-audit` — deep current-code discovery
-- `/security-code-audit quick` — incremental high-risk review
-- `/security-code-audit standard` — full practical review
-- `/security-code-audit regression` — retest the latest usable report
-- `/security-code-audit help` — show command options
+- Current-source discovery, bidirectional tracing, and repeated-pattern enumeration
+- Immutable dangerous-capability seeds, source snapshot validation, and exact report references
+- Open exploration with durable branch records and disconfirmation evidence
+- Safe local execution boundaries, fresh verification, and stable coverage identity
+- Application and contract authorization, state, integration, and settlement review
+- Persistent audit state, report rendering, history comparison, and remediation worktrees
+- Provider-independent requirement context after architecture/change reconnaissance
+
+Reports and state live in the running directory's `output/` using the
+`security-code-audit-` prefix. See [SKILL.md](SKILL.md) for the execution contract.
+
+## Plugin distributions
+
+The public distribution includes the generic [plugin framework](plugins/README.md),
+schema, and metadata validator. Optional provider implementations may be bundled
+in the internal distribution. An installation with no configured provider records
+`not_configured` and continues the full audit.
+
+Validate installed plugin metadata with `python3 tools/audit_plugin_check.py`.
+Credentials belong in user environment/configuration, outside the repository.

@@ -59,6 +59,9 @@ Every worker handoff should include:
   - semantic gate status, evidence refs, negative evidence, dependency semantics, design/implementation conflicts, proof obligations, semantic assumptions, and coverage debt refs inside the owned scope
 - `candidate_signals`
   - localized suspicious cases with concrete evidence and negative evidence
+- `verification_delta`
+  - candidate fingerprint, verifier stage, verifier identity, independence,
+    decision, source recheck, local-check boundary, blockers, and evidence refs
 - `trace_delta`
   - new trace checkpoints, bounded paths, invalidations, and localized hypotheses
 - `function_chain_delta`
@@ -130,6 +133,22 @@ That decision belongs to the `supervisor` after merge.
 - **Negative Evidence**: [what weakens confidence]
 - **Why It Matters**: [local impact]
 - **Needs**: [proof / cross-shard check / validator follow-up]
+```
+
+### Verification Delta
+
+```json
+{
+  "candidate_fingerprint": "...",
+  "stage": "candidate|final_record",
+  "verifier_id": "...",
+  "independence": "fresh_agent|fresh_pass|unavailable",
+  "decision": "confirmed|needs_validation|rejected",
+  "source_rechecked": true,
+  "local_check": "none|bounded_fixture|sandbox_blocked",
+  "evidence_refs": [],
+  "blockers": []
+}
 ```
 
 ### Chain Candidate
