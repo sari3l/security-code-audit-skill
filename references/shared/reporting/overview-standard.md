@@ -17,6 +17,7 @@ The report overview should help a decision-maker understand risk quickly without
 - candidate signals: only unresolved high-signal cases worth explicit follow-up
 - evidence-observation routing summary when material: how raw observations, tool outputs, blockers, negative evidence, and schema gaps were resolved
 - coverage debt: partial, blocked, or invalidated surfaces that still matter
+- plugin sections: one independent section per plugin that ran, as declared by `plugin.json.report` (for example the SCA dependency vulnerability table)
 - function call chains: bounded summary or appendix for security-relevant functions and state transitions in scope
 - skill optimization suggestions: required when post-scan history replay finds still-live historical vulnerabilities that the current scan missed
 - supplemental sections when material: operational risks, integration assumptions, and engineering notes that help readers without weakening the finding bar

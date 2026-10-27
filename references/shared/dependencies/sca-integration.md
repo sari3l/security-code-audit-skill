@@ -65,6 +65,16 @@ package-to-manifest mapping; preserve unknown scope, dependency path, directness
 and reachability until local inspection resolves them. Never write remote
 candidates directly into canonical confirmed findings or bypass verification.
 
+## Report Section
+
+SCA results get their own report section, declared by the plugin's
+`plugin.json.report` and described in its README. They are not only cited
+data inside other sections. Render the section with `tools/plugin_report_render.py
+--run-dir <state-dir>`. It lists every remote result with its local
+review disposition, plus the scan status. Keep `sca-review.jsonl` decisions
+separate from the adapter's raw rows. Promoted rows also appear in
+`已确认漏洞` or `候选信号` and link back through `finding_ref`.
+
 ## Outbound Fetching
 
 When the user configures an outbound SCA connector:

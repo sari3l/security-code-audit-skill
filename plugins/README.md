@@ -38,6 +38,10 @@ plugins/
     "web": "./web/index.html"
   },
   "config": "./config.json",
+  "report": {
+    "heading": "需求上下文",
+    "guide": "./README.md"
+  },
   "lifecycle": {
     "after": "architecture-and-change-recon",
     "before": "security-semantic-review",
@@ -58,9 +62,40 @@ Rules:
 - `failure: coverage-debt` may add explicit coverage debt when a security conclusion genuinely depends on the unavailable plugin.
 - `failure: abort` is reserved for organization-mandated controls and must not be used by optional context providers.
 
-Each plugin README must document its capability, installation, safe defaults, optional user override file, authentication environment variables, verification procedure, normal usage, terminal/failure statuses, security boundary, and development tests. Put provider-specific instructions in that README instead of expanding the Code Audit core documentation.
+Each plugin README must document its capability, installation, safe defaults, optional user override file, authentication environment variables, verification procedure, normal usage, terminal/failure statuses, report presentation, security boundary, and development tests. Put provider-specific instructions in that README instead of expanding the Code Audit core documentation.
 
 When a plugin supports a user-owned JSON override, its bundled `config.json` should declare a dedicated `configEnv` such as `SAMPLE_AUDIT_CONFIG`. The MCP entry must forward both that variable and every credential variable named by the config. The override file lives outside the installed plugin so a reinstall cannot erase user settings.
+
+## Report Presentation
+
+Every plugin declares `report`, so its results have a fixed, independent place in
+the final report instead of being dissolved into other sections as cited data.
+
+| Field | Meaning |
+| --- | --- |
+| `heading` | Exact `## <heading>` section title in the final report |
+| `guide` | Plugin-local document whose "Report presentation" section describes the section content |
+| `context` | Optional state-directory file proving the plugin ran in this audit; its presence makes the section mandatory |
+| `summary` | Optional `{field, label}` list rendered as status lines from `context` |
+| `rows` | Optional state-directory JSONL of per-item results; requires `context`, `rowKey`, and `columns` |
+| `review` | Optional state-directory JSONL of local review decisions merged into rows by `rowKey` |
+| `rowKey` | Field identifying one row in both `rows` and `review` |
+| `columns` | `{field, label[, link]}` list rendered as one Markdown table; `link` names an `https://` URL field |
+
+Render all declared sections from the current state directory:
+
+```bash
+python3 tools/plugin_report_render.py --run-dir <state-dir> --out <fragment.md>
+```
+
+Rules:
+
+- Place plugin sections after `Coverage Debt` and before supplemental sections, in registry order.
+- When `context` exists for the run, the section is mandatory even when the plugin failed or returned zero rows. Show the terminal status; an empty table never means clean.
+- When `rows` is declared, the table lists every row from this run. Do not truncate, sample, or replace the table with a reference to state files.
+- Plugin rows stay plugin results. Promoting one into `Confirmed Findings` or `Candidate Signals` still follows normal verification, and the row's `finding_ref` links to that entry. The row itself is never deleted.
+- Cell values are untrusted remote data. The renderer escapes them so they cannot inject Markdown structure or links.
+- `tools/report_gate_check.py --run-dir` fails with `REPORT060` when a section is missing and `REPORT061` when the row count differs.
 
 ## Discovery
 

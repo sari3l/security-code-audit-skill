@@ -5,7 +5,9 @@ import argparse
 import re
 from pathlib import Path
 
+from audit_plugin_check import check_plugins
 from audit_state_check import check_state
+from plugin_report_render import PLUGINS_ROOT, load_plugin_rows, reportable_plugins
 from security_audit_tools.common import Issue, emit_json, issue_payload, read_jsonl
 from security_audit_tools.reporting import MARKDOWN_FIELD_ALIASES, MARKDOWN_REQUIRED_FIELDS, parse_markdown_findings
 
@@ -102,6 +104,30 @@ def check_report(
     if run_dir is not None:
         issues.extend(check_state(run_dir, target_root=target_root))
         issues.extend(_check_dangerous_capability_routing(text, run_dir, bool(complete_claim)))
+        issues.extend(_check_plugin_sections(text, run_dir))
+    return issues
+
+
+def _check_plugin_sections(text: str, run_dir: Path) -> list[Issue]:
+    """Every plugin result produced for this run keeps its own report section."""
+    plugins, plugin_issues = check_plugins(PLUGINS_ROOT)
+    issues = [issue for issue in plugin_issues if issue.severity == "error"]
+    for plugin in reportable_plugins(plugins, run_dir):
+        report = plugin["report"]
+        section = _section(text, report["heading"])
+        if not section:
+            issues.append(Issue("REPORT060", f"plugin {plugin['id']} produced results but the report lacks section '## {report['heading']}'", record_id=plugin["id"]))
+            continue
+        if "rows" not in report:
+            continue
+        expected = len(load_plugin_rows(run_dir, report, issues))
+        table_rows = [
+            line for line in section.splitlines()
+            if line.lstrip().startswith("|") and not re.fullmatch(r"\s*\|(\s*:?-{3,}:?\s*\|)+\s*", line)
+        ]
+        actual = max(len(table_rows) - 1, 0)
+        if actual != expected:
+            issues.append(Issue("REPORT061", f"plugin {plugin['id']} section lists {actual} result rows; expected {expected}", record_id=plugin["id"]))
     return issues
 
 

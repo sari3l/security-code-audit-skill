@@ -73,7 +73,7 @@ class SkillContractTests(unittest.TestCase):
 
     def test_requirement_context_release_version_is_consistent(self):
         for path in ("SKILL.md", "README.md", "VERSIONING.md"):
-            self.assertIn("4.2.0", read_doc(path), path)
+            self.assertIn("4.3.0", read_doc(path), path)
 
     def test_auto_fix_requires_isolation_and_separate_final_acceptance(self):
         documents = {

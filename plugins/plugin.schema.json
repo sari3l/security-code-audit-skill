@@ -12,6 +12,7 @@
     "capabilities",
     "entrypoints",
     "config",
+    "report",
     "lifecycle"
   ],
   "properties": {
@@ -63,23 +64,88 @@
       },
       "anyOf": [
         {
-          "required": ["mcp"]
+          "required": [
+            "mcp"
+          ]
         },
         {
-          "required": ["skills"]
+          "required": [
+            "skills"
+          ]
         }
       ],
       "dependentRequired": {
-        "web": ["mcp"]
+        "web": [
+          "mcp"
+        ]
       }
     },
     "config": {
       "$ref": "#/$defs/localPath"
     },
+    "report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "heading",
+        "guide"
+      ],
+      "properties": {
+        "heading": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "guide": {
+          "$ref": "#/$defs/localPath"
+        },
+        "context": {
+          "$ref": "#/$defs/stateArtifact"
+        },
+        "rows": {
+          "$ref": "#/$defs/stateArtifact"
+        },
+        "review": {
+          "$ref": "#/$defs/stateArtifact"
+        },
+        "rowKey": {
+          "$ref": "#/$defs/fieldName"
+        },
+        "summary": {
+          "$ref": "#/$defs/fieldList"
+        },
+        "columns": {
+          "$ref": "#/$defs/fieldList"
+        }
+      },
+      "dependentRequired": {
+        "rows": [
+          "context",
+          "rowKey",
+          "columns"
+        ],
+        "review": [
+          "rows"
+        ],
+        "rowKey": [
+          "rows"
+        ],
+        "columns": [
+          "rows"
+        ],
+        "summary": [
+          "context"
+        ]
+      }
+    },
     "lifecycle": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["after", "before", "failure"],
+      "required": [
+        "after",
+        "before",
+        "failure"
+      ],
       "properties": {
         "after": {
           "$ref": "#/$defs/phase"
@@ -88,7 +154,11 @@
           "$ref": "#/$defs/phase"
         },
         "failure": {
-          "enum": ["continue", "coverage-debt", "abort"]
+          "enum": [
+            "continue",
+            "coverage-debt",
+            "abort"
+          ]
         }
       }
     }
@@ -97,6 +167,39 @@
     "localPath": {
       "type": "string",
       "pattern": "^\\./[^\\u0000]+$"
+    },
+    "fieldName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
+    },
+    "fieldList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "label"
+        ],
+        "properties": {
+          "field": {
+            "$ref": "#/$defs/fieldName"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "link": {
+            "$ref": "#/$defs/fieldName"
+          }
+        }
+      }
+    },
+    "stateArtifact": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
     },
     "phase": {
       "enum": [

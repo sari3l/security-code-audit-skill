@@ -2,7 +2,7 @@
 
 `security-code-audit` 用来检查代码仓库里的安全风险，适用于 Web/API、后端、全栈应用、配置与依赖、代码型文档 artifact，以及 Solidity 智能合约。
 
-当前版本：`4.2.0`
+当前版本：`4.3.0`
 
 ## 意义
 
@@ -158,7 +158,109 @@
 
 插件实现按发行范围提供。公开版本保留通用协议、schema 和校验工具；内部版本可附带需求提供方。没有可用 provider 时，记录 `not_configured` 后继续完整代码审计。
 
+每个插件都在 `plugin.json` 中声明 `report`，最终报告会为它生成独立章节，例如 SCA 会列出完整的依赖漏洞表格及每行的本地处置，而不是只在其他章节里引用数据。
+
 插件的安装、配置、环境变量和验证方法由各自的 `plugins/<id>/README.md` 说明；通用协议见 [plugins/README.md](plugins/README.md)。
+
+## 架构
+
+运行时架构包括：分阶段扫描、mode policy、执行拓扑、state freshness 检查、需求上下文、按目标画像路由、按需加载、bounded tracing、插件路由、证据门控报告，以及可选的隔离修复。维护层面的详细拆分见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+```mermaid
+flowchart TD
+    A["用户命令<br/>/security-code-audit [mode] [execution] [--auto-fix]"]
+    B["SKILL.md<br/>入口路由 + 共享工作流"]
+    MP["Mode policy<br/>quick | standard | deep | regression<br/>scope、depth、stop conditions"]
+    C["启动控制面<br/>解析 mode 和 execution<br/>加载 core、execution、mode rules"]
+    X["执行拓扑<br/>single | multi<br/>ownership、sharding、worker contract、merge"]
+
+    ST["output/security-code-audit-{timestamp}-{mode}-{hash}-state<br/>机器可读 continuity state"]
+    SR["State reader<br/>freshness、invalidation、<br/>continuation、merge hints<br/>不是安全证明"]
+
+    D["Recon 阶段<br/>仓库结构、技术栈、artifacts、<br/>claims、risk areas、state freshness"]
+    DC["危险能力 census<br/>源码绑定的 eval、shell、<br/>代码加载、签名材料种子"]
+    CB["审计上下文<br/>审计面、资产、不变量、<br/>信任边界、code facts"]
+
+    PR["插件注册表<br/>plugins/*/plugin.json<br/>capability + lifecycle + report"]
+    RQ["requirements-context 插件<br/>预期角色、不变量、业务流程<br/>回验前均不可信"]
+    SCA["dependency-sca 插件<br/>绑定当前项目的远端扫描<br/>结果先作为候选"]
+
+    E["目标画像选择<br/>application | smart-contract | artifact-centric"]
+    F["core/loading.md<br/>懒加载 + 按需路由"]
+    G["主知识域<br/>application | smart-contract"]
+    H["共享模块<br/>artifacts、dependencies、tooling、<br/>reporting、state 标准"]
+    T["核心质量控制<br/>integrity、coverage、findings、<br/>severity、fingerprints、tracing"]
+
+    I["发现与追踪<br/>双向追踪、开放探索、<br/>重复模式枚举"]
+    EO["证据观察<br/>工具输出、阻塞点、<br/>反证、schema gap"]
+    V["成熟度验证<br/>独立 verifier + coverage critic<br/>confirmed | alert | candidate | debt"]
+    GT["State 与报告 gate<br/>audit_state_check、report_gate_check<br/>重新扫描当前源码"]
+    K["报告<br/>漏洞、告警、候选、覆盖债务、<br/>插件章节、攻击链"]
+    HM["历史对比<br/>先过 historical-miss gate<br/>再标 New / Recurring / Fixed"]
+    R["output/<br/>报告 + canonical findings JSONL"]
+    AF["可选修复<br/>独立 Git worktree、测试、重新审计<br/>commit 前需明确接受"]
+
+    A --> B
+    B --> MP
+    B --> C
+    C --> X
+    ST -.->|"读取"| SR
+    SR -.->|"freshness 与 invalidation"| D
+    MP --> D
+    X --> D
+    D --> DC
+    D --> CB
+    CB --> PR
+    PR --> RQ
+    PR --> SCA
+    RQ --> E
+    CB --> E
+    E --> F
+    F --> G
+    F --> H
+    F --> T
+    DC --> I
+    G --> I
+    H --> I
+    T --> I
+    SCA -.->|"候选 + 扫描状态"| V
+    I --> EO
+    EO --> V
+    V --> GT
+    GT --> K
+    PR -.->|"报告展示声明"| K
+    K --> HM
+    HM --> R
+    R --> AF
+    D -.->|"持久化 run context"| ST
+    DC -.->|"持久化 census"| ST
+    RQ -.->|"requirements-context.json"| ST
+    SCA -.->|"sca-context / sca-findings"| ST
+    I -.->|"traces、chains、exploration"| ST
+    V -.->|"verification ledger"| ST
+```
+
+`State reader` 是概念性操作：它汇总 prior state 的 freshness、未关闭的义务和 merge hints，但不把这些当作安全证明。
+
+| 路径 | 作用 |
+| --- | --- |
+| `SKILL.md` | 主路由、help path、共享流程和完成契约 |
+| `core/` | integrity、coverage、findings、severity、懒加载、追踪、危险能力 census、需求上下文、执行安全、修复 |
+| `execution/` | `single` 与 beta `multi` 拓扑、worker contract、sharding、merge、独立验证 |
+| `profiles/` | RECON 后的目标语义：`application`、`smart-contract`、`artifact-centric` |
+| `modes/` | `quick`、`standard`、`deep`、`regression` 的深度契约 |
+| `references/application/` | Web/API/后端方法论：语言、框架、漏洞、利用 |
+| `references/smart-contract/` | Solidity 与链上逻辑方法论 |
+| `references/shared/` | artifact、依赖与 SCA 集成、tooling、reporting、audit state |
+| `plugins/` | 与提供方无关的插件协议、schema 和报告展示规则 |
+| `tools/` | census 种子、state 与报告 gate、报告与插件章节渲染、修复 worktree |
+| `tests/` | 契约与工具测试 |
+
+| 输出 | 作用 |
+| --- | --- |
+| `output/security-code-audit-{timestamp}-{mode}-{hash}.md` | 人类可读报告 |
+| `output/security-code-audit-{timestamp}-{mode}-{hash}-findings.jsonl` | canonical `finding.v1` 记录 |
+| `output/security-code-audit-{timestamp}-{mode}-{hash}-state/` | run manifest、census、traces、function chains、证据、验证、需求与插件上下文 |
 
 ## 注意事项
 

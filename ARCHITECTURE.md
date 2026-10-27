@@ -291,7 +291,9 @@ Standard surfaces:
 - `plugins/<id>/.mcp.json`: optional native MCP entry
 - `plugins/<id>/skills/*/SKILL.md`: optional native Skill entries
 - `plugins/<id>/web/*`: optional MCP Apps sources served through `ui://` resources
+- `plugins/<id>/plugin.json.report`: required report presentation; heading, guide, and optional state-local context/rows/review artifacts with summary and table columns
 - `tools/audit_plugin_check.py`: fixed-root, metadata-only registry validator
+- `tools/plugin_report_render.py`: renders one independent report section per plugin that ran; `report_gate_check.py` enforces section presence and row counts
 
 Boundary rules:
 - the audit core remains complete when the plugin is absent or a connector fails

@@ -107,7 +107,7 @@ Do not use this section for praise, release notes, or generic best-practice fill
 ## Reporting Rules
 
 - These sections are optional.
-- Place them after `Coverage Debt` and before `Attack Chains` when present.
+- Place them after `Coverage Debt` and any plugin sections, and before `Attack Chains` when present.
 - Do not include them in the severity table.
 - Do not assign CVSS.
 - Do not mix them into `Confirmed Findings`, `Candidate Signals`, or `Coverage Debt` counts.

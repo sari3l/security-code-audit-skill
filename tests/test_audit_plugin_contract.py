@@ -25,6 +25,20 @@ def skill_manifest(**overrides: object) -> dict[str, object]:
         "capabilities": ["sample-check"],
         "entrypoints": {"skills": ["./skills/sample/SKILL.md"]},
         "config": "./config.json",
+        "report": {
+            "heading": "Sample Results",
+            "guide": "./README.md",
+            "context": "sample-context.json",
+            "rows": "sample-rows.jsonl",
+            "review": "sample-review.jsonl",
+            "rowKey": "fingerprint",
+            "summary": [{"field": "status", "label": "状态"}],
+            "columns": [
+                {"field": "package", "label": "组件"},
+                {"field": "advisory_id", "label": "编号", "link": "advisory_url"},
+                {"field": "disposition", "label": "处置"},
+            ],
+        },
         "lifecycle": {
             "after": "audit-start",
             "before": "coverage-verification",
@@ -113,6 +127,32 @@ class AuditPluginContractTests(unittest.TestCase):
             _, empty_issues = check_plugins(root)
         self.assertTrue(any(issue.code == "PLUGIN032" for issue in missing_issues))
         self.assertTrue(any(issue.code == "PLUGIN033" for issue in empty_issues))
+
+    def test_plugin_must_declare_report_presentation(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            manifest = skill_manifest()
+            del manifest["report"]
+            make_skill_plugin(root, manifest)
+            _, issues = check_plugins(root)
+        self.assertTrue(any(issue.code == "PLUGIN040" for issue in issues))
+
+    def test_report_rows_require_columns_and_state_local_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            manifest = skill_manifest()
+            manifest["report"] = {
+                "heading": "Sample",
+                "guide": "./README.md",
+                "context": "../outside.json",
+                "rows": "sample-rows.jsonl",
+                "rowKey": "fingerprint",
+            }
+            make_skill_plugin(root, manifest)
+            _, issues = check_plugins(root)
+        codes = {issue.code for issue in issues}
+        self.assertIn("PLUGIN043", codes)
+        self.assertIn("PLUGIN044", codes)
 
     def test_mcp_config_environment_variables_must_be_forwarded(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

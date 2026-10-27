@@ -28,10 +28,21 @@ TOP_LEVEL_FIELDS = {
     "capabilities",
     "entrypoints",
     "config",
+    "report",
     "lifecycle",
 }
 ENTRYPOINT_FIELDS = {"mcp", "skills", "web"}
 LIFECYCLE_FIELDS = {"after", "before", "failure"}
+REPORT_FIELDS = {"heading", "guide", "context", "rows", "review", "rowKey", "summary", "columns"}
+REPORT_DEPENDENCIES = {
+    "rows": ("context", "rowKey", "columns"),
+    "review": ("rows",),
+    "rowKey": ("rows",),
+    "columns": ("rows",),
+    "summary": ("context",),
+}
+FIELD_NAME = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
+STATE_ARTIFACT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 SENSITIVE_FIELDS = {
     "access_token",
     "api_key",
@@ -258,6 +269,8 @@ def check_plugin(plugin_root: Path) -> tuple[dict[str, Any] | None, list[Issue]]
                         )
                     )
 
+    report = _check_report(plugin_root, manifest.get("report"), manifest_path, issues)
+
     lifecycle = manifest.get("lifecycle")
     if not isinstance(lifecycle, dict):
         issues.append(Issue("PLUGIN027", "lifecycle must be an object", file=str(manifest_path)))
@@ -282,9 +295,56 @@ def check_plugin(plugin_root: Path) -> tuple[dict[str, Any] | None, list[Issue]]
         "capabilities": capabilities if isinstance(capabilities, list) else [],
         "readme": resolved_readme,
         "entrypoints": resolved_entries,
+        "report": report,
         "lifecycle": lifecycle,
     }
     return descriptor, issues
+
+
+def _check_report(
+    plugin_root: Path, report: Any, manifest_path: Path, issues: list[Issue]
+) -> dict[str, Any] | None:
+    if not isinstance(report, dict):
+        issues.append(Issue("PLUGIN040", "report must declare how plugin results appear in the final report", file=str(manifest_path)))
+        return None
+    unsupported = sorted(set(report) - REPORT_FIELDS)
+    if unsupported:
+        issues.append(Issue("PLUGIN041", f"unsupported report fields: {', '.join(unsupported)}", file=str(manifest_path)))
+    heading = report.get("heading")
+    if not isinstance(heading, str) or not heading.strip() or len(heading) > 80 or "\n" in heading:
+        issues.append(Issue("PLUGIN042", "report.heading must be a single-line section title", file=str(manifest_path)))
+    guide = _resolve_local_path(plugin_root, report.get("guide"), label="report.guide", manifest_path=manifest_path, issues=issues)
+    for field, required in REPORT_DEPENDENCIES.items():
+        missing = [name for name in required if field in report and name not in report]
+        if missing:
+            issues.append(Issue("PLUGIN043", f"report.{field} requires {', '.join('report.' + name for name in missing)}", file=str(manifest_path)))
+    for field in ("context", "rows", "review"):
+        if field in report and (not isinstance(report[field], str) or not STATE_ARTIFACT.fullmatch(report[field])):
+            issues.append(Issue("PLUGIN044", f"report.{field} must be a file name inside the audit state directory", file=str(manifest_path)))
+    if "rowKey" in report and (not isinstance(report["rowKey"], str) or not FIELD_NAME.fullmatch(report["rowKey"])):
+        issues.append(Issue("PLUGIN045", "report.rowKey must be a snake_case field name", file=str(manifest_path)))
+    for field in ("summary", "columns"):
+        if field in report and not _valid_field_list(report[field]):
+            issues.append(Issue("PLUGIN046", f"report.{field} must be a non-empty list of {{field, label[, link]}} objects", file=str(manifest_path)))
+    resolved = {key: value for key, value in report.items() if key in REPORT_FIELDS}
+    resolved["guide"] = str(guide) if guide else None
+    return resolved
+
+
+def _valid_field_list(value: Any) -> bool:
+    if not isinstance(value, list) or not value:
+        return False
+    for item in value:
+        if not isinstance(item, dict) or set(item) - {"field", "label", "link"}:
+            return False
+        if not isinstance(item.get("field"), str) or not FIELD_NAME.fullmatch(item["field"]):
+            return False
+        label = item.get("label")
+        if not isinstance(label, str) or not label.strip() or len(label) > 40 or "|" in label:
+            return False
+        if "link" in item and (not isinstance(item["link"], str) or not FIELD_NAME.fullmatch(item["link"])):
+            return False
+    return True
 
 
 def check_plugins(plugins_root: Path) -> tuple[list[dict[str, Any]], list[Issue]]:

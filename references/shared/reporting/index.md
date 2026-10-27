@@ -33,6 +33,7 @@ Use these files to keep reports consistent, auditable, and actionable:
 - Load `evidence-standard.md` before promoting suspicious patterns or evidence observations into the main findings list.
 - For artifact-centric audits of skill, agent, or instruction-bearing repos, load the existing artifact review path and reconcile operator-risk coverage before finalizing the report.
 - Load `hypothesis-standard.md` in `deep` mode or beta `multi` execution whenever unresolved high-signal hypotheses remain material after final verification.
+- When any installed plugin wrote its declared `report.context` artifact for this run, render its independent section with `tools/plugin_report_render.py --run-dir <state-dir>` and place it after `Coverage Debt`. Follow `plugins/README.md` "Report Presentation" and the plugin README's report section.
 - Load `supplemental-sections-standard.md` when the audit has reader-relevant operational risks, integration assumptions, or engineering notes that should not be inflated into confirmed findings.
 - If the active knowledge domain is `smart-contract`, load `references/smart-contract/vulnerabilities/coverage.md` instead of relying only on the generic application coverage matrix.
 - Load `finding-detail-standard.md` and `remediation-standard.md` for every Standard or Deep audit report.
