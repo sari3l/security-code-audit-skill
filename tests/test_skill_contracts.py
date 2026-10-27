@@ -73,7 +73,7 @@ class SkillContractTests(unittest.TestCase):
 
     def test_requirement_context_release_version_is_consistent(self):
         for path in ("SKILL.md", "README.md", "VERSIONING.md"):
-            self.assertIn("4.3.0", read_doc(path), path)
+            self.assertIn("4.3.1", read_doc(path), path)
 
     def test_auto_fix_requires_isolation_and_separate_final_acceptance(self):
         documents = {
@@ -111,6 +111,16 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("If no argument is provided, use `deep`.", modes)
         self.assertIn("这等价于 `deep single`", readme)
         self.assertNotIn("Equivalent to `standard single`", skill)
+
+    def test_overall_progress_plan_is_mandatory_and_stable(self):
+        skill = read_doc("SKILL.md")
+        self.assertIn("### Progress Reporting (Mandatory)", skill)
+        self.assertIn("Initialize the six-stage plan before any audit work", skill)
+        self.assertIn("Every plan update sends all six items", skill)
+        self.assertIn("Keep exactly one stage `in_progress`", skill)
+        self.assertIn("Never invent percentages", skill)
+        for stage in range(1, 7):
+            self.assertIn(f"`[{stage}/6]", skill)
 
     def test_source_bound_gates_have_no_manual_bypass(self):
         skill = read_doc("SKILL.md")

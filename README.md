@@ -1,6 +1,6 @@
 # Security Code Audit
 
-Current release: `v4.3.0`
+Current release: `v4.3.1`
 
 A code security audit skill for web/API, service, smart-contract, deployment, CI,
 and instruction-bearing repositories. Chinese documentation: [README-CN.md](README-CN.md).
